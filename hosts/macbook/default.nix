@@ -67,6 +67,11 @@
 
     homebrew = {
         enable = true;
+        brews = [
+            # Programming
+            "opencode"
+            "asdf"
+        ];
         casks = [
             # Productivity
             "bettertouchtool"
