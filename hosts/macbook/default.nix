@@ -69,7 +69,7 @@
         enable = true;
         casks = [
             # Productivity
-            "karabiner-elements"
+            "bettertouchtool"
             "alfred"
             "alt-tab"
 
