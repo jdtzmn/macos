@@ -36,6 +36,28 @@
     # Disable window margins (set window resize increments to 0)
     system.defaults.WindowManager.EnableTiledWindowMargins = false;
 
+    # Disable cmd + space for Spotlight (requires restart)
+    system.defaults.CustomUserPreferences = {
+        "com.apple.symbolichotkeys" = {
+          AppleSymbolicHotKeys = {
+            "64" = {
+                enabled = false;
+                value = {
+                    parameters = [32 49 1572864];
+                    type = "standard";
+                };
+            };
+            "65" = {
+                enabled = false;
+                value = {
+                    parameters = [32 49 1572864];
+                    type = "standard";
+                };
+            };
+          };
+        };
+    };
+
     ##############################
     # Home Manager
     ##############################
