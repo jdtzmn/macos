@@ -6,6 +6,12 @@
     system.stateVersion = "25.05";
 
     ##############################
+    # Shell
+    ##############################
+
+    environment.shells = [ pkgs.fish ];
+
+    ##############################
     # User
     ##############################
 
@@ -15,6 +21,9 @@
     };
 
     system.primaryUser = "jacob";
+
+    # Open fish at zsh start
+    programs.zsh.interactiveShellInit = "exec fish";
 
     ##############################
     # System Defaults
@@ -76,9 +85,18 @@
             "cursor"
             "wezterm"
             "tower"
+            "tailscale-app"
             
             # Work
             "slack"
         ];
+    };
+
+    ##############################
+    # Fonts
+    ##############################
+
+    fonts = {
+        packages = [ pkgs.nerd-fonts.fira-code ];
     };
 }

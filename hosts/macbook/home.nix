@@ -12,11 +12,17 @@
     programs.fish.enable = true;
 
     # Wezterm
+    home.file.".config/wezterm/wezterm.lua".source = ./config/wezterm.lua;
 
     # Git
     programs.git = {
         enable = true;
         userName = "Jacob Daitzman";
         userEmail = "jdtzmn@gmail.com";
+    };
+
+    # Direnv
+    programs.direnv = {
+        enable = true;
     };
 }
