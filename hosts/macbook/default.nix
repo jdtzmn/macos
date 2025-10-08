@@ -100,4 +100,12 @@
     fonts = {
         packages = [ pkgs.nerd-fonts.fira-code ];
     };
+
+    ##############################
+    # Install Rosetta 2 for Done.fish plugin.
+    ##############################
+
+    system.activationScripts.extraActivation.text = ''
+        softwareupdate --install-rosetta --agree-to-license
+    '';
 }
