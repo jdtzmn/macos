@@ -1,8 +1,6 @@
-{ pkgs, ... }: {
+{ pkgs, home-manager, ... }: {
     # Make sure the nix daemon always runs
     services.nix-daemon.enable = true;
-    # Installs a version of nix, that dosen't need "experimental-features = nix-command flakes" in /etc/nix/nix.conf
-    services.nix-daemon.package = pkgs.nixFlakes;
 
     # Enable fish
     programs.fish.enable = true;
@@ -23,5 +21,7 @@
     ##############################
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
-    home-manager.users.jacob = import ./home.nix;
+    home-manager.users.jacob = {
+        imports = [ ./home.nix ];
+    };
 }
