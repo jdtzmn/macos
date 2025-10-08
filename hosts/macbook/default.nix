@@ -1,9 +1,23 @@
 { pkgs, home-manager, ... }: {
-    # Make sure the nix daemon always runs
-    services.nix-daemon.enable = true;
+    # Disable nix because we're using Determinate Nix
+    nix.enable = false;
+
+    # Set state version
+    system.stateVersion = "25.05";
 
     # Enable fish
     programs.fish.enable = true;
+
+    ##############################
+    # User
+    ##############################
+
+    users.users.jacob = {
+        name = "jacob";
+        home = "/Users/jacob";
+    };
+
+    system.primaryUser = "jacob";
 
     ##############################
     # System Defaults
