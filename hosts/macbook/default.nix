@@ -77,6 +77,7 @@
             "bettertouchtool"
             "alfred"
             "alt-tab"
+            "homerow"
 
             # Writing
             "notion"
