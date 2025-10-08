@@ -5,9 +5,6 @@
     # Set state version
     system.stateVersion = "25.05";
 
-    # Enable fish
-    programs.fish.enable = true;
-
     ##############################
     # User
     ##############################
@@ -33,9 +30,55 @@
     ##############################
     # Home Manager
     ##############################
+
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
     home-manager.users.jacob = {
         imports = [ ./home.nix ];
+    };
+
+    ##############################
+    # Nix-Homebrew (installs homebrew)
+    ##############################
+
+    nix-homebrew = {
+        # Install Homebrew under the default prefix
+        enable = true;
+
+        # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
+        enableRosetta = true;
+
+        # User owning the Homebrew prefix
+        user = "jacob";
+    };
+
+    ##############################
+    # Homebrew (installs dependencies)
+    ##############################
+
+    homebrew = {
+        enable = true;
+        casks = [
+            # Productivity
+            "karabiner-elements"
+            "alfred"
+
+            # Writing
+            "notion"
+
+            # Browser
+            "brave-browser"
+
+            # Music
+            "spotify"
+
+            # Programming
+            "cursor"
+            "wezterm"
+            "tower"
+            
+            # Work
+            "slack"
+        ];
     };
 }
