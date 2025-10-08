@@ -13,6 +13,7 @@ in {
 
     home.packages = with pkgs; [
         terminal-notifier
+        opencode
     ];
 
     ##############################
@@ -55,4 +56,12 @@ in {
     programs.direnv = {
         enable = true;
     };
+
+    # Opencode
+    # When supported in the future by home-manager,
+    # remove package above and configuration below
+    # programs.opencode = {
+    #     enable = true;
+    # };
+    home.file.".config/opencode/opencode.jsonc".source = ./config/opencode.jsonc;
 }
