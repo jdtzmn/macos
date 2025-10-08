@@ -1,4 +1,7 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+let
+    gitSigningKey = builtins.getEnv "GIT_SIGNING_KEY";
+in {
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
     home = {
         stateVersion = "25.05"; # Nix Darwin README.md says 25.05
@@ -38,6 +41,14 @@
         enable = true;
         userName = "Jacob Daitzman";
         userEmail = "jdtzmn@gmail.com";
+
+        # Support for 1Password SSH Signing
+        signing = {
+            format = "ssh";
+            signByDefault = true;
+            key = gitSigningKey;
+            signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+        };
     };
 
     # Direnv
