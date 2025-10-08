@@ -84,6 +84,7 @@
 
             # Programming
             "cursor"
+            "zed"
             "wezterm"
             "tower"
             "tailscale-app"
