@@ -1,15 +1,34 @@
-{ ... }: {
+{ pkgs, ... }: {
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
     home = {
         stateVersion = "25.05"; # Nix Darwin README.md says 25.05
     };
 
     ##############################
+    # Packages
+    ##############################
+
+    home.packages = with pkgs; [
+        terminal-notifier
+    ];
+
+    ##############################
     # Programs
     ##############################
 
     # Enable fish
-    programs.fish.enable = true;
+    programs.fish = {
+        enable = true;
+        interactiveShellInit = ''
+            set fish_greeting # Disable greeting
+        '';
+        plugins = [
+            {
+                name = "done";
+                src = pkgs.fishPlugins.done.src;
+            }
+        ];
+    };
 
     # Wezterm
     home.file.".config/wezterm/wezterm.lua".source = ./config/wezterm.lua;
