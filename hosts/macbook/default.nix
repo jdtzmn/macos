@@ -71,6 +71,7 @@
             # Productivity
             "karabiner-elements"
             "alfred"
+            "alt-tab"
 
             # Writing
             "notion"
