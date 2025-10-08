@@ -32,6 +32,10 @@
     # Dock
     system.defaults.dock.autohide = true;
 
+    # Desktop
+    # Disable standard click to show desktop
+    system.defaults.WindowManager.EnableStandardClickToShowDesktop = false;
+
     # Windows
     # Disable window margins (set window resize increments to 0)
     system.defaults.WindowManager.EnableTiledWindowMargins = false;
