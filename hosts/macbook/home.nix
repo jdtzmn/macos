@@ -15,7 +15,7 @@ in {
         terminal-notifier
         docker
         docker-compose
-        colima
+        bun
     ];
 
     ##############################
