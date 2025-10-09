@@ -44,6 +44,7 @@
     system.defaults.CustomUserPreferences = {
         "com.apple.symbolichotkeys" = {
           AppleSymbolicHotKeys = {
+            # 64 is the configuration entry for Spotlight search
             "64" = {
                 enabled = false;
             };
