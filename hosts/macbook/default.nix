@@ -114,6 +114,7 @@
             "tower"
             "tailscale-app"
             "orbstack"
+            "conductor"
 
             # Work
             "slack"
