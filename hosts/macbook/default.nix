@@ -46,17 +46,6 @@
           AppleSymbolicHotKeys = {
             "64" = {
                 enabled = false;
-                value = {
-                    parameters = [32 49 1572864];
-                    type = "standard";
-                };
-            };
-            "65" = {
-                enabled = false;
-                value = {
-                    parameters = [32 49 1572864];
-                    type = "standard";
-                };
             };
           };
         };
