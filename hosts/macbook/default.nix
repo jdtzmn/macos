@@ -95,6 +95,9 @@
             "alt-tab"
             "homerow"
 
+            # AI Tools
+            # coming soon: "intellibar"
+
             # Writing
             "notion"
 
@@ -110,7 +113,8 @@
             "wezterm"
             "tower"
             "tailscale-app"
-            
+            "orbstack"
+
             # Work
             "slack"
         ];
