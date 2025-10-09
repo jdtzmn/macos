@@ -16,6 +16,7 @@ in {
         docker
         docker-compose
         bun
+        gh
     ];
 
     ##############################
