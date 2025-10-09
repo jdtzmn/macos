@@ -13,6 +13,9 @@ in {
 
     home.packages = with pkgs; [
         terminal-notifier
+        docker
+        docker-compose
+        colima
     ];
 
     ##############################
