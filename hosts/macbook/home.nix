@@ -34,6 +34,9 @@ in {
                 src = pkgs.fishPlugins.done.src;
             }
         ];
+        shellAliases = {
+            "dc" = "docker compose";
+        };
     };
 
     # Wezterm
@@ -51,6 +54,10 @@ in {
             signByDefault = true;
             key = gitSigningKey;
             signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+        };
+
+        aliases = {
+            s = "status";
         };
     };
 
