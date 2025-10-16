@@ -11,6 +11,8 @@
             "cat *": "allow",
             "ls *": "allow",
             "grep *": "allow",
+            "mkdir *": "allow",
+            "git status *": "allow",
             "sleep *": "allow",
             "echo *": "allow",
             "xcodebuild *": "allow",
