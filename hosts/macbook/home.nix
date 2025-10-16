@@ -35,8 +35,9 @@ in {
                 src = pkgs.fishPlugins.done.src;
             }
         ];
-        shellAliases = {
+        shellAbbrs = {
             "dc" = "docker compose";
+            "oc" = "opencode";
         };
     };
 
