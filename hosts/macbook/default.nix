@@ -18,12 +18,11 @@
     users.users.jacob = {
         name = "jacob";
         home = "/Users/jacob";
+        shell = pkgs.fish;
+        ignoreShellProgramCheck = true;
     };
 
     system.primaryUser = "jacob";
-
-    # Open fish at zsh start
-    programs.zsh.interactiveShellInit = "exec fish";
 
     ##############################
     # System Defaults
