@@ -29,6 +29,9 @@ in {
         interactiveShellInit = ''
             set fish_greeting # Disable greeting
         '';
+        shellInit = ''
+          source ${./config/config.fish}
+        '';
         plugins = [
             {
                 name = "done";
