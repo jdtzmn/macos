@@ -86,6 +86,7 @@
             # Programming
             "opencode"
             "asdf"
+            "temporal"
         ];
         casks = [
             # Productivity
