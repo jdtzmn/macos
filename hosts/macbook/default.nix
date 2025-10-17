@@ -82,12 +82,16 @@
 
     homebrew = {
         enable = true;
+        taps = [
+            "oven-sh/bun"
+        ];
         brews = [
             # Programming
             "opencode"
             "asdf"
             "temporal"
             "uv"
+            "bun"
         ];
         casks = [
             # Productivity
