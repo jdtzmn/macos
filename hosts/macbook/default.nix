@@ -120,6 +120,7 @@
             "tailscale-app"
             "orbstack"
             "conductor"
+            "bruno"
 
             # Work
             "slack"
