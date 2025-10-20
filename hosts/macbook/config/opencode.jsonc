@@ -1,22 +1,25 @@
 {
-    "$schema": "https://opencode.ai/config.json",
-    "theme": "tokyonight",
-    "mcp": {},
-    "permission": {
-        // "bash": "allow",
-        "bash": {
-            "docker-compose *": "allow",
-            "bun *": "allow",
-            "cd *": "allow",
-            "cat *": "allow",
-            "ls *": "allow",
-            "grep *": "allow",
-            "mkdir *": "allow",
-            "git status *": "allow",
-            "sleep *": "allow",
-            "echo *": "allow",
-            "xcodebuild *": "allow",
-            "*": "ask"
-        }
-    }
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "tokyonight",
+  "mcp": {},
+  "permission": {
+    // "bash": "allow",
+    "bash": {
+      "docker-compose *": "allow",
+      "bun *": "allow",
+      "cd *": "allow",
+      "cat *": "allow",
+      "ls *": "allow",
+      "grep *": "allow",
+      "mkdir *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "git status *": "allow",
+      "git diff *": "allow",
+      "sleep *": "allow",
+      "echo *": "allow",
+      "xcodebuild *": "allow",
+      "*": "ask",
+    },
+  },
 }
