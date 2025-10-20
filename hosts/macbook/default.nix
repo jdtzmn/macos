@@ -11,6 +11,9 @@
 
     environment.shells = [ pkgs.fish ];
 
+    # Yes, you do need to enable fish in nix-darwin and home-manager.. sigh
+    programs.fish.enable = true;
+
     ##############################
     # User
     ##############################
