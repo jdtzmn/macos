@@ -95,7 +95,6 @@
             "temporal"
             "uv"
             "bun"
-            "dagger/tap/container-use"
             "dagger/tap/dagger"
         ];
         casks = [
