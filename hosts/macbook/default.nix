@@ -95,6 +95,8 @@
             "temporal"
             "uv"
             "bun"
+            "dagger/tap/container-use"
+            "dagger/tap/dagger"
         ];
         casks = [
             # Productivity
@@ -102,9 +104,11 @@
             "alfred"
             "alt-tab"
             "homerow"
+            "nordvpn"
+            "zoom"
 
             # AI Tools
-            # coming soon: "intellibar"
+            # Manually install Chorus
 
             # Writing
             "notion"
