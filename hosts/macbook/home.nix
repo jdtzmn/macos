@@ -128,5 +128,6 @@ in {
     # programs.opencode = {
     #     enable = true;
     # };
-    home.file.".config/opencode/opencode.jsonc".source = ./config/opencode.jsonc;
+    home.file.".config/opencode/opencode.jsonc".source = ./config/opencode/opencode.jsonc;
+    home.file.".config/opencode/plugin/notification.js".source = ./config/opencode/plugin/notification.js;
 }
