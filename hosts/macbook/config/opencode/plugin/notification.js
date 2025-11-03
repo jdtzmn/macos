@@ -14,7 +14,7 @@ export const NotificationPlugin = async ({
         const numberOfSeconds = Math.floor(
           (new Date() - lastMessageTime) / 1000,
         );
-        await $`sh -c "terminal-notifier -title 'Opencode' -message 'Completed in ${numberOfSeconds}s' -group 'opencode' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+        await $`sh -c "terminal-notifier -title 'Opencode' -message 'Completed in ${numberOfSeconds}s' -sound 'Purr' -group 'opencode' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
       }
     },
     "chat.message": async ({ message }) => {
