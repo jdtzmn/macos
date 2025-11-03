@@ -111,6 +111,14 @@ in {
                 dark = "Tokyo Night";
             };
         };
+        userKeymaps = [
+            {
+                context = "Editor && vim_mode == insert";
+                bindings = {
+                "j k" = "vim::NormalBefore";
+                };
+            }
+        ];
     };
 
 
