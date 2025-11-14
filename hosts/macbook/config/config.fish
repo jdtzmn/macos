@@ -14,3 +14,12 @@ if not contains $_asdf_shims $PATH
     set -gx --prepend PATH $_asdf_shims
 end
 set --erase _asdf_shims
+
+# GitHub alias function
+function github
+    if test -z "$argv"
+        cd ~/Documents/GitHub
+    else
+        cd ~/Documents/GitHub/$argv
+    end
+end
