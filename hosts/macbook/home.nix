@@ -110,6 +110,10 @@ in {
                 light = "Tokyo Night Light";
                 dark = "Tokyo Night";
             };
+            file_scan_inclusions = [
+                ".env"
+                ".env*"
+            ];
         };
         userKeymaps = [
             {
