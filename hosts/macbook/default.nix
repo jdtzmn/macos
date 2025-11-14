@@ -105,6 +105,8 @@
             "homerow"
             "nordvpn"
             "zoom"
+            "betterdisplay"
+            "linear-linear"
 
             # AI Tools
             # Manually install Chorus
@@ -127,6 +129,7 @@
             "orbstack"
             "conductor"
             "bruno"
+            "dbeaver-community"
 
             # Work
             "slack"
