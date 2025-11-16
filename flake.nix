@@ -1,5 +1,5 @@
 {
-    description = "Jacob's macOS configuration";
+    description = "Jacob's multi-platform configuration (macOS and Linux)";
 
     # Flake inputs
     inputs = {
@@ -17,17 +17,25 @@
         # Nix-Homebrew
         nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     };
-  
 
 
     # Flake outputs
     outputs = { self, nixpkgs, home-manager, darwin, nix-homebrew }: {
+        # macOS system configuration
         darwinConfigurations.macbook = darwin.lib.darwinSystem {
             system = "aarch64-darwin";
             modules = [
                 home-manager.darwinModules.home-manager
                 nix-homebrew.darwinModules.nix-homebrew
                 ./hosts/macbook/default.nix
+            ];
+        };
+
+        # Linux home-manager standalone configuration
+        homeConfigurations.linux = home-manager.lib.homeManagerConfiguration {
+            pkgs = nixpkgs.legacyPackages.x86_64-linux;
+            modules = [
+                ./hosts/linux/home.nix
             ];
         };
     };

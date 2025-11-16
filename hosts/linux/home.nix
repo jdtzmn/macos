@@ -14,26 +14,20 @@ in {
 
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
     home = {
-        stateVersion = "25.05"; # Nix Darwin README.md says 25.05
+        username = "jacob";
+        homeDirectory = "/home/jacob";
+        stateVersion = "25.05";
     };
 
     ##############################
-    # macOS-specific Packages
+    # Linux-specific Git Configuration
     ##############################
 
-    home.packages = with pkgs; [
-        terminal-notifier
-    ];
-
-    ##############################
-    # macOS-specific Git Configuration
-    ##############################
-
-    # Support for 1Password SSH Signing (macOS only)
+    # For Linux, use SSH key directly
     programs.git.signing = {
         format = "ssh";
         signByDefault = true;
         key = gitSigningKey;
-        signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+        signer = "${pkgs.openssh}/bin/ssh-keysign";
     };
 }

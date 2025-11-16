@@ -1,5 +1,19 @@
-.PHONY: default
+.PHONY: help macbook linux
 
-# Switch to the macbook configuration
-default:
+# Default target shows help
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  macbook  - Switch to macOS configuration"
+	@echo "  linux    - Switch to Linux (home-manager) configuration"
+
+.DEFAULT_GOAL := help
+
+# macOS system configuration
+macbook:
 	sudo -E nix run nix-darwin -- switch --flake .#macbook --impure
+
+# Linux home-manager standalone configuration
+linux:
+	nix run home-manager -- switch --flake .#linux --impure
