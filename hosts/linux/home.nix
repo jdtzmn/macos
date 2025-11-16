@@ -29,7 +29,17 @@ in {
         signByDefault = true;
     };
 
-    # Disable other shells to ensure fish is default
-    programs.bash.enable = false;
+    # Enable bash to launch fish interactively
+    programs.bash = {
+        enable = true;
+        bashrcExtra = ''
+            # Launch fish for interactive shells
+            if [ -n "$PS1" ]; then
+              if command -v fish &> /dev/null; then
+                exec fish
+              fi
+            fi
+        '';
+    };
     programs.zsh.enable = false;
 }
