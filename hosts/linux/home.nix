@@ -28,4 +28,8 @@ in {
         format = "ssh";
         signByDefault = true;
     };
+
+    # Disable other shells to ensure fish is default
+    programs.bash.enable = false;
+    programs.zsh.enable = false;
 }
