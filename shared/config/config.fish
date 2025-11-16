@@ -1,5 +1,7 @@
-# Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew (macOS only)
+if test (uname) = "Darwin"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+end
 
 # ASDF configuration code
 if test -z $ASDF_DATA_DIR
