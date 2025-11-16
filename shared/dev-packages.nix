@@ -5,5 +5,6 @@
     docker-compose
     bun
     gh
+    gnumake
   ];
 }
