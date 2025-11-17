@@ -28,6 +28,7 @@ in {
     programs.git.signing = {
         format = "ssh";
         signByDefault = true;
+        key = gitSigningKey;
     };
 
     # Enable bash to launch fish interactively
