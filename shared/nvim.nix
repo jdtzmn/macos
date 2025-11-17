@@ -8,5 +8,5 @@
   };
 
   # Create symlink to shared nvim config
-  home.file.".config/nvim".source = ./nvim;
+  xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink (toString ./nvim);
 }
