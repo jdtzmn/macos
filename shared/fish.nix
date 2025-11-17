@@ -17,6 +17,7 @@
     shellAbbrs = {
       "dc" = "docker compose";
       "oc" = "opencode";
+      "n" = "neovim";
     };
   };
 }
