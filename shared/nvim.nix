@@ -8,5 +8,5 @@
   };
 
   # Create symlink to shared nvim config
-  home.file.".config/nvim".source = config.lib.file.mkOutOfStoreSymlink ./nvim;
+  home.file.".config/nvim".source = ./nvim;
 }
