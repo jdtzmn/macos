@@ -1,0 +1,3 @@
+[submodule "shared/nvim"]
+	path = shared/nvim
+	url = https://github.com/jdtzmn/nvim
