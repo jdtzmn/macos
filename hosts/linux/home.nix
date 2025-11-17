@@ -10,6 +10,7 @@ in {
         ../../shared/wezterm.nix
         ../../shared/zed.nix
         ../../shared/opencode.nix
+        ../../shared/nvim.nix
     ];
 
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
