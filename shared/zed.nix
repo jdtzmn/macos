@@ -50,27 +50,6 @@
           "j k" = "vim::NormalBefore";
         };
       }
-      {
-        context = "Workspace";
-        bindings = {
-          "cmd-?" = [
-              "task::Spawn"
-              {
-                "task_name" = "Opencode";
-                "reveal_target" = "center";
-              }
-          ];
-        };
-      }
     ];
-    # To add once `userTasks` are supported
-    #{
-    #    "label": "Opencode",
-    #    "command": "opencode",
-    #    "shell": "system",
-    #    "reveal_target": "center",
-    #    "use_new_terminal": true,
-    #    "show_command": false
-    #}
   };
 }
