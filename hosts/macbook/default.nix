@@ -1,4 +1,4 @@
-{ pkgs, home-manager, ... }: {
+{ pkgs, ... }: {
     # Disable nix because we're using Determinate Nix
     nix.enable = false;
 

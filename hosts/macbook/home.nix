@@ -1,7 +1,5 @@
 { pkgs, ... }:
-let
-    gitSigningKey = builtins.getEnv "GIT_SIGNING_KEY";
-in {
+{
     imports = [
         ../../shared/dev-packages.nix
         ../../shared/git.nix
@@ -31,9 +29,6 @@ in {
 
     # Support for 1Password SSH Signing (macOS only)
     programs.git.signing = {
-        format = "ssh";
-        signByDefault = true;
-        key = gitSigningKey;
         signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
     };
 }
