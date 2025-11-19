@@ -6,5 +6,8 @@
     bun
     gh
     gnumake
+    # Nix language servers
+    nil
+    nixd
   ];
 }
