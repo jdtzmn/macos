@@ -122,6 +122,7 @@
 
             # Programming
             "cursor"
+            "visual-studio-code"
             "zed"
             "wezterm"
             "tower"
