@@ -5,8 +5,6 @@ in
 {
   programs.git = {
     enable = true;
-    userName = "Jacob Daitzman";
-    userEmail = "jdtzmn@gmail.com";
 
     signing = {
       format = "ssh";
@@ -14,8 +12,15 @@ in
       key = gitSigningKey;
     };
 
-    aliases = {
-      s = "status";
+    settings = {
+      alias = {
+        s = "status";
+      };
+
+      user = {
+        name = "Jacob Daitzman";
+        email = "jdtzmn@gmail.com";
+      };
     };
   };
 }
