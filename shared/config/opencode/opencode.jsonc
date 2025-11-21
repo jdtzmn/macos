@@ -5,6 +5,22 @@
   "tui": {
     "scroll_speed": 1,
   },
+  // Hopefully tmeporary - From https://github.com/sst/opencode/issues/4426#issuecomment-3543887850
+  "provider": {
+    "openai": {
+      "models": {
+        "gpt-5.1-codex": {
+          "options": {
+            "store": false,
+            "reasoningEffort": "high",
+            "textVerbosity": "medium",
+            "reasoningSummary": "auto",
+            "include": ["reasoning.encrypted_content"],
+          },
+        },
+      },
+    },
+  },
   "permission": {
     // "bash": "allow",
     "bash": {
