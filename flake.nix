@@ -3,7 +3,7 @@
 
     # Flake inputs
     inputs = {
-        nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2505.812676"; # Stable Nixpkgs
+        nixpkgs.url = "github:NixOS/nixpkgs/master"; # Unstable Nixpkgs
 
         # Home Manager
         home-manager.url = "https://flakehub.com/f/nix-community/home-manager/0.2505.4813";
