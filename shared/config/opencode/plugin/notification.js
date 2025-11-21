@@ -21,5 +21,9 @@ export const NotificationPlugin = async ({
       // Set last message time
       lastMessageTime = new Date();
     },
+    "permission.ask": async (input, output) => {
+      // Send notification when opencode asks for user input
+      await $`sh -c "terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+    },
   };
 };
