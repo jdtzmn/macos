@@ -52,6 +52,7 @@
             };
           };
         };
+        # Figure out a way to disable ctrl+space for "Select the previous input source" so that Zed can show completions
     };
 
     ##############################
