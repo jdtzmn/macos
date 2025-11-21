@@ -6,12 +6,12 @@
         nixpkgs.url = "github:NixOS/nixpkgs/master"; # Unstable Nixpkgs
 
         # Home Manager
-        home-manager.url = "https://flakehub.com/f/nix-community/home-manager/0.2505.4813";
+        home-manager.url = "github:nix-community/home-manager/master";
         home-manager.inputs.nixpkgs.follows = "nixpkgs";
         # nix will normally use the nixpkgs defined in home-managers inputs, we only want one copy of nixpkgs though
 
         # Nix-Darwin
-        darwin.url = "https://flakehub.com/f/nix-darwin/nix-darwin/0.2505.2190";
+        darwin.url = "github:nix-darwin/nix-darwin/master";
         darwin.inputs.nixpkgs.follows = "nixpkgs";
 
         # Nix-Homebrew
