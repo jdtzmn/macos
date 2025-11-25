@@ -12,8 +12,8 @@ help:
 
 # macOS system configuration
 macbook:
-	sudo -E nix run nix-darwin -- switch --flake .#macbook --impure
+	REPO_DIR=$(CURDIR) sudo -E nix run nix-darwin -- switch --flake .#macbook --impure
 
 # Linux home-manager standalone configuration
 linux:
-	nix run home-manager -- switch --flake .#linux --impure
+	REPO_DIR=$(CURDIR) nix run home-manager -- switch --flake .#linux --impure

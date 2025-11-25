@@ -1,4 +1,4 @@
-{ ... }:
+{ repoDir ? null, ... }:
 {
     imports = [
         ../../shared/dev-packages.nix

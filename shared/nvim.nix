@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, repoDir, ... }:
 {
   programs.neovim = {
     enable = true;
@@ -8,5 +8,5 @@
   };
 
   # Create symlink to shared nvim config
-  xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink (toString ./nvim);
+  xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/nvim";
 }

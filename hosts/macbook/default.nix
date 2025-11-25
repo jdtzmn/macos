@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  repoDir ? null,
+  ...
+}:
 {
   # Disable nix because we're using Determinate Nix
   nix.enable = false;
@@ -62,6 +66,9 @@
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
+  home-manager.extraSpecialArgs = {
+    inherit repoDir;
+  };
   home-manager.users.jacob = {
     imports = [ ./home.nix ];
   };

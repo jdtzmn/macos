@@ -20,7 +20,10 @@
 
 
     # Flake outputs
-    outputs = { self, nixpkgs, home-manager, darwin, nix-homebrew }: {
+    outputs = { self, nixpkgs, home-manager, darwin, nix-homebrew }:
+    let
+        repoDir = builtins.getEnv "REPO_DIR";
+    in {
         # macOS system configuration
         darwinConfigurations.macbook = darwin.lib.darwinSystem {
             system = "aarch64-darwin";
@@ -29,6 +32,9 @@
                 nix-homebrew.darwinModules.nix-homebrew
                 ./hosts/macbook/default.nix
             ];
+            specialArgs = {
+                inherit repoDir;
+            };
         };
 
         # Linux home-manager standalone configuration
@@ -37,6 +43,9 @@
             modules = [
                 ./hosts/linux/home.nix
             ];
+            extraSpecialArgs = {
+                inherit repoDir;
+            };
         };
     };
 }
