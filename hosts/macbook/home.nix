@@ -1,34 +1,35 @@
 { pkgs, ... }:
 {
-    imports = [
-        ../../shared/dev-packages.nix
-        ../../shared/git.nix
-        ../../shared/fish.nix
-        ../../shared/direnv.nix
-        ../../shared/wezterm.nix
-        ../../shared/zed.nix
-        ../../shared/opencode.nix
-    ];
+  imports = [
+    ../../shared/dev-packages.nix
+    ../../shared/git.nix
+    ../../shared/fish.nix
+    ../../shared/direnv.nix
+    ../../shared/wezterm.nix
+    ../../shared/zed.nix
+    ../../shared/opencode.nix
+    ../../shared/nvim.nix
+  ];
 
-    # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-    home = {
-        stateVersion = "25.05"; # Nix Darwin README.md says 25.05
-    };
+  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
+  home = {
+    stateVersion = "25.05"; # Nix Darwin README.md says 25.05
+  };
 
-    ##############################
-    # macOS-specific Packages
-    ##############################
+  ##############################
+  # macOS-specific Packages
+  ##############################
 
-    home.packages = with pkgs; [
-        terminal-notifier
-    ];
+  home.packages = with pkgs; [
+    terminal-notifier
+  ];
 
-    ##############################
-    # macOS-specific Git Configuration
-    ##############################
+  ##############################
+  # macOS-specific Git Configuration
+  ##############################
 
-    # Support for 1Password SSH Signing (macOS only)
-    programs.git.signing = {
-        signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
-    };
+  # Support for 1Password SSH Signing (macOS only)
+  programs.git.signing = {
+    signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+  };
 }
