@@ -116,7 +116,10 @@
       "zoom"
       "betterdisplay"
       "linear-linear"
+
+      # Design
       "kap"
+      "figma"
 
       # AI Tools
       # Manually install Chorus
