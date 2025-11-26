@@ -6,6 +6,7 @@
     bun
     gh
     gnumake
+    ripgrep
     # Nix language servers
     nil
     nixd
