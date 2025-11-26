@@ -26,7 +26,7 @@
         };
       };
       vim_mode = true;
-      relative_line_numbers = true;
+      relative_line_numbers = "enabled";
       telemetry = {
         diagnostics = false;
         metrics = false;
