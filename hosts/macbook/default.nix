@@ -117,8 +117,6 @@
       "alfred"
       "alt-tab"
       "homerow"
-      "nordvpn"
-      "zoom"
       "betterdisplay"
       "linear-linear"
 
@@ -142,9 +140,7 @@
       "cursor"
       "visual-studio-code"
       "zed"
-      "wezterm"
       "tower"
-      "tailscale-app"
       "orbstack"
       "conductor"
       "bruno"
@@ -152,7 +148,13 @@
 
       # Work
       "slack"
-    ];
+    ] ++ (if !separateAdminAccount then [
+      # These casks require sudo during install
+      "tailscale-app"
+      "wezterm"
+      "zoom"
+      "nordvpn"
+    ] else []);
   };
 
   ##############################
