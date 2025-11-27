@@ -4,10 +4,10 @@
     enable = true;
     interactiveShellInit = ''
       set fish_greeting # Disable greeting
+      source ${./config/tide.fish}
     '';
     shellInit = ''
       source ${./config/config.fish}
-      source ${./config/tide.fish}
     '';
     plugins = [
       {
