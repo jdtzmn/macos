@@ -23,9 +23,7 @@
     outputs = { self, nixpkgs, home-manager, darwin, nix-homebrew }:
     let
         repoDir = builtins.getEnv "REPO_DIR";
-    in {
-        # macOS system configuration
-        darwinConfigurations.macbook = darwin.lib.darwinSystem {
+        mkDarwinSystem = { separateAdminAccount ? false }: darwin.lib.darwinSystem {
             system = "aarch64-darwin";
             modules = [
                 home-manager.darwinModules.home-manager
@@ -33,9 +31,15 @@
                 ./hosts/macbook/default.nix
             ];
             specialArgs = {
-                inherit repoDir;
+                inherit repoDir separateAdminAccount;
             };
         };
+    in {
+        # macOS system configuration (run from admin account)
+        darwinConfigurations.macbook = mkDarwinSystem { };
+
+        # macOS system configuration (run from separate admin account)
+        darwinConfigurations.macbook-admin = mkDarwinSystem { separateAdminAccount = true; };
 
         # Linux home-manager standalone configuration
         homeConfigurations.linux = home-manager.lib.homeManagerConfiguration {

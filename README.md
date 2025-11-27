@@ -29,3 +29,5 @@ the `jacob` user's home directory:
 su admin
 sudo make macbook-admin
 ```
+
+Some packages can't be installed with homebrew this way, so you may need to install them manually or use a different method. Those packages are skipped in the Makefile.

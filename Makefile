@@ -18,7 +18,7 @@ macbook:
 # macOS system configuration from administrator account
 macbook-admin:
 	sudo cp -r $(CURDIR) /tmp/macos-config
-	REPO_DIR=$(CURDIR) sudo -H nix run nix-darwin -- switch --flake /tmp/macos-config#macbook --impure
+	REPO_DIR=$(CURDIR) HOMEBREW_BUNDLE_CASK_SKIP="tailscale-app wezterm zoom nordvpn" sudo -E -H nix run nix-darwin -- switch --flake /tmp/macos-config#macbook-admin --impure
 	sudo rm -rf /tmp/macos-config
 
 # Linux home-manager standalone configuration

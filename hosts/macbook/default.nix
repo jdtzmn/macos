@@ -1,6 +1,7 @@
 {
   pkgs,
   repoDir ? null,
+  separateAdminAccount ? false,
   ...
 }:
 {
@@ -95,6 +96,9 @@
 
   homebrew = {
     enable = true;
+    # When running from a separate admin account, install casks to user's Applications folder
+    caskArgs.appdir =
+      if separateAdminAccount then "/Users/jacob/Applications" else "/Applications";
     taps = [
       "oven-sh/bun"
     ];
