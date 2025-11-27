@@ -86,6 +86,7 @@
 
     # User owning the Homebrew prefix
     user = "jacob";
+    autoMigrate = true;
   };
 
   ##############################
