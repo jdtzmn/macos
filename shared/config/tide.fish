@@ -12,7 +12,7 @@ set -g tide_character_vi_icon_visual V
 set -g tide_cmd_duration_bg_color 1C1C1C
 set -g tide_cmd_duration_color 87875F
 set -g tide_cmd_duration_decimals 0
-set -g tide_cmd_duration_icon
+set -g tide_cmd_duration_icon ''
 set -g tide_cmd_duration_threshold 3000
 
 set -g tide_context_always_display false
@@ -32,7 +32,7 @@ set -g tide_git_color_staged D7AF00
 set -g tide_git_color_stash 5FD700
 set -g tide_git_color_untracked 00AFFF
 set -g tide_git_color_upstream 5FD700
-set -g tide_git_icon
+set -g tide_git_icon ''
 
 set -g tide_jobs_bg_color 1C1C1C
 set -g tide_jobs_color 5FAF00
@@ -40,7 +40,7 @@ set -g tide_jobs_icon
 
 set -g tide_left_prompt_frame_enabled false
 set -g tide_left_prompt_items pwd git
-set -g tide_left_prompt_prefix
+set -g tide_left_prompt_prefix ''
 set -g tide_left_prompt_separator_diff_color 
 set -g tide_left_prompt_separator_same_color 
 set -g tide_left_prompt_suffix 
@@ -56,8 +56,8 @@ set -g tide_pwd_bg_color 1C1C1C
 set -g tide_pwd_color_anchors 00AFFF
 set -g tide_pwd_color_dirs 0087AF
 set -g tide_pwd_color_truncated_dirs 8787AF
-set -g tide_pwd_icon
-set -g tide_pwd_icon_home
+set -g tide_pwd_icon ''
+set -g tide_pwd_icon_home ''
 set -g tide_pwd_icon_unwritable 
 set -g tide_pwd_markers .bzr .citc .git .hg .node-version .python-version .ruby-version .shorten_folder_marker .svn .terraform Cargo.toml composer.json CVS go.mod package.json
 
@@ -66,7 +66,7 @@ set -g tide_right_prompt_items status cmd_duration context jobs virtual_env node
 set -g tide_right_prompt_prefix 
 set -g tide_right_prompt_separator_diff_color 
 set -g tide_right_prompt_separator_same_color 
-set -g tide_right_prompt_suffix
+set -g tide_right_prompt_suffix ''
 
 set -g tide_status_bg_color 1C1C1C
 set -g tide_status_bg_color_failure 1C1C1C
