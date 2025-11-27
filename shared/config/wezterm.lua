@@ -5,7 +5,7 @@ local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
 -- Change the font
-config.font = wezterm.font('FiraCode Nerd Font Mono')
+config.font = wezterm.font('JetBrainsMono Nerd Font')
 
 -- Adjust default window size
 config.initial_rows = 30

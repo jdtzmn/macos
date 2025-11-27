@@ -162,7 +162,7 @@
   ##############################
 
   fonts = {
-    packages = [ pkgs.nerd-fonts.fira-code ];
+    packages = [ pkgs.nerd-fonts.jetbrains-mono ];
   };
 
   ##############################
