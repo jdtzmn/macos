@@ -36,14 +36,14 @@ set -g tide_git_icon ''
 
 set -g tide_jobs_bg_color 1C1C1C
 set -g tide_jobs_color 5FAF00
-set -g tide_jobs_icon 
+set -g tide_jobs_icon
 
 set -g tide_left_prompt_frame_enabled false
 set -g tide_left_prompt_items pwd git
 set -g tide_left_prompt_prefix ''
-set -g tide_left_prompt_separator_diff_color 
-set -g tide_left_prompt_separator_same_color 
-set -g tide_left_prompt_suffix 
+set -g tide_left_prompt_separator_diff_color
+set -g tide_left_prompt_separator_same_color
+set -g tide_left_prompt_suffix
 
 set -g tide_prompt_add_newline_before false
 set -g tide_prompt_color_frame_and_connection 6C6C6C
@@ -58,14 +58,14 @@ set -g tide_pwd_color_dirs 0087AF
 set -g tide_pwd_color_truncated_dirs 8787AF
 set -g tide_pwd_icon ''
 set -g tide_pwd_icon_home ''
-set -g tide_pwd_icon_unwritable 
+set -g tide_pwd_icon_unwritable
 set -g tide_pwd_markers .bzr .citc .git .hg .node-version .python-version .ruby-version .shorten_folder_marker .svn .terraform Cargo.toml composer.json CVS go.mod package.json
 
 set -g tide_right_prompt_frame_enabled false
-set -g tide_right_prompt_items status cmd_duration context jobs virtual_env node
-set -g tide_right_prompt_prefix 
-set -g tide_right_prompt_separator_diff_color 
-set -g tide_right_prompt_separator_same_color 
+set -g tide_right_prompt_items status cmd_duration context jobs node
+set -g tide_right_prompt_prefix
+set -g tide_right_prompt_separator_diff_color
+set -g tide_right_prompt_separator_same_color
 set -g tide_right_prompt_suffix ''
 
 set -g tide_status_bg_color 1C1C1C
@@ -81,4 +81,4 @@ set -g tide_node_icon ⬢
 
 set -g tide_virtual_env_bg_color 1C1C1C
 set -g tide_virtual_env_color 00AFAF
-set -g tide_virtual_env_icon 
+set -g tide_virtual_env_icon
