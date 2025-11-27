@@ -7,11 +7,16 @@
     '';
     shellInit = ''
       source ${./config/config.fish}
+      source ${./config/tide.fish}
     '';
     plugins = [
       {
         name = "done";
         src = pkgs.fishPlugins.done.src;
+      }
+      {
+        name = "tide";
+        src = pkgs.fishPlugins.tide.src;
       }
     ];
     shellAbbrs = {
