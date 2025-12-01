@@ -26,6 +26,9 @@
       "dc" = "docker compose";
       "oc" = "opencode";
       "n" = "nvim";
+      "up" = "docker compose up";
+      "stop" = "docker compose stop";
+      "down" = "docker compose down";
     };
   };
 }
