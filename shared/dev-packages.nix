@@ -7,6 +7,8 @@
     gh
     gnumake
     ripgrep
+    nnn
+    lazygit
     # Nix language servers
     nil
     nixd
