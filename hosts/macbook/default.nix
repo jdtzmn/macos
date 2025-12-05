@@ -126,6 +126,7 @@
 
       # AI Tools
       # Manually install Chorus
+      "jan"
 
       # Writing
       "notion"
