@@ -1,6 +1,7 @@
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
 
+
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
@@ -19,28 +20,28 @@ config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = true
 config.window_decorations = "RESIZE"
 config.window_padding = {
-  left = 10,
-  right = 10,
-  top = 20,
-  bottom = 10
+    left = 10,
+    right = 10,
+    top = 10,
+    bottom = 10
 }
 
 config.window_frame = {
-  active_titlebar_bg = '#1a1b26',
-  inactive_titlebar_bg = '#16161e',
+    active_titlebar_bg = '#1a1b26',
+    inactive_titlebar_bg = '#16161e',
 }
 
 config.colors = {
-  tab_bar = {
-    background = '#16161e',
-  },
+    tab_bar = {
+        background = '#16161e',
+    },
 }
 
 
 -- Set window opacity based on the focused window
 
-config.window_background_opacity = 0.8
-config.macos_window_background_blur = 60
+config.window_background_opacity = 0.5
+config.macos_window_background_blur = 40
 
 -- Return the configuration to wezterm
 return config
