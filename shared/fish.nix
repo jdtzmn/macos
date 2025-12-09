@@ -40,7 +40,7 @@
       # Git
       "s" = "git status";
       "gs" = "git status";
-      "gc" = "git commit -m \"%\"";
+      "gc" = "git commit -m ";
       "gp" = "git push";
       "gl" = "git log";
       "gcob" = "git checkout -b";
