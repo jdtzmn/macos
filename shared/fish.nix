@@ -30,6 +30,8 @@
       # Programs
       "oc" = "opencode";
       "n" = "nvim";
+      "terraform" = "opentofu";
+      "tf" = "opentofu";
 
       # Docker
       "dc" = "docker compose";

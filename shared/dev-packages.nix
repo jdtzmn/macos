@@ -10,6 +10,7 @@
     nnn
     lazygit
     eza
+    opentofu
     # Nix language servers
     nil
     nixd
