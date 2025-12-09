@@ -23,6 +23,10 @@
       }
     ];
     shellAbbrs = {
+      # Commands
+      "c" = "clear";
+      "ls" = "exa";
+
       # Programs
       "oc" = "opencode";
       "n" = "nvim";
@@ -34,8 +38,9 @@
       "down" = "docker compose down";
 
       # Git
+      "s" = "git status";
       "gs" = "git status";
-      "gc" = "git commit";
+      "gc" = "git commit -m \"%\"";
       "gp" = "git push";
       "gl" = "git log";
       "gcob" = "git checkout -b";
