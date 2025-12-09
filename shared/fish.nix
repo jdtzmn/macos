@@ -25,7 +25,7 @@
     shellAbbrs = {
       # Commands
       "c" = "clear";
-      "ls" = "exa";
+      "ls" = "eza";
 
       # Programs
       "oc" = "opencode";
