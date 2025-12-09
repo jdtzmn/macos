@@ -23,12 +23,22 @@
       }
     ];
     shellAbbrs = {
-      "dc" = "docker compose";
+      # Programs
       "oc" = "opencode";
       "n" = "nvim";
+
+      # Docker
+      "dc" = "docker compose";
       "up" = "docker compose up";
       "stop" = "docker compose stop";
       "down" = "docker compose down";
+
+      # Git
+      "gs" = "git status";
+      "gc" = "git commit";
+      "gp" = "git push";
+      "gl" = "git log";
+      "gcob" = "git checkout -b";
     };
   };
 }
