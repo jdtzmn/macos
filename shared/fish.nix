@@ -30,8 +30,8 @@
       # Programs
       "oc" = "opencode";
       "n" = "nvim";
-      "terraform" = "opentofu";
-      "tf" = "opentofu";
+      "terraform" = "tofu";
+      "tf" = "tofu";
 
       # Docker
       "dc" = "docker compose";
@@ -42,7 +42,9 @@
       # Git
       "s" = "git status";
       "gs" = "git status";
+      "a" = "git add ";
       "gc" = "git commit -m ";
+      "gca" = "git commit -amend";
       "gp" = "git push";
       "gl" = "git log";
       "gcob" = "git checkout -b";
