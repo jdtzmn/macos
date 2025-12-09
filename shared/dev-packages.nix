@@ -9,6 +9,7 @@
     ripgrep
     nnn
     lazygit
+    exa
     # Nix language servers
     nil
     nixd
