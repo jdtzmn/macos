@@ -11,6 +11,7 @@
     lazygit
     eza
     opentofu
+    awscli2
     # Nix language servers
     nil
     nixd
