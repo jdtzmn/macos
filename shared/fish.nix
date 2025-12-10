@@ -42,8 +42,8 @@
       # Git
       "s" = "git status";
       "gs" = "git status";
-      "a" = "git add ";
-      "gc" = "git commit -m ";
+      "a" = "git add";
+      "gc" = "git commit -m";
       "gca" = "git commit -amend";
       "gp" = "git push";
       "gl" = "git log";
