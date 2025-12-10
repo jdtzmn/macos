@@ -38,6 +38,7 @@
       "sleep *": "allow",
       "echo *": "allow",
       "xcodebuild *": "allow",
+      "bd *": "allow",
       "*": "ask",
     },
   },
