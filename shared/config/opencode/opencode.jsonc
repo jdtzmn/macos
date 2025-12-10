@@ -30,6 +30,7 @@
       "cat *": "allow",
       "ls *": "allow",
       "grep *": "allow",
+      "rg *": "allow",
       "mkdir *": "allow",
       "head *": "allow",
       "tail *": "allow",
