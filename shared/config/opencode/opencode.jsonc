@@ -26,6 +26,7 @@
     "bash": {
       "docker-compose *": "allow",
       "bun *": "allow",
+      "bunx tsc *": "allow",
       "cd *": "allow",
       "cat *": "allow",
       "ls *": "allow",
