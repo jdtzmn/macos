@@ -38,6 +38,9 @@
         light = "Tokyo Night Light";
         dark = "Tokyo Night";
       };
+      terminal = {
+        font_family = "JetBrainsMono Nerd Font Mono";
+      };
       file_scan_inclusions = [
         ".env"
         ".env*"
