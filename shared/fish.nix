@@ -3,6 +3,7 @@
   # We use `00` as a prefix to ensure that the tide configuration file is loaded before
   # the tide plugin itself.
   xdg.configFile."fish/conf.d/00-tide-config.fish".source = ./config/tide.fish;
+  xdg.configFile."fish/conf.d/01-mono-smoke.fish".source = ./config/mono-smoke.fish;
 
   programs.fish = {
     enable = true;
