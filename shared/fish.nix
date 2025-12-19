@@ -33,6 +33,7 @@
       "n" = "nvim";
       "terraform" = "tofu";
       "tf" = "tofu";
+      "lg" = "lazygit";
 
       # Docker
       "dc" = "docker compose";
