@@ -1,4 +1,4 @@
-{ pkgs, repoDir ? null, ... }:
+{ pkgs, ... }:
 {
   imports = [
     ../../shared/dev-packages.nix

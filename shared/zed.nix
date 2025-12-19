@@ -39,7 +39,7 @@
         dark = "Tokyo Night";
       };
       terminal = {
-        font_family = "JetBrainsMono Nerd Font Mono";
+        font_family = "JetBrainsMono Nerd Font";
       };
       file_scan_inclusions = [
         ".env"
