@@ -20,10 +20,10 @@ config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = true
 config.window_decorations = "RESIZE"
 config.window_padding = {
-    left = 10,
-    right = 10,
-    top = 10,
-    bottom = 10
+    left = 24,
+    right = 24,
+    top = 24,
+    bottom = 24
 }
 
 config.window_frame = {
@@ -40,8 +40,8 @@ config.colors = {
 
 -- Set window opacity based on the focused window
 
-config.window_background_opacity = 0.5
-config.macos_window_background_blur = 40
+config.window_background_opacity = 0.8
+config.macos_window_background_blur = 80
 
 -- Return the configuration to wezterm
 return config
