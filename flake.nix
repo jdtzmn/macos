@@ -3,7 +3,7 @@
 
     # Flake inputs
     inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11"; # Unstable Nixpkgs
+        nixpkgs.url = "github:NixOS/nixpkgs/release-25.11"; # Unstable Nixpkgs
 
         # Home Manager
         home-manager.url = "github:nix-community/home-manager/release-25.11";
