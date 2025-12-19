@@ -18,6 +18,10 @@
         src = pkgs.fishPlugins.done.src;
       }
       {
+        name = "fish-async-prompt";
+        src = pkgs.fishPlugins.async-prompt.src;
+      }
+      {
         name = "pure";
         src = pkgs.fishPlugins.pure.src;
       }
