@@ -3,15 +3,15 @@
 
     # Flake inputs
     inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; # Unstable Nixpkgs
+        nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11"; # Unstable Nixpkgs
 
         # Home Manager
-        home-manager.url = "github:nix-community/home-manager/master";
+        home-manager.url = "github:nix-community/home-manager/release-25.11";
         home-manager.inputs.nixpkgs.follows = "nixpkgs";
         # nix will normally use the nixpkgs defined in home-managers inputs, we only want one copy of nixpkgs though
 
         # Nix-Darwin
-        darwin.url = "github:nix-darwin/nix-darwin/master";
+        darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
         darwin.inputs.nixpkgs.follows = "nixpkgs";
 
         # Nix-Homebrew
