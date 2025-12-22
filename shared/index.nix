@@ -1,12 +1,13 @@
 {
   imports = [
     ./dev-packages.nix
-    ./git.nix
-    ./fish.nix
     ./direnv.nix
+    ./fish.nix
+    ./git.nix
+    ./nvim.nix
+    ./opencode.nix
     ./wezterm.nix
     ./zed.nix
-    ./opencode.nix
-    ./nvim.nix
+    ./zoxide.nix
   ];
 }

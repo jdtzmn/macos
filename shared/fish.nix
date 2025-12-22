@@ -30,6 +30,7 @@
       # Commands
       "c" = "clear";
       "ls" = "eza";
+      "cd" = "z";
 
       # Programs
       "oc" = "opencode";
