@@ -75,5 +75,13 @@ end)
 config.window_background_opacity = 0.8
 config.macos_window_background_blur = 80
 
+-- Pane navigation with Alt + hjkl
+config.keys = {
+  { key = 'h', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Left' },
+  { key = 'j', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down' },
+  { key = 'k', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up' },
+  { key = 'l', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right' },
+}
+
 -- Return the configuration to wezterm
 return config
