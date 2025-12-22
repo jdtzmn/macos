@@ -152,7 +152,7 @@
     ] ++ (if !separateAdminAccount then [
       # These casks require sudo during install
       "tailscale-app"
-      "wezterm"
+      "wezterm@nightly"
       "zoom"
       "nordvpn"
     ] else []);
