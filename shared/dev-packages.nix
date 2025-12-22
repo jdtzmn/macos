@@ -12,6 +12,7 @@
     eza
     opentofu
     awscli2
+    gh
     # Nix language servers
     nil
     nixd
