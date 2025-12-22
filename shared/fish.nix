@@ -54,6 +54,9 @@
       "gp" = "git push";
       "gl" = "git log";
       "gcob" = "git checkout -b";
+
+      # GitHub
+      "reviews" = "gh pr list --search 'review-requested:@me'";
     };
   };
 }
