@@ -1,14 +1,7 @@
 { repoDir ? null, ... }:
 {
     imports = [
-        ../../shared/dev-packages.nix
-        ../../shared/git.nix
-        ../../shared/fish.nix
-        ../../shared/direnv.nix
-        ../../shared/wezterm.nix
-        ../../shared/zed.nix
-        ../../shared/opencode.nix
-        ../../shared/nvim.nix
+        ../../shared/index.nix
     ];
 
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
