@@ -22,6 +22,9 @@ vim.opt.smartcase = true
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
 
+-- Enable transparency by default
+vim.g.transparent_enabled = true
+
 -- Decrease update time
 vim.opt.updatetime = 250
 
