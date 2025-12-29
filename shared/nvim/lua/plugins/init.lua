@@ -24,6 +24,13 @@ return {
         end,
     },
     {
+        "mfussenegger/nvim-lint",
+        event = { "BufReadPost", "BufWritePost" },
+        config = function()
+            require "configs.lint"
+        end,
+    },
+    {
         "neovim/nvim-lspconfig",
         config = function()
             require("nvchad.configs.lspconfig").defaults()
