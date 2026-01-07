@@ -3,8 +3,12 @@ local options = {
     lua = { "stylua" },
     css = { "prettier" },
     html = { "prettier" },
-    typescript = { "prettier" },
-    typescriptreact = { "prettier" },
+    javascript = { "eslint_d", "prettier" },
+    javascriptreact = { "eslint_d", "prettier" },
+    typescript = { "eslint_d", "prettier" },
+    typescriptreact = { "eslint_d", "prettier" },
+    vue = { "eslint_d", "prettier" },
+    json = { "prettier" },
   },
 
   format_on_save = {
