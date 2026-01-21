@@ -44,4 +44,18 @@
       "*": "ask",
     },
   },
+  "agent": {
+    "oracle": {
+      "description": "Come up with a plan for an implementation or code change. Ask questions to a more powerful thinking model.",
+      "mode": "subagent",
+      "model": "opencode/gpt-5.2-codex",
+      "reasoningEffort": "high",
+      "textVerbosity": "low",
+      "reasoningSummary": "auto",
+      "tools": {
+        "write": false,
+        "edit": false,
+      },
+    },
+  },
 }
