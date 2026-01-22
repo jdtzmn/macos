@@ -1,3 +1,4 @@
+/** @type {import("/Users/jacob/.cache/opencode/node_modules/@opencode-ai/plugin/dist/index.d.ts").Plugin} */
 export const NotificationPlugin = async ({
   project,
   client,
