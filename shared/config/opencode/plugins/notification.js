@@ -26,6 +26,14 @@ export const NotificationPlugin = async ({
         );
         await $`sh -c "terminal-notifier -title 'Opencode' -message 'Completed in ${numberOfSeconds}s' -sound 'Purr' -group 'opencode' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
       }
+
+      // Send notification on session error
+      if (event.type === "session.error") {
+        const errorName = event.properties.error?.name ?? "Unknown error";
+        const errorMessage =
+          event.properties.error?.message ?? "No error message";
+        await $`sh -c "terminal-notifier -title 'Opencode Error' -subtitle '${errorName}' -message '${errorMessage}' -sound 'Basso' -group 'opencode-error' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+      }
     },
     "chat.message": async ({ message }) => {
       // Set last message time
