@@ -37,7 +37,7 @@ export const NotificationPlugin = async ({
       }
 
       // Send notification when opencode asks for permission (via event)
-      if (event.type === "permission.updated") {
+      if (event.type === "permission.asked") {
         await $`sh -c "terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
       }
     },
