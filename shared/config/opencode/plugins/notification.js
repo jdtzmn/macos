@@ -35,6 +35,11 @@ export const NotificationPlugin = async ({
           event.properties.error?.message ?? "No error message";
         await $`sh -c "terminal-notifier -title 'Opencode Error' -subtitle '${errorName}' -message '${errorMessage}' -sound 'Basso' -group 'opencode-error' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
       }
+
+      // Send notification when opencode asks for permission (via event)
+      if (event.type === "permission.updated") {
+        await $`sh -c "terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+      }
     },
     "chat.message": async ({ message }) => {
       // Set last message time
