@@ -11,6 +11,16 @@ export const NotificationPlugin = async ({
     event: async ({ event }) => {
       // Send notification on session completion
       if (event.type === "session.idle") {
+        // Fetch session info to check if it's a subagent
+        const session = await client.session.get({
+          path: { id: event.properties.sessionID },
+        });
+
+        // Only notify for main sessions (no parentID)
+        if (session.data?.parentID) {
+          return;
+        }
+
         const numberOfSeconds = Math.floor(
           (new Date() - lastMessageTime) / 1000,
         );
