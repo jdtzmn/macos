@@ -27,6 +27,7 @@
       "docker-compose *": "allow",
       "bun *": "allow",
       "bunx tsc *": "allow",
+      "make *": "allow",
       "cd *": "allow",
       "cat *": "allow",
       "ls *": "allow",
