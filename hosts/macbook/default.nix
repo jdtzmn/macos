@@ -110,6 +110,7 @@
       "uv"
       "bun"
       "dagger/tap/dagger"
+      "beads"
     ];
     casks = [
       # Productivity
