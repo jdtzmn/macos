@@ -40,6 +40,8 @@
       "xcodebuild": "allow",
       "xcodebuild *": "allow",
       "bd *": "allow",
+      "port": "allow",
+      "port *": "allow",
     },
   },
   "agent": {
