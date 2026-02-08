@@ -33,6 +33,8 @@
       "git status *": "allow",
       "git diff": "allow",
       "git diff *": "allow",
+      "git show": "allow",
+      "git show *": "allow",
       "sleep *": "allow",
       "echo *": "allow",
       "xcodebuild": "allow",
