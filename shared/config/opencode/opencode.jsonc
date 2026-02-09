@@ -27,6 +27,7 @@
       "*": "ask",
       "docker-compose *": "allow",
       "bun *": "allow",
+      "bunx playwright *": "allow",
       "bunx tsc": "allow",
       "bunx tsc *": "allow",
       "make": "allow",
