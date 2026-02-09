@@ -49,6 +49,8 @@
       "git show *": "allow",
       "git log": "allow",
       "git log *": "allow",
+      "git stash": "allow",
+      "git stash *": "allow",
       "sleep *": "allow",
       "echo *": "allow",
       "xcodebuild": "allow",
