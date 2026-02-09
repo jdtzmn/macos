@@ -43,6 +43,9 @@
       "port": "allow",
       "port *": "allow",
       "docker ps *": "allow",
+      "docker inspect *": "allow",
+      "docker compose ps": "allow",
+      "docker compose ps *": "allow",
     },
     "read": {
       ".env.template": "allow",
