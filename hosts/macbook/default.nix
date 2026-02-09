@@ -111,6 +111,14 @@
       "bun"
       "dagger/tap/dagger"
       "beads"
+ 
+      # CLI File Explorer
+      "yazi"
+      "fd" # File Searching
+      "poppler" # PDF preview
+      "jq" # JSON preview
+      "ffmpeg" # Video thumbnails
+      "resvg" # SVG preview
     ];
     casks = [
       # Productivity
