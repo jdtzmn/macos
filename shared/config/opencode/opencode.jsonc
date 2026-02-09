@@ -42,6 +42,10 @@
       "bd *": "allow",
       "port": "allow",
       "port *": "allow",
+      "docker ps *": "allow",
+    },
+    "read": {
+      ".env.template": "allow",
     },
   },
   "agent": {
