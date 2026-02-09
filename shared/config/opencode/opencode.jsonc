@@ -59,7 +59,11 @@
       "docker compose ps *": "allow",
     },
     "read": {
-      ".env.template": "allow",
+      "*": "allow",
+      "*.env": "ask",
+      "*.env.*": "ask",
+      "*.env.example": "allow",
+      "*.env.template": "allow",
     },
   },
   "agent": {
