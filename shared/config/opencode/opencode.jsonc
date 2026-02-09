@@ -62,6 +62,9 @@
       "docker inspect *": "allow",
       "docker compose ps": "allow",
       "docker compose ps *": "allow",
+      "docker logs *": "allow",
+      "docker compose logs": "allow",
+      "docker compose logs *": "allow",
     },
     "read": {
       "*": "allow",
