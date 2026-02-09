@@ -3,6 +3,38 @@ if test (uname) = "Darwin"
     eval "$(/opt/homebrew/bin/brew shellenv)"
 end
 
+set -l repo_env "$HOME/Documents/GitHub/macos/.env"
+if test -f "$repo_env"
+    set -l allowlisted_env_keys GITHUB_MCP_TOKEN
+    while read -l line
+        set line (string trim -- "$line")
+        if test -z "$line"
+            continue
+        end
+        if string match -qr '^#' -- "$line"
+            continue
+        end
+        if not string match -qr '^[A-Za-z_][A-Za-z0-9_]*=' -- "$line"
+            continue
+        end
+
+        set -l parts (string split -m 1 '=' -- "$line")
+        set -l key $parts[1]
+        if not contains -- "$key" $allowlisted_env_keys
+            continue
+        end
+
+        set -l value (string trim -- "$parts[2]")
+        if string match -qr '^".*"$' -- "$value"
+            set value (string sub -s 2 -e -1 -- "$value")
+        else if string match -qr "^'.*'\$" -- "$value"
+            set value (string sub -s 2 -e -1 -- "$value")
+        end
+
+        set -gx $key "$value"
+    end < "$repo_env"
+end
+
 # ASDF configuration code
 if test -z $ASDF_DATA_DIR
     set _asdf_shims "$HOME/.asdf/shims"
