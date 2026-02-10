@@ -6,17 +6,23 @@ export const NotificationPlugin = async ({
   directory,
   worktree,
 }) => {
-  let lastMessageTime;
-  let activeRootSessionID;
-  let lastPostedStatus;
-  let lastPermissionSessionID;
-  let lastPermissionNotificationAt = 0;
-  const primarySessionCache = new Map();
-  const WAITING_NOTIFICATION_DEBOUNCE_MS = 1500;
   const OPENCODE_STATUS = {
     complete: "complete",
     inProgress: "in_progress",
     waiting: "waiting",
+  };
+  const WAITING_NOTIFICATION_DEBOUNCE_MS = 1500;
+  const state = {
+    lastMessageTime: undefined,
+    activeRootSessionID: undefined,
+    lastPostedStatus: undefined,
+    lastPermissionSessionID: undefined,
+    lastPermissionNotificationAt: 0,
+    primarySessionCache: new Map(),
+  };
+
+  const resolveSessionID = (...values) => {
+    return values.find((value) => typeof value === "string" && value.length > 0);
   };
 
   const postWeztermStatus = (status) => {
@@ -38,11 +44,11 @@ export const NotificationPlugin = async ({
   };
 
   const setWeztermStatus = (status) => {
-    if (!status || status === lastPostedStatus) {
+    if (!status || status === state.lastPostedStatus) {
       return;
     }
 
-    lastPostedStatus = status;
+    state.lastPostedStatus = status;
     postWeztermStatus(status);
   };
 
@@ -51,8 +57,8 @@ export const NotificationPlugin = async ({
       return false;
     }
 
-    if (primarySessionCache.has(sessionID)) {
-      return primarySessionCache.get(sessionID);
+    if (state.primarySessionCache.has(sessionID)) {
+      return state.primarySessionCache.get(sessionID);
     }
 
     try {
@@ -61,9 +67,9 @@ export const NotificationPlugin = async ({
       });
 
       const isPrimary = !session.data?.parentID;
-      primarySessionCache.set(sessionID, isPrimary);
+      state.primarySessionCache.set(sessionID, isPrimary);
       if (session.data?.id) {
-        primarySessionCache.set(session.data.id, isPrimary);
+        state.primarySessionCache.set(session.data.id, isPrimary);
       }
       return isPrimary;
     } catch {
@@ -76,13 +82,13 @@ export const NotificationPlugin = async ({
       return false;
     }
 
-    if (activeRootSessionID) {
-      return sessionID === activeRootSessionID;
+    if (state.activeRootSessionID) {
+      return sessionID === state.activeRootSessionID;
     }
 
     const isPrimary = await fetchIsPrimarySession(sessionID);
     if (isPrimary) {
-      activeRootSessionID = sessionID;
+      state.activeRootSessionID = sessionID;
     }
     return isPrimary;
   };
@@ -91,14 +97,14 @@ export const NotificationPlugin = async ({
     const now = Date.now();
     if (
       sessionID &&
-      sessionID === lastPermissionSessionID &&
-      now - lastPermissionNotificationAt < WAITING_NOTIFICATION_DEBOUNCE_MS
+      sessionID === state.lastPermissionSessionID &&
+      now - state.lastPermissionNotificationAt < WAITING_NOTIFICATION_DEBOUNCE_MS
     ) {
       return false;
     }
 
-    lastPermissionSessionID = sessionID;
-    lastPermissionNotificationAt = now;
+    state.lastPermissionSessionID = sessionID;
+    state.lastPermissionNotificationAt = now;
     return true;
   };
 
@@ -112,7 +118,29 @@ export const NotificationPlugin = async ({
   };
 
   const getEventSessionID = (event) => {
-    return event?.properties?.sessionID;
+    return resolveSessionID(event?.properties?.sessionID);
+  };
+
+  const getChatMessageSessionID = (input) => {
+    return resolveSessionID(
+      input?.sessionID,
+      input?.message?.sessionID,
+      input?.output?.message?.sessionID,
+    );
+  };
+
+  const getPermissionHookSessionID = (input) => {
+    return resolveSessionID(
+      input?.event?.properties?.sessionID,
+      input?.event?.sessionID,
+      input?.permission?.sessionID,
+      input?.sessionID,
+      state.activeRootSessionID,
+    );
+  };
+
+  const getPermissionEventSessionID = (eventSessionID) => {
+    return resolveSessionID(eventSessionID, state.activeRootSessionID);
   };
 
   return {
@@ -141,7 +169,7 @@ export const NotificationPlugin = async ({
 
         setWeztermStatus(OPENCODE_STATUS.complete);
 
-        const elapsedMs = lastMessageTime ? new Date() - lastMessageTime : 0;
+        const elapsedMs = state.lastMessageTime ? new Date() - state.lastMessageTime : 0;
         const numberOfSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
         await $`sh -c "terminal-notifier -title 'Opencode' -message 'Completed in ${numberOfSeconds}s' -sound 'Purr' -group 'opencode' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
       }
@@ -162,7 +190,7 @@ export const NotificationPlugin = async ({
 
       // Send notification when opencode asks for permission (via event)
       if (event.type === "permission.asked" || event.type === "permission.updated") {
-        const permissionSessionID = eventSessionID ?? activeRootSessionID;
+        const permissionSessionID = getPermissionEventSessionID(eventSessionID);
         if (!(await shouldTrackSession(permissionSessionID))) {
           return;
         }
@@ -171,7 +199,7 @@ export const NotificationPlugin = async ({
       }
 
       if (event.type === "permission.replied") {
-        const permissionSessionID = eventSessionID ?? activeRootSessionID;
+        const permissionSessionID = getPermissionEventSessionID(eventSessionID);
         if (!(await shouldTrackSession(permissionSessionID))) {
           return;
         }
@@ -180,10 +208,7 @@ export const NotificationPlugin = async ({
       }
     },
     "chat.message": async (input) => {
-      const sessionID =
-        input?.sessionID ??
-        input?.message?.sessionID ??
-        input?.output?.message?.sessionID;
+      const sessionID = getChatMessageSessionID(input);
 
       if (!sessionID) {
         return;
@@ -193,19 +218,14 @@ export const NotificationPlugin = async ({
         return;
       }
 
-      activeRootSessionID = sessionID;
+      state.activeRootSessionID = sessionID;
 
       // Set last message time
-      lastMessageTime = new Date();
+      state.lastMessageTime = new Date();
       setWeztermStatus(OPENCODE_STATUS.inProgress);
     },
     "permission.updated": async (input) => {
-      const sessionID =
-        input?.event?.properties?.sessionID ??
-        input?.event?.sessionID ??
-        input?.permission?.sessionID ??
-        input?.sessionID ??
-        activeRootSessionID;
+      const sessionID = getPermissionHookSessionID(input);
 
       if (!(await shouldTrackSession(sessionID))) {
         return;
