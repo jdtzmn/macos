@@ -58,6 +58,16 @@
         };
       };
     };
+    "com.apple.Siri" = {
+      # Disable keyboard shortcut invocation for Siri (e.g. double-press Command)
+      KeyboardShortcutSAE = {
+        enabled = false;
+      };
+      # Keep the legacy Siri shortcut path disabled as well
+      KeyboardShortcutPreSAE = {
+        enabled = false;
+      };
+    };
     # Figure out a way to disable ctrl+space for "Select the previous input source" so that Zed can show completions
   };
 
