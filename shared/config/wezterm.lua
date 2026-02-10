@@ -46,10 +46,14 @@ local branch_inactive = blend_toward_bg(dim, bg, 0.35)
 local highlight = scheme.ansi[4]
 local tbg = set_alpha(bg, 0.8)
 local opencode_status_colors = {
-    complete = scheme.ansi[3],
+    complete_unseen = scheme.ansi[3],
+    complete_seen = scheme.ansi[3],
     in_progress = scheme.ansi[4],
     waiting = scheme.ansi[2],
 }
+
+local opencode_complete_seen_by_tab = {}
+local opencode_last_status_by_tab = {}
 
 -- Customize titlebar
 config.window_frame = {
@@ -232,10 +236,47 @@ local function tab_opencode_status(tab)
     return nil
 end
 
+local function tab_opencode_display_status(tab)
+    local status = tab_opencode_status(tab)
+    if not status then
+        return nil
+    end
+
+    local tab_id = tab.tab_id
+    if not tab_id then
+        return status
+    end
+
+    local previous_status = opencode_last_status_by_tab[tab_id]
+    if status ~= previous_status then
+        if status == 'complete' then
+            opencode_complete_seen_by_tab[tab_id] = tab.is_active
+        elseif status == 'in_progress' then
+            opencode_complete_seen_by_tab[tab_id] = false
+        end
+
+        opencode_last_status_by_tab[tab_id] = status
+    end
+
+    if status == 'complete' then
+        if tab.is_active then
+            opencode_complete_seen_by_tab[tab_id] = true
+        end
+
+        if opencode_complete_seen_by_tab[tab_id] then
+            return 'complete_seen'
+        end
+
+        return 'complete_unseen'
+    end
+
+    return status
+end
+
 -- Format the tab title
 wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
     local title = tostring(tab.tab_index + 1)
-    local status = tab_opencode_status(tab)
+    local status = tab_opencode_display_status(tab)
     local title_text = ' ' .. title
 
     local cells = {
@@ -243,7 +284,13 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
     }
 
     if status then
-        local icon = status == 'waiting' and '🔔 ' or '● '
+        local icon = '● '
+        if status == 'waiting' then
+            icon = '🔔 '
+        elseif status == 'complete_seen' then
+            icon = '○ '
+        end
+
         table.insert(cells, { Foreground = { Color = opencode_status_colors[status] } })
         table.insert(cells, { Text = ' ' .. icon })
         title_text = title
