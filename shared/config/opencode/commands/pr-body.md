@@ -15,8 +15,9 @@ Base branch selection (in order):
 Repository context:
 !`sh -lc 'USER_BASE="$1"; BASE=""; if [ -n "$USER_BASE" ] && git rev-parse --verify --quiet "$USER_BASE" >/dev/null; then BASE="$USER_BASE"; fi; if [ -z "$BASE" ]; then for ref in origin/main origin/master origin/dev; do if git rev-parse --verify --quiet "$ref" >/dev/null; then BASE="$ref"; break; fi; done; fi; if [ -z "$BASE" ]; then DEFAULT_REMOTE="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"; if [ -n "$DEFAULT_REMOTE" ] && git rev-parse --verify --quiet "$DEFAULT_REMOTE" >/dev/null; then BASE="$DEFAULT_REMOTE"; fi; fi; if [ -z "$BASE" ]; then for ref in main master dev; do if git rev-parse --verify --quiet "$ref" >/dev/null; then BASE="$ref"; break; fi; done; fi; if [ -z "$BASE" ]; then if git rev-parse --verify --quiet HEAD~10 >/dev/null; then BASE="HEAD~10"; else BASE="HEAD~1"; fi; fi; echo "BASE_REF=$BASE"; echo "RANGE=${BASE}..HEAD"; echo; echo "COMMITS:"; git log --oneline --no-decorate "${BASE}..HEAD" || true; echo; echo "FILES:"; git diff --name-status "${BASE}...HEAD" || true; echo; echo "DIFFSTAT:"; git diff --stat "${BASE}...HEAD" || true'`
 
-Return only the PR body in markdown using this template:
+Return only a single fenced markdown code block containing the PR body using this template:
 
+```markdown
 ## Summary
 - <key change 1>
 - <key change 2>
@@ -28,6 +29,7 @@ Return only the PR body in markdown using this template:
 ## Risks
 - <known risk or "None noted">
 - <rollout/mitigation note if applicable>
+```
 
 Guidelines:
 - Keep it concise and specific to the included commits.
