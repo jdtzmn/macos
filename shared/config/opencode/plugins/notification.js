@@ -7,6 +7,12 @@ export const NotificationPlugin = async ({
   worktree,
 }) => {
   let lastMessageTime;
+  let activeRootSessionID;
+  let lastPostedStatus;
+  let lastPermissionSessionID;
+  let lastPermissionNotificationAt = 0;
+  const primarySessionCache = new Map();
+  const WAITING_NOTIFICATION_DEBOUNCE_MS = 1500;
   const OPENCODE_STATUS = {
     complete: "complete",
     inProgress: "in_progress",
@@ -31,31 +37,109 @@ export const NotificationPlugin = async ({
     );
   };
 
+  const setWeztermStatus = (status) => {
+    if (!status || status === lastPostedStatus) {
+      return;
+    }
+
+    lastPostedStatus = status;
+    postWeztermStatus(status);
+  };
+
+  const fetchIsPrimarySession = async (sessionID) => {
+    if (!sessionID) {
+      return false;
+    }
+
+    if (primarySessionCache.has(sessionID)) {
+      return primarySessionCache.get(sessionID);
+    }
+
+    try {
+      const session = await client.session.get({
+        path: { id: sessionID },
+      });
+
+      const isPrimary = !session.data?.parentID;
+      primarySessionCache.set(sessionID, isPrimary);
+      if (session.data?.id) {
+        primarySessionCache.set(session.data.id, isPrimary);
+      }
+      return isPrimary;
+    } catch {
+      return false;
+    }
+  };
+
+  const shouldTrackSession = async (sessionID) => {
+    if (!sessionID) {
+      return false;
+    }
+
+    if (activeRootSessionID) {
+      return sessionID === activeRootSessionID;
+    }
+
+    const isPrimary = await fetchIsPrimarySession(sessionID);
+    if (isPrimary) {
+      activeRootSessionID = sessionID;
+    }
+    return isPrimary;
+  };
+
+  const shouldSendWaitingNotification = (sessionID) => {
+    const now = Date.now();
+    if (
+      sessionID &&
+      sessionID === lastPermissionSessionID &&
+      now - lastPermissionNotificationAt < WAITING_NOTIFICATION_DEBOUNCE_MS
+    ) {
+      return false;
+    }
+
+    lastPermissionSessionID = sessionID;
+    lastPermissionNotificationAt = now;
+    return true;
+  };
+
+  const notifyWaitingForInput = async (sessionID) => {
+    setWeztermStatus(OPENCODE_STATUS.waiting);
+    if (!shouldSendWaitingNotification(sessionID)) {
+      return;
+    }
+
+    await $`sh -c "terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+  };
+
+  const getEventSessionID = (event) => {
+    return event?.properties?.sessionID;
+  };
+
   return {
     event: async ({ event }) => {
+      const eventSessionID = getEventSessionID(event);
+
       if (event.type === "session.status") {
+        if (!(await shouldTrackSession(eventSessionID))) {
+          return;
+        }
+
         const statusType = event.properties.status?.type;
         if (statusType === "busy" || statusType === "retry") {
-          postWeztermStatus(OPENCODE_STATUS.inProgress);
+          setWeztermStatus(OPENCODE_STATUS.inProgress);
         }
         if (statusType === "idle") {
-          postWeztermStatus(OPENCODE_STATUS.complete);
+          setWeztermStatus(OPENCODE_STATUS.complete);
         }
       }
 
       // Send notification on session completion
       if (event.type === "session.idle") {
-        postWeztermStatus(OPENCODE_STATUS.complete);
-
-        // Fetch session info to check if it's a subagent
-        const session = await client.session.get({
-          path: { id: event.properties.sessionID },
-        });
-
-        // Only notify for main sessions (no parentID)
-        if (session.data?.parentID) {
+        if (!(await shouldTrackSession(eventSessionID))) {
           return;
         }
+
+        setWeztermStatus(OPENCODE_STATUS.complete);
 
         const elapsedMs = lastMessageTime ? new Date() - lastMessageTime : 0;
         const numberOfSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
@@ -64,7 +148,11 @@ export const NotificationPlugin = async ({
 
       // Send notification on session error
       if (event.type === "session.error") {
-        postWeztermStatus(OPENCODE_STATUS.waiting);
+        if (!(await shouldTrackSession(eventSessionID))) {
+          return;
+        }
+
+        setWeztermStatus(OPENCODE_STATUS.waiting);
 
         const errorName = event.properties.error?.name ?? "Unknown error";
         const errorMessage =
@@ -73,26 +161,57 @@ export const NotificationPlugin = async ({
       }
 
       // Send notification when opencode asks for permission (via event)
-      if (event.type === "permission.asked") {
-        postWeztermStatus(OPENCODE_STATUS.waiting);
+      if (event.type === "permission.asked" || event.type === "permission.updated") {
+        const permissionSessionID = eventSessionID ?? activeRootSessionID;
+        if (!(await shouldTrackSession(permissionSessionID))) {
+          return;
+        }
 
-        await $`sh -c "terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+        await notifyWaitingForInput(permissionSessionID);
       }
 
       if (event.type === "permission.replied") {
-        postWeztermStatus(OPENCODE_STATUS.inProgress);
+        const permissionSessionID = eventSessionID ?? activeRootSessionID;
+        if (!(await shouldTrackSession(permissionSessionID))) {
+          return;
+        }
+
+        setWeztermStatus(OPENCODE_STATUS.inProgress);
       }
     },
-    "chat.message": async ({ message }) => {
+    "chat.message": async (input) => {
+      const sessionID =
+        input?.sessionID ??
+        input?.message?.sessionID ??
+        input?.output?.message?.sessionID;
+
+      if (!sessionID) {
+        return;
+      }
+
+      if (!(await fetchIsPrimarySession(sessionID))) {
+        return;
+      }
+
+      activeRootSessionID = sessionID;
+
       // Set last message time
       lastMessageTime = new Date();
-      postWeztermStatus(OPENCODE_STATUS.inProgress);
+      setWeztermStatus(OPENCODE_STATUS.inProgress);
     },
-    "permission.updated": async ({ event }) => {
-      postWeztermStatus(OPENCODE_STATUS.waiting);
+    "permission.updated": async (input) => {
+      const sessionID =
+        input?.event?.properties?.sessionID ??
+        input?.event?.sessionID ??
+        input?.permission?.sessionID ??
+        input?.sessionID ??
+        activeRootSessionID;
 
-      // Send notification when opencode asks for user input
-      await $`sh -c "terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+      if (!(await shouldTrackSession(sessionID))) {
+        return;
+      }
+
+      await notifyWaitingForInput(sessionID);
     },
   };
 };
