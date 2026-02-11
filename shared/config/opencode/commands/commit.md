@@ -1,6 +1,7 @@
 ---
 description: Stage and commit current changes
 agent: committer
+model: anthropic/claude-haiku-4-5
 subtask: true
 ---
 Create a git commit for the current working tree changes.
