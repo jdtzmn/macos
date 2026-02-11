@@ -115,6 +115,7 @@
     brews = [
       # Programming
       "opencode"
+      "1password-cli"
       "asdf"
       "temporal"
       "uv"
