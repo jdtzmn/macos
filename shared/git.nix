@@ -1,6 +1,8 @@
 { ... }:
 let
   gitSigningKey = builtins.getEnv "GIT_SIGNING_KEY";
+  gitUserName = builtins.getEnv "GIT_USER_NAME";
+  gitUserEmail = builtins.getEnv "GIT_USER_EMAIL";
 in
 {
   programs.git = {
@@ -18,8 +20,8 @@ in
       };
 
       user = {
-        name = "Jacob Daitzman";
-        email = "jdtzmn@gmail.com";
+        name = gitUserName;
+        email = gitUserEmail;
       };
     };
   };
