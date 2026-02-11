@@ -7,7 +7,6 @@
     gh
     gnumake
     ripgrep
-    nnn
     lazygit
     eza
     opentofu
