@@ -28,6 +28,7 @@
       "docker-compose *": "allow",
       "bun *": "allow",
       "bunx playwright *": "allow",
+      "bun run playwright *": "allow",
       "bunx tsc": "allow",
       "bunx tsc *": "allow",
       "bunx eslint": "allow",
