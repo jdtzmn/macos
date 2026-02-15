@@ -78,11 +78,15 @@ local function sync_tab_bar_top_padding(window)
     local desired_height = tab_count > 1 and tab_bar_top_padding or '0cell'
 
     local overrides = window:get_config_overrides() or {}
-    local frame = overrides.window_frame or {}
-    if frame.border_top_height == desired_height then
+    local current_frame = overrides.window_frame or config.window_frame
+    if current_frame and current_frame.border_top_height == desired_height then
         return
     end
 
+    local frame = {}
+    for key, value in pairs(config.window_frame) do
+        frame[key] = value
+    end
     frame.border_top_height = desired_height
 
     overrides.window_frame = frame
@@ -90,7 +94,9 @@ local function sync_tab_bar_top_padding(window)
 end
 
 wezterm.on('update-status', function(window, pane)
-    sync_tab_bar_top_padding(window)
+    for _, gui_window in ipairs(wezterm.gui.gui_windows()) do
+        sync_tab_bar_top_padding(gui_window)
+    end
 end)
 
 -- Customize tab bar
