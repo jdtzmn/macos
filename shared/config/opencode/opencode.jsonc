@@ -7,6 +7,12 @@
       "command": ["bunx", "-y", "@playwright/mcp@latest"],
       "enabled": true,
     },
+    "peekaboo": {
+      "type": "local",
+      "command": ["npx", "-y", "@steipete/peekaboo", "mcp", "serve", "--transport", "stdio"],
+      "enabled": true,
+      "timeout": 30000,
+    },
     "github": {
       "type": "remote",
       "url": "https://api.githubcopilot.com/mcp/readonly",
@@ -78,6 +84,7 @@
       "*.env.example": "allow",
       "*.env.template": "allow",
     },
+    "peekaboo_*": "ask",
   },
   "agent": {
     "oracle": {
