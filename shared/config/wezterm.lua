@@ -45,6 +45,7 @@ local dim = scheme.ansi[8]
 local branch_inactive = blend_toward_bg(dim, bg, 0.35)
 local highlight = scheme.ansi[4]
 local tbg = set_alpha(bg, 0.8)
+local tab_bar_top_padding = '0.7cell'
 local opencode_status_colors = {
     complete_unseen = scheme.ansi[3],
     complete_seen = scheme.ansi[3],
@@ -59,13 +60,38 @@ local opencode_last_status_by_tab = {}
 config.window_frame = {
     active_titlebar_bg = tbg,
     inactive_titlebar_bg = tbg,
-    border_top_height = '0.7cell',
+    border_top_height = '0cell',
     border_top_color = tbg,
     active_titlebar_border_bottom = tbg,
     inactive_titlebar_border_bottom = tbg,
     font = wezterm.font('JetBrainsMono Nerd Font'),
     font_size = 12,
 }
+
+local function sync_tab_bar_top_padding(window)
+    local mux_window = window:mux_window()
+    if not mux_window then
+        return
+    end
+
+    local tab_count = #mux_window:tabs_with_info()
+    local desired_height = tab_count > 1 and tab_bar_top_padding or '0cell'
+
+    local overrides = window:get_config_overrides() or {}
+    local frame = overrides.window_frame or {}
+    if frame.border_top_height == desired_height then
+        return
+    end
+
+    frame.border_top_height = desired_height
+
+    overrides.window_frame = frame
+    window:set_config_overrides(overrides)
+end
+
+wezterm.on('update-status', function(window, pane)
+    sync_tab_bar_top_padding(window)
+end)
 
 -- Customize tab bar
 config.use_fancy_tab_bar = false
@@ -342,6 +368,7 @@ end)
 -- Set window opacity based on the focused window
 config.window_background_opacity = 0.8
 config.macos_window_background_blur = 80
+config.status_update_interval = 200
 
 -- Pane navigation with Alt + hjkl
 config.keys = {
