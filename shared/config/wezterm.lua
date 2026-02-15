@@ -16,7 +16,7 @@ config.initial_cols = 100
 config.color_scheme = 'Tokyo Night'
 
 -- Set top bar appearance to match Tokyo Night
-config.window_decorations = "RESIZE|MACOS_FORCE_DISABLE_SHADOW"
+config.window_decorations = "RESIZE"
 config.window_padding = {
     left = 24,
     right = 24,
@@ -58,11 +58,17 @@ local opencode_last_status_by_tab = {}
 -- Customize titlebar
 config.window_frame = {
     active_titlebar_bg = tbg,
+    inactive_titlebar_bg = tbg,
+    border_top_height = '0.7cell',
+    border_top_color = tbg,
+    active_titlebar_border_bottom = tbg,
+    inactive_titlebar_border_bottom = tbg,
     font = wezterm.font('JetBrainsMono Nerd Font'),
     font_size = 12,
 }
 
 -- Customize tab bar
+config.use_fancy_tab_bar = false
 config.show_new_tab_button_in_tab_bar = false
 config.show_close_tab_button_in_tabs = false
 config.hide_tab_bar_if_only_one_tab = true
@@ -71,7 +77,20 @@ config.hide_tab_bar_if_only_one_tab = true
 config.colors = {
     split = "none",
     tab_bar = {
-        inactive_tab_edge = "none",
+        background = tbg,
+        inactive_tab_edge = tbg,
+        active_tab = {
+            bg_color = tbg,
+            fg_color = highlight,
+        },
+        inactive_tab = {
+            bg_color = tbg,
+            fg_color = dim,
+        },
+        inactive_tab_hover = {
+            bg_color = tbg,
+            fg_color = highlight,
+        },
     },
 }
 
@@ -277,34 +296,45 @@ end
 wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
     local title = tostring(tab.tab_index + 1)
     local status = tab_opencode_display_status(tab)
-    local title_text = ' ' .. title
+    local title_text = title
 
     local cells = {
-        { Background = { Color = "none" } },
+        { Background = { Color = tbg } },
     }
 
-    if status then
-        local icon = '● '
-        if status == 'waiting' then
-            icon = '🔔 '
-        elseif status == 'complete_seen' then
-            icon = '○ '
-        end
-
-        table.insert(cells, { Foreground = { Color = opencode_status_colors[status] } })
-        table.insert(cells, { Text = ' ' .. icon })
-        title_text = title
+    -- Add "horizontal padding" to the left
+    if tab.tab_index == 0 then
+        table.insert(cells, { Text = '  ' })
     end
 
     table.insert(cells, { Foreground = { Color = tab.is_active and highlight or dim } })
     table.insert(cells, { Text = title_text })
 
     local branch = tab_git_branch(tab)
+
+    if status or branch then
+      table.insert(cells, { Text = ' ' })
+    end
+  
+    if status then
+        local icon = '●'
+        if status == 'waiting' then
+            icon = '🔔'
+        elseif status == 'complete_seen' then
+            icon = '○'
+        end
+
+        table.insert(cells, { Foreground = { Color = opencode_status_colors[status] } })
+        table.insert(cells, { Text = ' ' .. icon })
+    end
+
     if branch then
         branch = truncate_text(branch, 28)
         table.insert(cells, { Foreground = { Color = tab.is_active and dim or branch_inactive } })
-        table.insert(cells, { Text = '  ' .. branch })
+        table.insert(cells, { Text = ' ' .. branch })
     end
+
+    table.insert(cells, { Text = '   ' })
 
     return cells
 end)
