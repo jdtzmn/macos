@@ -115,7 +115,6 @@
     brews = [
       # Programming
       "opencode"
-      "1password-cli"
       "asdf"
       "temporal"
       "uv"
@@ -161,6 +160,7 @@
       "cursor"
       "visual-studio-code"
       "zed"
+      "1password-cli"
       "tower"
       "orbstack"
       "conductor"
