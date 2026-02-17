@@ -129,14 +129,55 @@ def flatten_pages(value):
     return flattened
 
 
+def slim_user(user):
+    if isinstance(user, dict):
+        return {"login": user.get("login", "unknown")}
+    return user
+
+
+def slim_review(r):
+    return {
+        "user": slim_user(r.get("user")),
+        "state": r.get("state"),
+        "body": r.get("body"),
+        "submitted_at": r.get("submitted_at"),
+    }
+
+
+def slim_issue_comment(c):
+    return {
+        "user": slim_user(c.get("user")),
+        "body": c.get("body"),
+        "created_at": c.get("created_at"),
+        "updated_at": c.get("updated_at"),
+    }
+
+
+def slim_review_comment(c):
+    return {
+        "user": slim_user(c.get("user")),
+        "body": c.get("body"),
+        "path": c.get("path"),
+        "line": c.get("line"),
+        "original_line": c.get("original_line"),
+        "start_line": c.get("start_line"),
+        "side": c.get("side"),
+        "created_at": c.get("created_at"),
+    }
+
+
 core = load_json(tmp / "core.json", {})
-reviews = flatten_pages(load_json(tmp / "reviews.json", []))
+reviews_raw = flatten_pages(load_json(tmp / "reviews.json", []))
 issue_comments_all = flatten_pages(load_json(tmp / "issue_comments.json", []))
 review_comments_all = flatten_pages(load_json(tmp / "review_comments.json", []))
 checks = load_json(tmp / "checks.json", [])
 
 issue_comments = latest(issue_comments_all, comment_limit)
 review_comments = latest(review_comments_all, comment_limit)
+
+reviews = [slim_review(r) for r in reviews_raw]
+issue_comments = [slim_issue_comment(c) for c in issue_comments]
+review_comments = [slim_review_comment(c) for c in review_comments]
 
 comment_mode = "full" if comment_limit <= 0 else f"latest_{comment_limit}"
 
