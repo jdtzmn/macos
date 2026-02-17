@@ -93,6 +93,25 @@ export const NotificationPlugin = async ({
     return isPrimary;
   };
 
+  const shouldTrackPermissionSession = async (sessionID) => {
+    if (await shouldTrackSession(sessionID)) {
+      return true;
+    }
+
+    if (!sessionID || !state.activeRootSessionID) {
+      return false;
+    }
+
+    try {
+      const session = await client.session.get({
+        path: { id: sessionID },
+      });
+      return session.data?.parentID === state.activeRootSessionID;
+    } catch {
+      return false;
+    }
+  };
+
   const shouldSendWaitingNotification = (sessionID) => {
     const now = Date.now();
     if (
@@ -189,9 +208,10 @@ export const NotificationPlugin = async ({
       }
 
       // Send notification when opencode asks for permission (via event)
+      // Use shouldTrackPermissionSession to also handle subagent permission requests.
       if (event.type === "permission.asked" || event.type === "permission.updated") {
         const permissionSessionID = getPermissionEventSessionID(eventSessionID);
-        if (!(await shouldTrackSession(permissionSessionID))) {
+        if (!(await shouldTrackPermissionSession(permissionSessionID))) {
           return;
         }
 
@@ -200,7 +220,7 @@ export const NotificationPlugin = async ({
 
       if (event.type === "permission.replied") {
         const permissionSessionID = getPermissionEventSessionID(eventSessionID);
-        if (!(await shouldTrackSession(permissionSessionID))) {
+        if (!(await shouldTrackPermissionSession(permissionSessionID))) {
           return;
         }
 
@@ -227,7 +247,7 @@ export const NotificationPlugin = async ({
     "permission.updated": async (input) => {
       const sessionID = getPermissionHookSessionID(input);
 
-      if (!(await shouldTrackSession(sessionID))) {
+      if (!(await shouldTrackPermissionSession(sessionID))) {
         return;
       }
 
