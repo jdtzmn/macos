@@ -334,11 +334,14 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
         { Background = { Color = tbg } },
     }
 
-    -- Add "horizontal padding" to the left
+    -- Add additional "horizontal padding" to the left
     if tab.tab_index == 0 then
         table.insert(cells, { Text = '  ' })
     end
 
+
+    -- Add gap padding between tab bar items
+    table.insert(cells, { Text = '  ' })
     table.insert(cells, { Foreground = { Color = tab.is_active and highlight or dim } })
     table.insert(cells, { Text = title_text })
 
@@ -365,8 +368,6 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
         table.insert(cells, { Foreground = { Color = tab.is_active and dim or branch_inactive } })
         table.insert(cells, { Text = ' ' .. branch })
     end
-
-    table.insert(cells, { Text = '   ' })
 
     return cells
 end)
