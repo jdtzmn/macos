@@ -29,6 +29,10 @@
     "scroll_speed": 1,
   },
   "permission": {
+    "external_directory": {
+      "*": "ask",
+      "/tmp/**": "allow",
+    },
     "bash": {
       "*": "ask",
       "docker-compose *": "allow",
