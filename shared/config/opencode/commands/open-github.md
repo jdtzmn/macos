@@ -1,7 +1,7 @@
 ---
-description: Open the current branch PR in GitHub
+description: Open the current branch's PR, new PR page, or repo in GitHub
 ---
-Open the open pull request for the current git branch in the default browser.
+Open GitHub for the current branch. Opens the pull request if one exists, the new pull request page if on an unmerged branch, or the repository page if on the default branch.
 
 !`bash -lc 'set -euo pipefail
 
@@ -33,6 +33,10 @@ branch = sys.argv[1]
 
 def run(args):
     return subprocess.run(args, capture_output=True, text=True)
+
+
+def open_url(url):
+    return subprocess.run(["open", url], capture_output=True, text=True).returncode == 0
 
 
 def run_stdout(args):
@@ -79,15 +83,13 @@ def parse_repo_from_url(url):
     return ""
 
 
+default_branch = run_stdout(["gh", "repo", "view", "--json", "defaultBranchRef", "--jq", ".defaultBranchRef.name"])
+
 direct = run_json(["gh", "pr", "view", "--json", "number,url"])
 if isinstance(direct, dict) and direct.get("number"):
     number = direct["number"]
-    url = direct.get("url", "")
     if open_pr(number):
-        if url:
-            print(f"Opened PR #{number}: {url}")
-        else:
-            print(f"Opened PR #{number}")
+        print(f"Opened the pull request (#{number}) in a web browser.")
         raise SystemExit(0)
 
 
@@ -171,18 +173,31 @@ for repo in repo_candidates:
                     "score": score,
                 }
 
-if best is None:
-    print(f"ERROR: No open PR found for branch '{branch}'.")
+if best is not None:
+    if open_pr(best["number"], best["repo"]):
+        print(f"Opened the pull request (#{best['number']}) in a web browser.")
+        raise SystemExit(0)
+
+# No open PR found — fall back based on branch context.
+repo = repo_candidates[0] if repo_candidates else ""
+
+if not repo:
+    print("ERROR: Unable to determine current GitHub repository.")
     raise SystemExit(1)
 
-if not open_pr(best["number"], best["repo"]):
-    print(f"ERROR: Found PR #{best['number']} but failed to open in browser.")
-    raise SystemExit(1)
-
-if best["url"]:
-    print(f"Opened PR #{best['number']}: {best['url']}")
+if default_branch and branch == default_branch:
+    if run(["gh", "repo", "view", "-R", repo, "--web"]).returncode == 0:
+        print("Opened the repository page in a web browser.")
+    else:
+        print("ERROR: Failed to open the repository page.")
+        raise SystemExit(1)
 else:
-    print(f"Opened PR #{best['number']}")
+    compare_url = f"https://github.com/{repo}/compare/{branch}?expand=1"
+    if open_url(compare_url):
+        print("Opened the new pull request page in a web browser.")
+    else:
+        print("ERROR: Failed to open the new pull request page.")
+        raise SystemExit(1)
 PY'`
 
-Return exactly the shell output and nothing else.
+Return the shell output to the user. Do not attempt to open a browser or take any further action.
