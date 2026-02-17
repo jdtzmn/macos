@@ -80,6 +80,8 @@
       "docker logs *": "allow",
       "docker compose logs": "allow",
       "docker compose logs *": "allow",
+      "docker compose config": "allow",
+      "docker compose config *": "allow",
     },
     "read": {
       "*": "allow",
