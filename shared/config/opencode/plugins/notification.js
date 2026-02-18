@@ -16,8 +16,8 @@ export const NotificationPlugin = async ({
     lastMessageTime: undefined,
     activeRootSessionID: undefined,
     lastPostedStatus: undefined,
-    lastPermissionSessionID: undefined,
-    lastPermissionNotificationAt: 0,
+    lastInputSessionID: undefined,
+    lastInputNotificationAt: 0,
     primarySessionCache: new Map(),
   };
 
@@ -93,7 +93,7 @@ export const NotificationPlugin = async ({
     return isPrimary;
   };
 
-  const shouldTrackPermissionSession = async (sessionID) => {
+  const shouldTrackInputSession = async (sessionID) => {
     if (await shouldTrackSession(sessionID)) {
       return true;
     }
@@ -116,14 +116,14 @@ export const NotificationPlugin = async ({
     const now = Date.now();
     if (
       sessionID &&
-      sessionID === state.lastPermissionSessionID &&
-      now - state.lastPermissionNotificationAt < WAITING_NOTIFICATION_DEBOUNCE_MS
+      sessionID === state.lastInputSessionID &&
+      now - state.lastInputNotificationAt < WAITING_NOTIFICATION_DEBOUNCE_MS
     ) {
       return false;
     }
 
-    state.lastPermissionSessionID = sessionID;
-    state.lastPermissionNotificationAt = now;
+    state.lastInputSessionID = sessionID;
+    state.lastInputNotificationAt = now;
     return true;
   };
 
@@ -148,7 +148,7 @@ export const NotificationPlugin = async ({
     );
   };
 
-  const getPermissionHookSessionID = (input) => {
+  const getInputHookSessionID = (input) => {
     return resolveSessionID(
       input?.event?.properties?.sessionID,
       input?.event?.sessionID,
@@ -158,7 +158,7 @@ export const NotificationPlugin = async ({
     );
   };
 
-  const getPermissionEventSessionID = (eventSessionID) => {
+  const getInputEventSessionID = (eventSessionID) => {
     return resolveSessionID(eventSessionID, state.activeRootSessionID);
   };
 
@@ -207,20 +207,23 @@ export const NotificationPlugin = async ({
         await $`sh -c "terminal-notifier -title 'Opencode Error' -subtitle '${errorName}' -message '${errorMessage}' -sound 'Basso' -group 'opencode-error' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
       }
 
-      // Send notification when opencode asks for permission (via event)
-      // Use shouldTrackPermissionSession to also handle subagent permission requests.
-      if (event.type === "permission.asked" || event.type === "permission.updated") {
-        const permissionSessionID = getPermissionEventSessionID(eventSessionID);
-        if (!(await shouldTrackPermissionSession(permissionSessionID))) {
+      // Send notification when opencode is waiting for user input (permission or question)
+      // Use shouldTrackInputSession to also handle subagent requests.
+      const inputAskedEvents = ["permission.asked", "permission.updated", "question.asked"];
+      const inputResolvedEvents = ["permission.replied", "question.replied", "question.rejected"];
+
+      if (inputAskedEvents.includes(event.type)) {
+        const inputSessionID = getInputEventSessionID(eventSessionID);
+        if (!(await shouldTrackInputSession(inputSessionID))) {
           return;
         }
 
-        await notifyWaitingForInput(permissionSessionID);
+        await notifyWaitingForInput(inputSessionID);
       }
 
-      if (event.type === "permission.replied") {
-        const permissionSessionID = getPermissionEventSessionID(eventSessionID);
-        if (!(await shouldTrackPermissionSession(permissionSessionID))) {
+      if (inputResolvedEvents.includes(event.type)) {
+        const inputSessionID = getInputEventSessionID(eventSessionID);
+        if (!(await shouldTrackInputSession(inputSessionID))) {
           return;
         }
 
@@ -245,9 +248,9 @@ export const NotificationPlugin = async ({
       setWeztermStatus(OPENCODE_STATUS.inProgress);
     },
     "permission.updated": async (input) => {
-      const sessionID = getPermissionHookSessionID(input);
+      const sessionID = getInputHookSessionID(input);
 
-      if (!(await shouldTrackPermissionSession(sessionID))) {
+      if (!(await shouldTrackInputSession(sessionID))) {
         return;
       }
 
