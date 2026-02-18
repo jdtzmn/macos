@@ -28,6 +28,7 @@
   "tui": {
     "scroll_speed": 1,
   },
+  "plugin": ["@0xsero/open-queue"],
   "permission": {
     "external_directory": {
       "*": "ask",
