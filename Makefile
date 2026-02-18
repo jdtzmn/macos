@@ -17,10 +17,8 @@ macbook:
 
 # macOS system configuration from administrator account
 macbook-admin:
-	sudo rm -rf /tmp/macos-config
 	sudo cp -r $(CURDIR) /tmp/macos-config
 	REPO_DIR=$(CURDIR) sudo -E -H nix run nix-darwin -- switch --flake /tmp/macos-config#macbook-admin --impure
-	sudo rm -rf /tmp/macos-config
 
 # Linux home-manager standalone configuration
 linux:
