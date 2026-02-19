@@ -9,8 +9,8 @@ Build a PR priority queue using GitHub CLI snapshot data that has already been f
 Inputs:
 - Repository: use `$1` when it matches `owner/repo`; otherwise auto-detect from the local git repository.
 
-Snapshot context (already fetched; do not call MCP/`gh`/web tools yourself):
-!`sh -lc 'set -euo pipefail; INPUT="${1:-}"; REPO=""; if printf "%s" "$INPUT" | grep -Eq "^[^/]+/[^/]+$"; then REPO="$INPUT"; fi; if [ -z "$REPO" ]; then ORIGIN_URL="$(git remote get-url origin 2>/dev/null || true)"; CANDIDATE="$ORIGIN_URL"; case "$CANDIDATE" in git@github.com:*) CANDIDATE="${CANDIDATE#git@github.com:}" ;; ssh://git@github.com/*) CANDIDATE="${CANDIDATE#ssh://git@github.com/}" ;; https://github.com/*) CANDIDATE="${CANDIDATE#https://github.com/}" ;; http://github.com/*) CANDIDATE="${CANDIDATE#http://github.com/}" ;; esac; CANDIDATE="${CANDIDATE%.git}"; CANDIDATE="${CANDIDATE%/}"; if printf "%s" "$CANDIDATE" | grep -Eq "^[^/]+/[^/]+$"; then REPO="$CANDIDATE"; fi; fi; if [ -z "$REPO" ] && command -v gh >/dev/null 2>&1; then REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)"; fi; if [ -z "$REPO" ]; then echo "<pr_priority_error>unable to resolve current GitHub repository</pr_priority_error>"; exit 0; fi; if ! command -v gh >/dev/null 2>&1; then echo "<pr_priority_error>gh CLI not installed</pr_priority_error>"; exit 0; fi; if ! gh auth status >/dev/null 2>&1; then echo "<pr_priority_error>gh CLI not authenticated</pr_priority_error>"; exit 0; fi; OWNER="${REPO%%/*}"; NAME="${REPO#*/}"; TMP="$(mktemp -d)"; trap "rm -rf \"$TMP\"" EXIT; (gh pr list -R "$REPO" --state open --search "author:@me" --limit 200 --json number --jq ".[].number" > "$TMP/authored_numbers.txt") & (gh pr list -R "$REPO" --state open --search "review-requested:@me" --limit 200 --json number --jq ".[].number" > "$TMP/reviewer_numbers.txt") & wait; NUMBERS="$(cat "$TMP/authored_numbers.txt" "$TMP/reviewer_numbers.txt" | awk "NF" | sort -nu)"; if [ -n "$NUMBERS" ]; then for N in $NUMBERS; do (gh pr view "$N" -R "$REPO" --json number,title,url,isDraft,author,updatedAt,createdAt,mergeStateStatus,reviewDecision,reviewRequests,statusCheckRollup,reviews,comments > "$TMP/$N.core.json"; gh api --paginate --slurp "repos/$OWNER/$NAME/issues/$N/comments?per_page=100" > "$TMP/$N.issue_comments.json"; gh api --paginate --slurp "repos/$OWNER/$NAME/pulls/$N/comments?per_page=100" > "$TMP/$N.review_comments.json") & done; wait; fi; python3 - "$TMP" "$REPO" <<"PY"
+Snapshot context (pre-fetched compact summaries; full detail files available on disk):
+!`sh -lc 'set -euo pipefail; INPUT="${1:-}"; REPO=""; if printf "%s" "$INPUT" | grep -Eq "^[^/]+/[^/]+$"; then REPO="$INPUT"; fi; if [ -z "$REPO" ]; then ORIGIN_URL="$(git remote get-url origin 2>/dev/null || true)"; CANDIDATE="$ORIGIN_URL"; case "$CANDIDATE" in git@github.com:*) CANDIDATE="${CANDIDATE#git@github.com:}" ;; ssh://git@github.com/*) CANDIDATE="${CANDIDATE#ssh://git@github.com/}" ;; https://github.com/*) CANDIDATE="${CANDIDATE#https://github.com/}" ;; http://github.com/*) CANDIDATE="${CANDIDATE#http://github.com/}" ;; esac; CANDIDATE="${CANDIDATE%.git}"; CANDIDATE="${CANDIDATE%/}"; if printf "%s" "$CANDIDATE" | grep -Eq "^[^/]+/[^/]+$"; then REPO="$CANDIDATE"; fi; fi; if [ -z "$REPO" ] && command -v gh >/dev/null 2>&1; then REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)"; fi; if [ -z "$REPO" ]; then echo "<pr_priority_error>unable to resolve current GitHub repository</pr_priority_error>"; exit 0; fi; if ! command -v gh >/dev/null 2>&1; then echo "<pr_priority_error>gh CLI not installed</pr_priority_error>"; exit 0; fi; if ! gh auth status >/dev/null 2>&1; then echo "<pr_priority_error>gh CLI not authenticated</pr_priority_error>"; exit 0; fi; OWNER="${REPO%%/*}"; NAME="${REPO#*/}"; TMP="$(mktemp -d)"; DATA_DIR="/tmp/pr-priority-data"; rm -rf "$DATA_DIR"; trap "cp -r \"$TMP\" \"$DATA_DIR\"; rm -rf \"$TMP\"" EXIT; (gh pr list -R "$REPO" --state open --search "author:@me" --limit 200 --json number --jq ".[].number" > "$TMP/authored_numbers.txt") & (gh pr list -R "$REPO" --state open --search "review-requested:@me" --limit 200 --json number --jq ".[].number" > "$TMP/reviewer_numbers.txt") & wait; NUMBERS="$(cat "$TMP/authored_numbers.txt" "$TMP/reviewer_numbers.txt" | awk "NF" | sort -nu)"; if [ -n "$NUMBERS" ]; then for N in $NUMBERS; do (gh pr view "$N" -R "$REPO" --json number,title,url,isDraft,author,updatedAt,createdAt,mergeStateStatus,reviewDecision,reviewRequests,statusCheckRollup,reviews,comments > "$TMP/$N.core.json"; gh api --paginate --slurp "repos/$OWNER/$NAME/issues/$N/comments?per_page=100" > "$TMP/$N.issue_comments.json"; gh api --paginate --slurp "repos/$OWNER/$NAME/pulls/$N/comments?per_page=100" > "$TMP/$N.review_comments.json") & done; wait; fi; python3 - "$TMP" "$REPO" <<"PY"
 import json
 import pathlib
 import sys
@@ -58,18 +58,94 @@ def cdata(text: str):
     return "<![CDATA[" + text.replace("]]>", "]]]]><![CDATA[>") + "]]>"
 
 
+def slim_user(user):
+    if isinstance(user, dict):
+        return user.get("login", "unknown")
+    return user
+
+
+def compute_check_state(core):
+    checks = core.get("statusCheckRollup", []) or []
+    if not checks:
+        return "none"
+    states = set()
+    for c in checks:
+        s = (c.get("state") or c.get("conclusion") or "").upper()
+        if s:
+            states.add(s)
+    if not states:
+        return "none"
+    if states & {"FAILURE", "ERROR", "CANCELLED", "TIMED_OUT"}:
+        return "failure"
+    if states & {"PENDING", "IN_PROGRESS", "QUEUED", "WAITING"}:
+        return "pending"
+    return "success"
+
+
+def compute_review_summary(core):
+    reviews = core.get("reviews", []) or []
+    latest = {}
+    for r in reviews:
+        author = r.get("author") or {}
+        login = author.get("login", "unknown") if isinstance(author, dict) else str(author)
+        state = r.get("state", "")
+        if state:
+            latest[login] = state
+    return latest
+
+
+def compute_comment_activity(issue_comments, review_comments):
+    all_comments = issue_comments + review_comments
+    last_at = ""
+    last_by = ""
+    for c in all_comments:
+        ts = c.get("created_at") or c.get("createdAt") or ""
+        if ts > last_at:
+            last_at = ts
+            user = c.get("user") or c.get("author") or {}
+            last_by = user.get("login", "unknown") if isinstance(user, dict) else str(user)
+    return {
+        "issueCount": len(issue_comments),
+        "reviewCount": len(review_comments),
+        "lastAt": last_at or None,
+        "lastBy": last_by or None,
+    }
+
+
+def slim_core_summary(core, issue_comments, review_comments):
+    review_requests = core.get("reviewRequests", []) or []
+    return {
+        "number": core.get("number"),
+        "title": core.get("title"),
+        "url": core.get("url"),
+        "isDraft": core.get("isDraft"),
+        "author": slim_user(core.get("author")),
+        "createdAt": core.get("createdAt"),
+        "updatedAt": core.get("updatedAt"),
+        "mergeStateStatus": core.get("mergeStateStatus"),
+        "reviewDecision": core.get("reviewDecision"),
+        "reviewRequests": [slim_user(r) for r in review_requests],
+        "checkState": compute_check_state(core),
+        "reviewSummary": compute_review_summary(core),
+        "commentActivity": compute_comment_activity(issue_comments, review_comments),
+    }
+
+
 authored = sorted(set(read_number_lines(tmp / "authored_numbers.txt")))
 review_requested = sorted(set(read_number_lines(tmp / "reviewer_numbers.txt")))
 numbers = sorted(set(authored + review_requested))
 
+detail_dir = "/tmp/pr-priority-data"
+
 print("<pr_priority_snapshot>")
 print(f"<repo>{repo}</repo>")
+print(f"<detail_dir>{detail_dir}</detail_dir>")
 print(f"<pr_priority_empty>{str(len(numbers) == 0).lower()}</pr_priority_empty>")
 print("<authored_pr_numbers_json>")
-print(cdata(json.dumps(authored)))
+print(cdata(json.dumps(authored, separators=(",", ":"))))
 print("</authored_pr_numbers_json>")
 print("<review_requested_pr_numbers_json>")
-print(cdata(json.dumps(review_requested)))
+print(cdata(json.dumps(review_requested, separators=(",", ":"))))
 print("</review_requested_pr_numbers_json>")
 print("<pr_items>")
 
@@ -78,19 +154,15 @@ for number in numbers:
     issue_comments = flatten_pages(load_json(tmp / f"{number}.issue_comments.json", []))
     review_comments = flatten_pages(load_json(tmp / f"{number}.review_comments.json", []))
 
+    summary = slim_core_summary(core, issue_comments, review_comments)
+
     print("<pr_item>")
     print(f"<number>{number}</number>")
     print(f"<is_authored>{str(number in authored).lower()}</is_authored>")
     print(f"<is_review_requested>{str(number in review_requested).lower()}</is_review_requested>")
-    print("<pr_core_json>")
-    print(cdata(json.dumps(core, indent=2)))
-    print("</pr_core_json>")
-    print("<pr_issue_comments_json>")
-    print(cdata(json.dumps(issue_comments, indent=2)))
-    print("</pr_issue_comments_json>")
-    print("<pr_review_comments_json>")
-    print(cdata(json.dumps(review_comments, indent=2)))
-    print("</pr_review_comments_json>")
+    print("<pr_summary_json>")
+    print(cdata(json.dumps(summary, separators=(",", ":"))))
+    print("</pr_summary_json>")
     print("</pr_item>")
 
 print("</pr_items>")
@@ -113,13 +185,21 @@ Required parsing flow:
 4. For each `<pr_item>`, use:
    - `<number>`
    - `<is_authored>` and `<is_review_requested>`
-   - `<pr_core_json>`
-   - `<pr_issue_comments_json>`
-   - `<pr_review_comments_json>`
+   - `<pr_summary_json>` — compact object with: `number`, `title`, `url`, `isDraft`,
+     `author`, `createdAt`, `updatedAt`, `mergeStateStatus`, `reviewDecision`,
+     `reviewRequests`, `checkState` (aggregated: success/pending/failure/none),
+     `reviewSummary` (latest state per reviewer), `commentActivity` (counts + last activity)
 5. If `<pr_priority_empty>true</pr_priority_empty>`, output the no-PRs message.
 
 Important:
-- Do not make any additional network/tool calls. Use only the supplied snapshot blocks.
+- Use the inline summaries for ranking. They contain all signals needed for prioritization.
+- If a specific PR's priority is ambiguous (e.g., you need to read comment text to understand
+  what changes were requested), you may read the full detail files at the path in `<detail_dir>`:
+  - `<detail_dir>/<number>.core.json` — full PR metadata
+  - `<detail_dir>/<number>.issue_comments.json` — all issue comments
+  - `<detail_dir>/<number>.review_comments.json` — all review comments
+- Only read detail files when the summary is insufficient. Most PRs can be ranked from summaries alone.
+- Do not make any network/API calls. All data has already been fetched to disk.
 
 Ranking rules (highest priority first):
 1. PRs requesting my review that are review-ready:
@@ -143,13 +223,13 @@ Interpretation rules:
   - `Reviewer` when the PR is in the `review-requested:@me` result set
   - `Author+Reviewer` when both apply
 - Reviews summary:
-  - Compute latest review state per reviewer.
+  - Use the pre-computed `reviewSummary` map (latest state per reviewer).
   - Show compact counts: `A:<approved> CR:<changes_requested> C:<commented>`.
-- Title status dot (checks state, prefixed to title):
+- Title status dot (derived from pre-computed `checkState`, prefixed to title):
   - `🟢` success
-  - `🟡` pending/in_progress
-  - `🔴` failure/error/cancelled/timed_out
-  - `⚪` unknown/no checks
+  - `🟡` pending
+  - `🔴` failure
+  - `⚪` none
 - Review-ready gate for reviewer work:
   - Only treat reviewer PRs as top priority when non-draft and not blocked.
   - If checks are pending/failing, do not rank as review-ready.
