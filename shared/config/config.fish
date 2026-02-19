@@ -3,6 +3,9 @@ if test (uname) = "Darwin"
     eval "$(/opt/homebrew/bin/brew shellenv)"
 end
 
+# Port shell hook
+port shell-hook fish | source
+
 set -l repo_env "$HOME/Documents/GitHub/macos/.env"
 if test -f "$repo_env"
     set -l allowlisted_env_keys GITHUB_MCP_TOKEN
