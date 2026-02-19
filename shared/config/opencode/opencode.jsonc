@@ -29,6 +29,10 @@
     "scroll_speed": 1,
   },
   "plugin": ["@0xsero/open-queue"],
+  "instructions": [
+    "~/.config/opencode/me.md",
+    "https://raw.githubusercontent.com/jdtzmn/port/refs/heads/main/ONBOARD.md",
+  ],
   "permission": {
     "external_directory": {
       "*": "ask",
