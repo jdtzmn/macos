@@ -3,8 +3,12 @@ if test (uname) = "Darwin"
     eval "$(/opt/homebrew/bin/brew shellenv)"
 end
 
+# Add bun global binaries to path
+fish_add_path -g "$HOME/.bun/bin"
+
 # Port shell hook
 port shell-hook fish | source
+port completion fish | source
 
 set -l repo_env "$HOME/Documents/GitHub/macos/.env"
 if test -f "$repo_env"
@@ -66,6 +70,3 @@ end
 set -g async_prompt_functions _pure_prompt_git
 set -g pure_enable_single_line_prompt true
 set -g pure_color_mute brcyan
-
-# Add bun global binaries to path
-fish_add_path -g "$HOME/.bun/bin"
