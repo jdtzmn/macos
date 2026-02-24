@@ -1,7 +1,5 @@
 ---
 description: Draft a PR body from branch commits
-agent: general
-subtask: true
 ---
 Create a pull request description from the commits on this branch.
 
