@@ -15,7 +15,7 @@ Use this file to capture my personal development workflow preferences.
 
 ## Code Changes
 
-- Add rules here.
+- Complete work in phases. Break larger tasks into logical, incremental steps and commit changes sequentially using the committer subagent after each phase.
 
 ## Testing and Validation
 
