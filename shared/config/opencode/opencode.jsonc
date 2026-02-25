@@ -69,6 +69,8 @@
       "git show *": "allow",
       "git log": "allow",
       "git log *": "allow",
+      "git rev-parse": "allow",
+      "git rev-parse *": "allow",
       "git stash": "allow",
       "git stash *": "allow",
       "git branch": "allow",
