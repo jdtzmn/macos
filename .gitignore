@@ -79,3 +79,6 @@ $RECYCLE.BIN/
 
 # Secrets
 .env
+
+# ChunkHound local index database
+.chunkhound/
