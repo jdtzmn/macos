@@ -35,6 +35,7 @@
       # Programs
       "oc" = "opencode";
       "n" = "nvim";
+      "t" = "tmux";
       "y" = "yazi";
       "terraform" = "tofu";
       "tf" = "tofu";
