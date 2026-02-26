@@ -6,6 +6,8 @@ export const NotificationPlugin = async ({
   directory,
   worktree,
 }) => {
+  const WEZTERM_BUNDLE_ID = "com.github.wez.wezterm";
+  const WEZTERM_BIN = "/Applications/WezTerm.app/Contents/MacOS/wezterm";
   const OPENCODE_STATUS = {
     complete: "complete",
     inProgress: "in_progress",
@@ -20,6 +22,17 @@ export const NotificationPlugin = async ({
     lastInputNotificationAt: 0,
     primarySessionCache: new Map(),
   };
+
+  const buildNotifierFocusFlags = () => {
+    const paneID = process.env.WEZTERM_PANE?.trim();
+    if (paneID && /^\d+$/.test(paneID)) {
+      return `-activate '${WEZTERM_BUNDLE_ID}' -execute '${WEZTERM_BIN} cli activate-pane --pane-id ${paneID}'`;
+    }
+
+    return `-activate '${WEZTERM_BUNDLE_ID}'`;
+  };
+
+  const notifierFocusFlags = buildNotifierFocusFlags();
 
   const resolveSessionID = (...values) => {
     return values.find((value) => typeof value === "string" && value.length > 0);
@@ -133,7 +146,8 @@ export const NotificationPlugin = async ({
       return;
     }
 
-    await $`sh -c "terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+    const command = `terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' ${notifierFocusFlags} > /dev/null 2>&1`;
+    await $`sh -c ${command}`;
   };
 
   const getEventSessionID = (event) => {
@@ -190,7 +204,8 @@ export const NotificationPlugin = async ({
 
         const elapsedMs = state.lastMessageTime ? new Date() - state.lastMessageTime : 0;
         const numberOfSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
-        await $`sh -c "terminal-notifier -title 'Opencode' -message 'Completed in ${numberOfSeconds}s' -sound 'Purr' -group 'opencode' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+        const command = `terminal-notifier -title 'Opencode' -message 'Completed in ${numberOfSeconds}s' -sound 'Purr' -group 'opencode' ${notifierFocusFlags} > /dev/null 2>&1`;
+        await $`sh -c ${command}`;
       }
 
       // Send notification on session error
@@ -204,7 +219,8 @@ export const NotificationPlugin = async ({
         const errorName = event.properties.error?.name ?? "Unknown error";
         const errorMessage =
           event.properties.error?.message ?? "No error message";
-        await $`sh -c "terminal-notifier -title 'Opencode Error' -subtitle '${errorName}' -message '${errorMessage}' -sound 'Basso' -group 'opencode-error' -activate 'dev.zed.Zed' > /dev/null 2>&1"`;
+        const command = `terminal-notifier -title 'Opencode Error' -subtitle '${errorName}' -message '${errorMessage}' -sound 'Basso' -group 'opencode-error' ${notifierFocusFlags} > /dev/null 2>&1`;
+        await $`sh -c ${command}`;
       }
 
       // Send notification when opencode is waiting for user input (permission or question)
