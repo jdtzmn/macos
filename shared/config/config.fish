@@ -6,6 +6,8 @@ end
 # Add bun global binaries to path
 fish_add_path -g "$HOME/.bun/bin"
 
+set -gx RAILWAY_NO_TELEMETRY 1
+
 # Port shell hook
 port shell-hook fish | source
 port completion fish | source
