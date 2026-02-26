@@ -39,19 +39,19 @@ export const NotificationPlugin = async ({
   };
 
   const postWeztermStatus = (status) => {
-    if (!status || !process.stdout || typeof process.stdout.write !== "function") {
+    if (!status || !process.stderr || typeof process.stderr.write !== "function") {
       return;
     }
 
     const encodedValue = Buffer.from(status).toString("base64");
     if (process.env.TMUX) {
-      process.stdout.write(
+      process.stderr.write(
         `\u001bPtmux;\u001b\u001b]1337;SetUserVar=opencode_status=${encodedValue}\u0007\u001b\\`,
       );
       return;
     }
 
-    process.stdout.write(
+    process.stderr.write(
       `\u001b]1337;SetUserVar=opencode_status=${encodedValue}\u0007`,
     );
   };
