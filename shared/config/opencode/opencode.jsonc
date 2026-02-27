@@ -13,12 +13,6 @@
       "enabled": true,
       "timeout": 30000,
     },
-    "chunkhound": {
-      "type": "local",
-      "command": ["chunkhound", "mcp"],
-      "enabled": true,
-      "timeout": 30000,
-    },
     "github": {
       "type": "remote",
       "url": "https://api.githubcopilot.com/mcp/readonly",
