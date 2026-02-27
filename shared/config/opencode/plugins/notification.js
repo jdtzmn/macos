@@ -1,3 +1,15 @@
+import { openSync, writeSync } from "fs";
+
+// Open /dev/tty once for writing terminal escape sequences directly to the
+// controlling terminal, bypassing stdout which is used for JSON-RPC with opencode.
+// Falls back to null if no TTY is available (e.g. CI environments).
+let ttyFd = null;
+try {
+  ttyFd = openSync("/dev/tty", "w");
+} catch {
+  // No controlling terminal; status updates will be silently skipped.
+}
+
 /** @type {import("/Users/jacob/.cache/opencode/node_modules/@opencode-ai/plugin/dist/index.d.ts").Plugin} */
 export const NotificationPlugin = async ({
   project,
@@ -39,19 +51,21 @@ export const NotificationPlugin = async ({
   };
 
   const postWeztermStatus = (status) => {
-    if (!status || !process.stderr || typeof process.stderr.write !== "function") {
+    if (!status || ttyFd === null) {
       return;
     }
 
     const encodedValue = Buffer.from(status).toString("base64");
     if (process.env.TMUX) {
-      process.stderr.write(
+      writeSync(
+        ttyFd,
         `\u001bPtmux;\u001b\u001b]1337;SetUserVar=opencode_status=${encodedValue}\u0007\u001b\\`,
       );
       return;
     }
 
-    process.stderr.write(
+    writeSync(
+      ttyFd,
       `\u001b]1337;SetUserVar=opencode_status=${encodedValue}\u0007`,
     );
   };
