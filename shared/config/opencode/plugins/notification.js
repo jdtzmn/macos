@@ -1,4 +1,5 @@
 import { openSync, writeSync } from "fs";
+import { execSync } from "child_process";
 
 // Open /dev/tty once for writing terminal escape sequences directly to the
 // controlling terminal, bypassing stdout which is used for JSON-RPC with opencode.
@@ -70,6 +71,20 @@ export const NotificationPlugin = async ({
     );
   };
 
+  const postTmuxStatus = (status) => {
+    if (!status || !process.env.TMUX) {
+      return;
+    }
+
+    try {
+      execSync(`tmux set-option -p @opencode_status "${status}"`, {
+        stdio: "ignore",
+      });
+    } catch {
+      // tmux command failed; ignore
+    }
+  };
+
   const setWeztermStatus = (status) => {
     if (!status || status === state.lastPostedStatus) {
       return;
@@ -77,6 +92,7 @@ export const NotificationPlugin = async ({
 
     state.lastPostedStatus = status;
     postWeztermStatus(status);
+    postTmuxStatus(status);
   };
 
   const fetchIsPrimarySession = async (sessionID) => {

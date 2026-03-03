@@ -8,7 +8,6 @@
     gnumake
     ripgrep
     lazygit
-    tmux
     eza
     opentofu
     awscli2
