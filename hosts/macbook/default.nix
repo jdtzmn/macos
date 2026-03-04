@@ -52,6 +52,10 @@
   system.defaults.CustomUserPreferences = {
     "com.apple.symbolichotkeys" = {
       AppleSymbolicHotKeys = {
+        # 60 is "Select the previous input source" (Ctrl+Space)
+        "60" = {
+          enabled = false;
+        };
         # 64 is the configuration entry for Spotlight search
         "64" = {
           enabled = false;
@@ -68,7 +72,6 @@
         enabled = false;
       };
     };
-    # Figure out a way to disable ctrl+space for "Select the previous input source" so that Zed can show completions
   };
 
   ##############################
