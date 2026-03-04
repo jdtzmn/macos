@@ -49,17 +49,19 @@
       set -g status-interval 2
       set -g status-style "bg=default,fg=#c0caf5"
       set -g status-left-length 20
-      set -g status-right-length 50
 
       # Left: session name
       set -g status-left "#[fg=#7aa2f7,bold] #S "
 
-      # Right: opencode status indicator + git branch
-      set -g status-right "#{?#{==:#{@opencode_status},waiting},#[fg=#f7768e]🔔 ,#{?#{==:#{@opencode_status},in_progress},#[fg=#7aa2f7]● ,#{?#{==:#{@opencode_status},complete},#[fg=#9ece6a]● ,}}}#[fg=#414868]#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null | cut -c1-28) "
+      # Right: empty
+      set -g status-right ""
 
-      # Window list
-      set -g window-status-format "  #[fg=#414868]#I "
-      set -g window-status-current-format "  #[fg=#7aa2f7]#I "
+      # Mark window as seen when focused and status is complete
+      set-hook -g window-focus-in 'if-shell "[ \"#{@opencode_status}\" = complete ]" "set-option -w @opencode_seen 1"'
+
+      # Window list: index + opencode status dot + git branch
+      set -g window-status-format "  #{?#{==:#{@opencode_status},waiting},#[fg=#f7768e]🔔 ,#{?#{==:#{@opencode_status},in_progress},#[fg=#7aa2f7]● ,#{?#{==:#{@opencode_status},complete},#{?#{==:#{@opencode_seen},1},#[fg=#9ece6a]○ ,#[fg=#9ece6a]● ,},}}}#[fg=#414868]#I #[fg=#414868]#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null | cut -c1-20) "
+      set -g window-status-current-format "  #{?#{==:#{@opencode_status},waiting},#[fg=#f7768e]🔔 ,#{?#{==:#{@opencode_status},in_progress},#[fg=#7aa2f7]● ,#{?#{==:#{@opencode_status},complete},#[fg=#9ece6a]○ ,}}}#[fg=#7aa2f7]#I #[fg=#565f89]#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null | cut -c1-20) "
       set -g window-status-separator ""
 
       # Pane borders
