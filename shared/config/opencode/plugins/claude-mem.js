@@ -16,6 +16,8 @@ const STATUS_TIMEOUT_MS = 500;
 const MAX_OUTPUT_BYTES = 50_000;
 const MAX_TAG_REPLACEMENTS = 100;
 
+const SUMMARY_INTERVAL = 3; // Send a mid-session summary every N prompts
+
 const SKIP_TOOLS = new Set([
   "todowrite",
   "askuserquestion",
@@ -210,6 +212,7 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
   const state = {
     sessionId: "",
     promptNumber: 0,
+    lastSummaryPrompt: 0,
     lastUserMessage: "",
     lastAssistantMessage: "",
     summarySent: false,
@@ -232,20 +235,29 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
     // Session lifecycle
     // -------------------------------------------------------------------------
     event: async ({ event }) => {
+      // Resolve session ID from multiple possible locations across opencode versions
+      const resolveEventSessionId = () =>
+        event.properties?.sessionID ??
+        event.properties?.info?.id ??
+        event.properties?.id ??
+        state.sessionId;
+
       if (event.type === "session.created") {
-        const newSessionId = event.properties?.info?.id;
+        const newSessionId = resolveEventSessionId();
         if (state.sessionId && state.sessionId !== newSessionId) {
           void mem.completeSession({ contentSessionId: state.sessionId });
         }
         state.sessionId = newSessionId ?? "";
         state.summarySent = false;
         state.promptNumber = 0;
+        state.lastSummaryPrompt = 0;
         state.lastUserMessage = "";
         state.lastAssistantMessage = "";
+        log(`Session created: ${state.sessionId}`);
       }
 
       if (event.type === "session.deleted") {
-        const sessionId = event.properties?.info?.id;
+        const sessionId = resolveEventSessionId();
         if (sessionId) {
           if (!state.summarySent) {
             void mem.sendSummary({
@@ -260,7 +272,7 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
 
       // session.idle → send summary
       if (event.type === "session.idle") {
-        const sessionId = event.properties?.sessionID ?? state.sessionId;
+        const sessionId = resolveEventSessionId();
         if (!sessionId || state.summarySent) return;
         void mem.sendSummary({
           contentSessionId: sessionId,
@@ -274,9 +286,21 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
     // Capture user prompt
     // -------------------------------------------------------------------------
     "chat.message": async (input, output) => {
-      if (!input.sessionID || input.agent) return;
+      // Resolve session ID from multiple possible locations
+      const sessionID =
+        input?.sessionID ??
+        input?.message?.sessionID ??
+        output?.message?.sessionID;
 
-      const parts = output.parts ?? [];
+      // Skip subagent messages (agent field is set for sub-agents)
+      if (!sessionID || input.agent) return;
+
+      // Store session ID if not already tracked
+      if (!state.sessionId) {
+        state.sessionId = sessionID;
+      }
+
+      const parts = output?.parts ?? [];
       const textContent = parts
         .filter((p) => p?.type === "text")
         .map((p) => p.text ?? "")
@@ -287,9 +311,13 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
 
       state.lastUserMessage = cleanText;
       state.promptNumber += 1;
+      // Reset summarySent so periodic summaries can fire again for this new prompt
+      state.summarySent = false;
+
+      log(`Prompt ${state.promptNumber} captured (session: ${sessionID})`);
 
       void mem.initSession({
-        contentSessionId: input.sessionID,
+        contentSessionId: sessionID,
         project: projectName,
         prompt: cleanText,
       });
@@ -300,7 +328,8 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
     // -------------------------------------------------------------------------
     "tool.execute.after": async (input, output) => {
       if (SKIP_TOOLS.has((input.tool ?? "").toLowerCase())) return;
-      if (!input.sessionID) return;
+      const sessionID = input.sessionID ?? state.sessionId;
+      if (!sessionID) return;
 
       let toolOutput = output.output ?? "";
       if (toolOutput.length > MAX_OUTPUT_BYTES) {
@@ -318,7 +347,7 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
       }
 
       void mem.sendObservation({
-        contentSessionId: input.sessionID,
+        contentSessionId: sessionID,
         tool_name: input.tool,
         tool_input: safeParseJson(stripMemoryTagsFromJson(inputText)),
         tool_response: stripMemoryTagsFromText(toolOutput),
@@ -327,6 +356,19 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
         last_assistant_message: state.lastAssistantMessage || undefined,
         prompt_number: state.promptNumber > 0 ? state.promptNumber : undefined,
       });
+
+      // Periodic mid-session summary every SUMMARY_INTERVAL prompts
+      if (
+        state.promptNumber > 0 &&
+        state.promptNumber - state.lastSummaryPrompt >= SUMMARY_INTERVAL
+      ) {
+        state.lastSummaryPrompt = state.promptNumber;
+        void mem.sendSummary({
+          contentSessionId: sessionID,
+          last_assistant_message: state.lastAssistantMessage || undefined,
+        });
+        log(`Mid-session summary queued at prompt ${state.promptNumber}`);
+      }
     },
 
     // -------------------------------------------------------------------------
@@ -381,7 +423,8 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
     // Log slash command usage as an observation
     // -------------------------------------------------------------------------
     "command.execute.before": async (input, _output) => {
-      if (!input.sessionID || !input.command) return;
+      const sessionID = input.sessionID ?? state.sessionId;
+      if (!sessionID || !input.command) return;
 
       let argumentsText;
       try {
@@ -391,7 +434,7 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
       }
 
       void mem.sendObservation({
-        contentSessionId: input.sessionID,
+        contentSessionId: sessionID,
         tool_name: `command:${input.command}`,
         tool_input: safeParseJson(stripMemoryTagsFromJson(argumentsText)),
         tool_response: `Slash command executed: /${input.command}`,
