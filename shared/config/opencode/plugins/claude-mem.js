@@ -292,13 +292,14 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
         input?.message?.sessionID ??
         output?.message?.sessionID;
 
-      // Skip subagent messages (agent field is set for sub-agents)
-      if (!sessionID || input.agent) return;
+      if (!sessionID) return;
 
-      // Store session ID if not already tracked
+      // Only track the primary (root) session — set it on first message
       if (!state.sessionId) {
         state.sessionId = sessionID;
       }
+      // Skip messages from a different session (e.g. child agents with different IDs)
+      if (sessionID !== state.sessionId) return;
 
       const parts = output?.parts ?? [];
       const textContent = parts
