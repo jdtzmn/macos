@@ -16,6 +16,8 @@ Use this file to capture my personal development workflow preferences.
 ## Code Changes
 
 - Complete work in phases. Break larger tasks into logical, incremental steps and commit changes sequentially using the committer subagent after each phase.
+- Never run `git add` or `git commit` from the primary agent. When staging/committing is needed, delegate immediately to the `committer` subagent.
+- Commit intent triggers include requests like "commit this", "save changes", "checkpoint", or "WIP commit".
 
 ## Testing and Validation
 
@@ -23,4 +25,5 @@ Use this file to capture my personal development workflow preferences.
 
 ## Git Workflow
 
-- Add rules here.
+- The primary agent may inspect git state (`git status`, `git diff`, `git log`, `git show`) but does not perform git write actions.
+- The `committer` subagent is the only agent that stages files and creates commits.
