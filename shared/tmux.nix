@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, repoDir, ... }:
 {
   programs.tmux = {
     enable = true;
@@ -10,67 +10,6 @@
     baseIndex = 1;
     escapeTime = 0;
     historyLimit = 50000;
-    extraConfig = ''
-      # True color and undercurl support
-      set -as terminal-overrides ",xterm-256color:Tc"
-      set -as terminal-overrides ',*:Smulx=\E[4::%p1%dm'
-      set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{255}%&%d::%p1%{255}%&%d%;m'
-
-      # General settings
-      set -g focus-events on
-      set -g set-clipboard on
-      set -g allow-passthrough on
-      set -g renumber-windows on
-
-      # Vi copy mode
-      bind-key -T copy-mode-vi v send-keys -X begin-selection
-      bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
-      bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
-
-      # Vim-tmux-navigator (smart pane switching with vim awareness)
-      is_vim="ps -o state= -o comm= -t '#{pane_tty}' | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf)(diff)?$'"
-      bind-key -n C-h if-shell "$is_vim" "send-keys C-h" "select-pane -L"
-      bind-key -n C-j if-shell "$is_vim" "send-keys C-j" "select-pane -D"
-      bind-key -n C-k if-shell "$is_vim" "send-keys C-k" "select-pane -U"
-      bind-key -n C-l if-shell "$is_vim" "send-keys C-l" "select-pane -R"
-      bind-key -T copy-mode-vi C-h select-pane -L
-      bind-key -T copy-mode-vi C-j select-pane -D
-      bind-key -T copy-mode-vi C-k select-pane -U
-      bind-key -T copy-mode-vi C-l select-pane -R
-
-      # Prefix pane navigation
-      bind h select-pane -L
-      bind j select-pane -D
-      bind k select-pane -U
-      bind l select-pane -R
-
-      # --- Status bar (Tokyo Night) ---
-      set -g status-position bottom
-      set -g status-interval 2
-      set -g status-style "bg=default,fg=#c0caf5"
-      set -g status-left-length 20
-
-      # Left: session name
-      set -g status-left "#[fg=#7aa2f7,bold] #S "
-
-      # Right: empty
-      set -g status-right ""
-
-      # Mark window as seen when focused and status is complete
-      set-hook -g window-focus-in 'if-shell "[ \"#{@opencode_status}\" = complete ]" "set-option -w @opencode_seen 1"'
-
-      # Window list: index + opencode status dot + git branch
-      set -g window-status-format "  #{?#{==:#{@opencode_status},waiting},#[fg=#f7768e]🔔 ,#{?#{==:#{@opencode_status},in_progress},#[fg=#7aa2f7]● ,#{?#{==:#{@opencode_status},complete},#{?#{==:#{@opencode_seen},1},#[fg=#9ece6a]○ ,#[fg=#9ece6a]● ,},}}}#[fg=#414868]#I #[fg=#414868]#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null | cut -c1-20) "
-      set -g window-status-current-format "  #{?#{==:#{@opencode_status},waiting},#[fg=#f7768e]🔔 ,#{?#{==:#{@opencode_status},in_progress},#[fg=#7aa2f7]● ,#{?#{==:#{@opencode_status},complete},#[fg=#9ece6a]○ ,}}}#[fg=#7aa2f7]#I #[fg=#565f89]#(git -C #{pane_current_path} rev-parse --abbrev-ref HEAD 2>/dev/null | cut -c1-20) "
-      set -g window-status-separator ""
-
-      # Pane borders
-      set -g pane-border-style "fg=#414868"
-      set -g pane-active-border-style "fg=#7aa2f7"
-
-      # Messages and mode
-      set -g message-style "fg=#c0caf5,bg=#1a1b26"
-      set -g mode-style "fg=#c0caf5,bg=#414868"
-    '';
+    extraConfig = "source-file ${repoDir}/shared/config/tmux.conf";
   };
 }
