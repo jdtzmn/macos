@@ -28,7 +28,7 @@
   "tui": {
     "scroll_speed": 1,
   },
-  "plugin": ["@0xsero/open-queue"],
+  "plugin": ["@0xsero/open-queue", "@bloodf/opencode-claude-mem"],
   "instructions": [
     "~/.config/opencode/me.md",
     "https://raw.githubusercontent.com/jdtzmn/port/refs/heads/main/ONBOARD.md",
