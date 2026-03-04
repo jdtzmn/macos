@@ -1,9 +1,7 @@
 { pkgs, config, repoDir, ... }:
 {
-  xdg.configFile."tmux/opencode-status.sh" = {
-    source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode-status.sh";
-    executable = true;
-  };
+  xdg.configFile."tmux/opencode-status.sh".source =
+    config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode-status.sh";
 
   programs.tmux = {
     enable = true;
