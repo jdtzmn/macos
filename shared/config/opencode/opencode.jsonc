@@ -2,11 +2,6 @@
   "$schema": "https://opencode.ai/config.json",
   "theme": "tokyonight-transparent",
   "mcp": {
-    "claude-mem": {
-      "type": "local",
-      "command": ["node", "/Users/jacob/.bun/install/global/node_modules/claude-mem/plugin/scripts/mcp-server.cjs"],
-      "enabled": true,
-    },
     "playwright": {
       "type": "local",
       "command": ["bunx", "-y", "@playwright/mcp@latest"],
