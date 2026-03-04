@@ -1,5 +1,10 @@
-{ pkgs, repoDir, ... }:
+{ pkgs, config, repoDir, ... }:
 {
+  xdg.configFile."tmux/opencode-status.sh" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode-status.sh";
+    executable = true;
+  };
+
   programs.tmux = {
     enable = true;
     prefix = "C-Space";
