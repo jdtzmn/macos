@@ -83,13 +83,13 @@ export const NotificationPlugin = async ({
 
       if (status === "in_progress") {
         // Clear seen flag so the complete indicator shows as unread next time
-        execSync(`tmux set-option -w @opencode_seen 0`, { stdio: "ignore" });
+        execSync(`tmux set-option -p @opencode_seen 0`, { stdio: "ignore" });
       } else if (status === "complete") {
-        // If this pane's window is currently the active window, mark as seen immediately
-        const activeWindow = execSync(`tmux display-message -p "#{window_id}"`, { encoding: "utf8" }).trim();
-        const thisWindow = execSync(`tmux display-message -p -t "${process.env.TMUX_PANE}" "#{window_id}"`, { encoding: "utf8" }).trim();
-        if (activeWindow === thisWindow) {
-          execSync(`tmux set-option -w @opencode_seen 1`, { stdio: "ignore" });
+        // If this pane is currently the active pane, mark as seen immediately
+        const activePane = execSync(`tmux display-message -p "#{pane_id}"`, { encoding: "utf8" }).trim();
+        const thisPane = process.env.TMUX_PANE?.trim();
+        if (thisPane && activePane === thisPane) {
+          execSync(`tmux set-option -p @opencode_seen 1`, { stdio: "ignore" });
         }
       }
     } catch {
