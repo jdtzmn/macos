@@ -349,7 +349,7 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
             "## 🧠 Claude-Mem Status",
             `- Connection: ✓ Active (${status.workerUrl})`,
             `- Worker Version:${version}`,
-            "- Available Commands: /mem-search, /mem-save, /mem-status, /mem-timeline",
+            "- Available Commands: /mem-search, /mem-status, /mem-timeline",
             `- Memory Viewer: ${status.workerUrl}`,
           ].join("\n");
         } else {
