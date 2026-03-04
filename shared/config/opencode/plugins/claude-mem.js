@@ -356,7 +356,7 @@ export const ClaudeMemPlugin = async ({ client, project, directory }) => {
           statusBlock = [
             "## 🧠 Claude-Mem Status",
             "- Connection: ✗ Disconnected",
-            "- Memory features unavailable. Start worker: claude-mem start",
+            "- Memory features unavailable. Start worker: /mem-worker-start",
           ].join("\n");
         }
         output.system.unshift(statusBlock);
