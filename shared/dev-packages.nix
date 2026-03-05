@@ -4,6 +4,7 @@
     docker
     docker-compose
     bun
+    sprite
     gh
     gnumake
     ripgrep

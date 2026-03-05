@@ -16,11 +16,15 @@
 
         # Nix-Homebrew
         nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+
+        # Sprite CLI
+        sprite-cli.url = "github:jamiebrynes7/sprite-cli-nix";
+        sprite-cli.inputs.nixpkgs.follows = "nixpkgs";
     };
 
 
     # Flake outputs
-    outputs = { self, nixpkgs, home-manager, darwin, nix-homebrew }:
+    outputs = { self, nixpkgs, home-manager, darwin, nix-homebrew, sprite-cli }:
     let
         repoDir = builtins.getEnv "REPO_DIR";
         mkDarwinSystem = { separateAdminAccount ? false }: darwin.lib.darwinSystem {
@@ -28,11 +32,18 @@
             modules = [
                 home-manager.darwinModules.home-manager
                 nix-homebrew.darwinModules.nix-homebrew
+                {
+                    nixpkgs.overlays = [ sprite-cli.overlays.default ];
+                }
                 ./hosts/macbook/default.nix
             ];
             specialArgs = {
                 inherit repoDir separateAdminAccount;
             };
+        };
+        linuxPkgs = import nixpkgs {
+            system = "x86_64-linux";
+            overlays = [ sprite-cli.overlays.default ];
         };
     in {
         # macOS system configuration (run from admin account)
@@ -43,7 +54,7 @@
 
         # Linux home-manager standalone configuration
         homeConfigurations.linux = home-manager.lib.homeManagerConfiguration {
-            pkgs = nixpkgs.legacyPackages.x86_64-linux;
+            pkgs = linuxPkgs;
             modules = [
                 ./hosts/linux/home.nix
             ];
