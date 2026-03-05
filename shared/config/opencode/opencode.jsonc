@@ -48,6 +48,8 @@
       "bunx tsc *": "allow",
       "bunx eslint": "allow",
       "bunx eslint *": "allow",
+      "bunx prettier --write": "allow",
+      "bunx prettier --write *": "allow",
       "bunx vitest": "allow",
       "bunx vitest *": "allow",
       "make": "allow",
