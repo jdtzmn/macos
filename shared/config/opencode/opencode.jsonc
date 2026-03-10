@@ -63,6 +63,8 @@
       "mkdir *": "allow",
       "head *": "allow",
       "tail *": "allow",
+      "find *": "allow",
+      "sort *": "allow",
       "git status": "allow",
       "git status *": "allow",
       "git diff": "allow",
