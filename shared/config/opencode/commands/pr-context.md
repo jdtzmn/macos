@@ -221,5 +221,5 @@ Instructions:
 - Otherwise, give a concise PR context brief with:
   - current status (draft/review/checks)
   - blockers or requested changes
-  - top 3 next actions
+  - prioritized next actions, covering all relevant follow-ups
 - Mention whether comment history is truncated via `<pr_meta>.comment_mode`.
