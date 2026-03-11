@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "theme": "tokyonight-transparent",
   "mcp": {
     "playwright": {
       "type": "local",
@@ -23,6 +24,9 @@
       },
       "enabled": true,
     },
+  },
+  "tui": {
+    "scroll_speed": 1,
   },
   "plugin": ["@0xsero/open-queue"],
   "instructions": [
