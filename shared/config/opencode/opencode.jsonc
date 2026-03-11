@@ -81,6 +81,7 @@
       "git branch *": "allow",
       "git fetch": "allow",
       "git fetch *": "allow",
+      "git merge main": "allow",
       "sleep *": "allow",
       "echo *": "allow",
       "xcodebuild": "allow",
