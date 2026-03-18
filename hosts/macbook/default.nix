@@ -114,11 +114,16 @@
       if separateAdminAccount then "/Users/jacob/Applications" else "/Applications";
     taps = [
       "oven-sh/bun"
+      {
+        name = "microsoft/inshellisense";
+        clone_target = "https://github.com/microsoft/inshellisense";
+      }
     ];
     brews = [
       # Programming
       "opencode"
       "asdf"
+      "inshellisense"
       "temporal"
       "uv"
       "bun"
