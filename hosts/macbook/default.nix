@@ -123,7 +123,7 @@
       # Programming
       "opencode"
       "asdf"
-      "inshellisense"
+      "microsoft/inshellisense/inshellisense"
       "temporal"
       "uv"
       "bun"
