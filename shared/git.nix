@@ -23,10 +23,6 @@ in
         name = gitUserName;
         email = gitUserEmail;
       };
-
-      status = {
-        showUntrackedFiles = "no";
-      };
     };
   };
 }
