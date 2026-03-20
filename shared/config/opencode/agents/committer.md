@@ -26,6 +26,8 @@ permission:
     "git add *": allow
     "git commit": allow
     "git commit *": allow
+    "git rebase --continue": allow
+    "git rebase --continue *": allow
 ---
 You are a commit-focused subagent.
 
