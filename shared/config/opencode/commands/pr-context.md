@@ -56,7 +56,6 @@ OWNER="${REPO%%/*}"
 NAME="${REPO#*/}"
 
 TMP="$(mktemp -d)"
-trap "rm -rf \"$TMP\"" EXIT
 
 (
   gh pr view "$PR_NUMBER" -R "$REPO" \
@@ -82,7 +81,9 @@ trap "rm -rf \"$TMP\"" EXIT
 
 wait
 
-python3 - "$TMP" "$REPO" "$BRANCH" "$PR_NUMBER" "$COMMENT_LIMIT" <<"PY"
+OUTPUT_FILE="$TMP/pr_context.json"
+
+python3 - "$TMP" "$REPO" "$BRANCH" "$PR_NUMBER" "$COMMENT_LIMIT" "$OUTPUT_FILE" <<"PY"
 import json
 import pathlib
 import sys
@@ -92,6 +93,7 @@ repo = sys.argv[2]
 branch = sys.argv[3]
 pr_number = sys.argv[4]
 comment_limit = int(sys.argv[5])
+output_file = pathlib.Path(sys.argv[6])
 
 
 def load_json(path: pathlib.Path, default):
@@ -137,6 +139,7 @@ def slim_user(user):
 
 def slim_review(r):
     return {
+        "id": r.get("id"),
         "user": slim_user(r.get("user")),
         "state": r.get("state"),
         "body": r.get("body"),
@@ -146,6 +149,7 @@ def slim_review(r):
 
 def slim_issue_comment(c):
     return {
+        "id": c.get("id"),
         "user": slim_user(c.get("user")),
         "body": c.get("body"),
         "created_at": c.get("created_at"),
@@ -155,6 +159,8 @@ def slim_issue_comment(c):
 
 def slim_review_comment(c):
     return {
+        "id": c.get("id"),
+        "in_reply_to_id": c.get("in_reply_to_id"),
         "user": slim_user(c.get("user")),
         "body": c.get("body"),
         "path": c.get("path"),
@@ -192,6 +198,14 @@ meta = {
     "review_comments_included": len(review_comments),
 }
 
+details = {
+    "reviews": reviews,
+    "issue_comments": issue_comments,
+    "review_comments": review_comments,
+}
+with output_file.open("w", encoding="utf-8") as f:
+    json.dump(details, f, indent=2)
+
 print("<pr_context>")
 print("<pr_found>true</pr_found>")
 print("<pr_meta>")
@@ -203,15 +217,7 @@ print("</pr_core>")
 print("<pr_checks>")
 print(json.dumps(checks, indent=2))
 print("</pr_checks>")
-print("<pr_reviews>")
-print(json.dumps(reviews, indent=2))
-print("</pr_reviews>")
-print("<pr_issue_comments>")
-print(json.dumps(issue_comments, indent=2))
-print("</pr_issue_comments>")
-print("<pr_review_comments>")
-print(json.dumps(review_comments, indent=2))
-print("</pr_review_comments>")
+print(f"<pr_context_file>{output_file}</pr_context_file>")
 print("</pr_context>")
 PY' -- "$1"`
 
@@ -223,3 +229,5 @@ Instructions:
   - blockers or requested changes
   - prioritized next actions, covering all relevant follow-ups
 - Mention whether comment history is truncated via `<pr_meta>.comment_mode`.
+- The file at `<pr_context_file>` contains detailed review and comment data (reviews, issue comments, review comments) as JSON. Use `Read` or `Grep` on that file to inspect specific comments when needed.
+- Each comment includes an `id` field. Review comments also include `in_reply_to_id` for threading. Use these IDs when replying to comments via `gh api`.
