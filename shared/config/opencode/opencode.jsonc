@@ -74,10 +74,7 @@
       "git show *": "allow",
       "git log": "allow",
       "git log *": "allow",
-      "git add": "deny",
-      "git add *": "deny",
-      "git commit": "deny",
-      "git commit *": "deny",
+
       "git rev-parse": "allow",
       "git rev-parse *": "allow",
       "git stash": "allow",
