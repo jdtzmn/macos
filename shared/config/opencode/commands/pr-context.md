@@ -55,7 +55,7 @@ fi
 OWNER="${REPO%%/*}"
 NAME="${REPO#*/}"
 
-TMP="$(mktemp -d)"
+TMP="$(mktemp -d /tmp/pr-context.XXXXXX)"
 
 (
   gh pr view "$PR_NUMBER" -R "$REPO" \
