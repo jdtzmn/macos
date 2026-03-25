@@ -13,6 +13,8 @@ Snapshot context:
 
 MODE="${1:-latest}"
 COMMENT_LIMIT=100
+INLINE_RECENT_LIMIT=20
+INLINE_COMMENT_CHAR_LIMIT=320
 if [ "$MODE" = "full" ]; then
   COMMENT_LIMIT=0
 fi
@@ -83,7 +85,7 @@ wait
 
 OUTPUT_FILE="$TMP/pr_context.json"
 
-python3 - "$TMP" "$REPO" "$BRANCH" "$PR_NUMBER" "$COMMENT_LIMIT" "$OUTPUT_FILE" <<"PY"
+python3 - "$TMP" "$REPO" "$BRANCH" "$PR_NUMBER" "$COMMENT_LIMIT" "$INLINE_RECENT_LIMIT" "$INLINE_COMMENT_CHAR_LIMIT" "$OUTPUT_FILE" <<"PY"
 import json
 import pathlib
 import sys
@@ -93,7 +95,9 @@ repo = sys.argv[2]
 branch = sys.argv[3]
 pr_number = sys.argv[4]
 comment_limit = int(sys.argv[5])
-output_file = pathlib.Path(sys.argv[6])
+inline_recent_limit = int(sys.argv[6])
+inline_comment_char_limit = int(sys.argv[7])
+output_file = pathlib.Path(sys.argv[8])
 
 
 def load_json(path: pathlib.Path, default):
