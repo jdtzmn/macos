@@ -65,6 +65,8 @@
 
       # GitHub
       "reviews" = "gh pr list --search 'review-requested:@me'";
+      "ghd" = "gh-dash";
+      "ghe" = "gh enhance";
     };
   };
 }
