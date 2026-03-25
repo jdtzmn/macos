@@ -3,6 +3,7 @@
     ./dev-packages.nix
     ./direnv.nix
     ./fish.nix
+    ./gh.nix
     ./git.nix
     ./lazygit.nix
     ./nvim.nix

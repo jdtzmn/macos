@@ -6,13 +6,13 @@
     bun
     sprite
     gh
+    gh-dash
     gnumake
     ripgrep
     lazygit
     eza
     opentofu
     awscli2
-    gh
     # Nix language servers
     nil
     nixd
