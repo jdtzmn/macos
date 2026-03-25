@@ -16,8 +16,8 @@ Use this file to capture my personal development workflow preferences.
 ## Code Changes
 
 - Complete work in phases. Break larger tasks into logical, incremental steps.
-- Use the `committer` subagent specifically for staging and creating commits when there is explicit commit intent.
-- Commit intent triggers include requests like "commit this", "save changes", "checkpoint", or "WIP commit".
+- After completing each phase/step, commit the changes before moving on to the next step. Use the `committer` subagent for staging and creating commits.
+- Additional commit intent triggers include requests like "commit this", "save changes", "checkpoint", or "WIP commit".
 
 ## Testing and Validation
 
