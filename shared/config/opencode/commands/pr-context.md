@@ -176,6 +176,54 @@ def slim_review_comment(c):
     }
 
 
+def truncate_comment_body(body, char_limit):
+    if not isinstance(body, str):
+        return ""
+
+    compact = " ".join(body.split())
+    if char_limit <= 0 or len(compact) <= char_limit:
+        return compact
+
+    return compact[:char_limit].rstrip() + "..."
+
+
+def recent_inline_comments(issue_comments_all, review_comments_all, limit, char_limit):
+    combined = []
+
+    for c in issue_comments_all:
+        combined.append(
+            {
+                "type": "issue",
+                "id": c.get("id"),
+                "in_reply_to_id": None,
+                "user": slim_user(c.get("user")),
+                "body": truncate_comment_body(c.get("body"), char_limit),
+                "path": None,
+                "line": None,
+                "created_at": c.get("created_at"),
+            }
+        )
+
+    for c in review_comments_all:
+        combined.append(
+            {
+                "type": "review",
+                "id": c.get("id"),
+                "in_reply_to_id": c.get("in_reply_to_id"),
+                "user": slim_user(c.get("user")),
+                "body": truncate_comment_body(c.get("body"), char_limit),
+                "path": c.get("path"),
+                "line": c.get("line"),
+                "created_at": c.get("created_at"),
+            }
+        )
+
+    combined = sorted(combined, key=lambda item: item.get("created_at") or "")
+    if limit > 0:
+        return combined[-limit:]
+    return combined
+
+
 core = load_json(tmp / "core.json", {})
 reviews_raw = flatten_pages(load_json(tmp / "reviews.json", []))
 issue_comments_all = flatten_pages(load_json(tmp / "issue_comments.json", []))
@@ -188,6 +236,12 @@ review_comments = latest(review_comments_all, comment_limit)
 reviews = [slim_review(r) for r in reviews_raw]
 issue_comments = [slim_issue_comment(c) for c in issue_comments]
 review_comments = [slim_review_comment(c) for c in review_comments]
+recent_comments = recent_inline_comments(
+    issue_comments_all,
+    review_comments_all,
+    inline_recent_limit,
+    inline_comment_char_limit,
+)
 
 comment_mode = "full" if comment_limit <= 0 else f"latest_{comment_limit}"
 
@@ -200,6 +254,13 @@ meta = {
     "issue_comments_included": len(issue_comments),
     "review_comments_total": len(review_comments_all),
     "review_comments_included": len(review_comments),
+}
+
+recent_meta = {
+    "inline_recent_limit": inline_recent_limit,
+    "inline_comment_char_limit": inline_comment_char_limit,
+    "total_comments_considered": len(issue_comments_all) + len(review_comments_all),
+    "recent_comments_included": len(recent_comments),
 }
 
 details = {
@@ -221,6 +282,12 @@ print("</pr_core>")
 print("<pr_checks>")
 print(json.dumps(checks, indent=2))
 print("</pr_checks>")
+print("<pr_recent_comments_meta>")
+print(json.dumps(recent_meta, indent=2))
+print("</pr_recent_comments_meta>")
+print("<pr_recent_comments>")
+print(json.dumps(recent_comments, indent=2))
+print("</pr_recent_comments>")
 print(f"<pr_context_file>{output_file}</pr_context_file>")
 print("</pr_context>")
 PY' -- "$1"`
