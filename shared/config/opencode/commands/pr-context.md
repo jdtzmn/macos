@@ -300,5 +300,8 @@ Instructions:
   - blockers or requested changes
   - prioritized next actions, covering all relevant follow-ups
 - Mention whether comment history is truncated via `<pr_meta>.comment_mode`.
+- Always inspect `<pr_recent_comments>` before summarizing blockers and next actions.
+- `<pr_recent_comments_meta>` includes the inline limits and how many comments were included.
+- Inline comment bodies are truncated for context efficiency; if you need full text, read `<pr_context_file>`.
 - The file at `<pr_context_file>` contains detailed review and comment data (reviews, issue comments, review comments) as JSON. Use `Read` or `Grep` on that file to inspect specific comments when needed.
 - Each comment includes an `id` field. Review comments also include `in_reply_to_id` for threading. Use these IDs when replying to comments via `gh api`.
