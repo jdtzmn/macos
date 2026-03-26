@@ -28,6 +28,11 @@
       "url": "https://mcp.deepwiki.com/mcp",
       "enabled": true,
     },
+    "linear": {
+      "type": "remote",
+      "url": "https://mcp.linear.app/mcp",
+      "enabled": true,
+    },
   },
   "plugin": ["@0xsero/open-queue"],
   "instructions": [
