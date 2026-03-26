@@ -1,0 +1,48 @@
+defaults:
+  refetchIntervalMinutes: 5
+
+confirmQuit: true
+
+theme:
+  ui:
+    sectionsShowCount: true
+    table:
+      compact: false
+  colors:
+    text:
+      primary: "#c8d3f5"
+      secondary: "#828bb8"
+      inverted: "#1e2030"
+      faint: "#737aa2"
+      warning: "#ff966c"
+      success: "#c3e88d"
+      actor: "#828bb8"
+    background:
+      selected: "#292e42"
+    border:
+      primary: "#3b4261"
+      secondary: "#545c7e"
+      faint: "#222436"
+
+keybindings:
+  prs:
+    - key: T
+      name: enhance
+      command: gh enhance -R {{.RepoName}} {{.PrNumber}}
+    - key: m
+      command: "echo 'merge disabled - use GitHub web'"
+    - key: x
+      command: "echo 'close disabled - use GitHub web'"
+    - key: X
+      command: "echo 'reopen disabled - use GitHub web'"
+    - key: u
+      command: "echo 'update branch disabled - use GitHub web'"
+    - key: v
+      command: "echo 'approve disabled - use GitHub web'"
+    - key: W
+      command: "echo 'mark ready disabled - use GitHub web'"
+  issues:
+    - key: x
+      command: "echo 'close disabled - use GitHub web'"
+    - key: X
+      command: "echo 'reopen disabled - use GitHub web'"

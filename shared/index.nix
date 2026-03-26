@@ -4,6 +4,7 @@
     ./direnv.nix
     ./fish.nix
     ./gh.nix
+    ./gh-dash.nix
     ./git.nix
     ./lazygit.nix
     ./nvim.nix
