@@ -80,3 +80,9 @@ $RECYCLE.BIN/
 # Secrets
 .env
 
+# OpenCode generated files
+shared/config/opencode/agent/swarm-researcher.md
+shared/config/opencode/agent/swarm-worker.md
+shared/config/opencode/agent/swarm-planner.md
+shared/config/opencode/command/swarm.md
+shared/config/opencode/plugin/swarm.ts
