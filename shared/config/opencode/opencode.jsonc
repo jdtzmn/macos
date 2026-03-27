@@ -123,6 +123,8 @@
       "gh repo view *": "allow",
       "gh auth status": "allow",
       "gh auth status *": "allow",
+      "date +%s": "allow",
+      "date -u +%s": "allow",
     },
     "read": {
       "*": "allow",
