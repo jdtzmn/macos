@@ -384,6 +384,8 @@ config.keys = {
   { key = 'j', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down' },
   { key = 'k', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up' },
   { key = 'l', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right' },
+  { key = 'LeftArrow', mods = 'CMD|ALT', action = wezterm.action.ActivateTabRelative(-1) },
+  { key = 'RightArrow', mods = 'CMD|ALT', action = wezterm.action.ActivateTabRelative(1) },
 }
 
 -- Return the configuration to wezterm
