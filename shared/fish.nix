@@ -3,13 +3,6 @@
   # We use `00` as a prefix to ensure that the tide configuration file is loaded before
   # the tide plugin itself.
   xdg.configFile."fish/conf.d/01-mono-smoke.fish".source = ./config/mono-smoke.fish;
-  xdg.configFile."fish/conf.d/99-inshellisense.fish".text = ''
-    # inshellisense — must load last
-    if command -q is
-      is init fish | source
-    end
-  '';
-
   programs.fish = {
     enable = true;
     interactiveShellInit = ''
