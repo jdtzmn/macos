@@ -3,6 +3,7 @@
   home.packages = with pkgs; [
     docker
     docker-compose
+    atlas
     bun
     sprite
     gh
