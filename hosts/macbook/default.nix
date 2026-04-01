@@ -113,6 +113,7 @@
     caskArgs.appdir =
       if separateAdminAccount then "/Users/jacob/Applications" else "/Applications";
     taps = [
+      "entireio/tap"
       "oven-sh/bun"
     ];
     brews = [
@@ -172,6 +173,7 @@
 
       # Work
       "slack"
+      "entire"
     ] ++ (if !separateAdminAccount then [
       # These casks require sudo during install
       "tailscale-app"
