@@ -173,7 +173,7 @@
 
       # Work
       "slack"
-      "entire"
+      "entireio/tap/entire"
     ] ++ (if !separateAdminAccount then [
       # These casks require sudo during install
       "tailscale-app"
