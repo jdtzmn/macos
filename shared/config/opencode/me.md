@@ -4,7 +4,10 @@ Use this file to capture my personal development workflow preferences.
 
 ## Working Style
 
-- Add rules here.
+- For any non-trivial coding task, use a phased workflow by default.
+- Break implementation work into small, logical, incremental steps.
+- After each completed phase, run the smallest relevant validation you can, then create a commit before starting the next phase.
+- Skip phase-by-phase commits only for trivial single-change tasks, read-only work, or when the user explicitly asks for one final commit.
 
 ## Secrets and .env Safety
 
@@ -15,13 +18,15 @@ Use this file to capture my personal development workflow preferences.
 
 ## Code Changes
 
+- Treat phased implementation as the default for multi-step work.
 - Complete work in phases. Break larger tasks into logical, incremental steps.
-- After completing each phase/step, commit the changes before moving on to the next step. Use the `committer` subagent for staging and creating commits.
+- After completing each phase/step, validate the change, then commit it before moving on to the next step. Use the `committer` subagent for staging and creating commits.
 - Additional commit intent triggers include requests like "commit this", "save changes", "checkpoint", or "WIP commit".
 
 ## Testing and Validation
 
-- Add rules here.
+- Prefer the smallest relevant validation for the current phase before committing.
+- If a full test suite or build is expensive, run a targeted check first and note any broader validation that still remains.
 
 ## Git Workflow
 
