@@ -9,6 +9,7 @@
     ./lazygit.nix
     ./nvim.nix
     ./opencode.nix
+    ./remote.nix
     ./tmux.nix
     ./wezterm.nix
     ./zed.nix

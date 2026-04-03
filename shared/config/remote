@@ -1,0 +1,250 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: remote [--org ORG] [--sprite NAME] <command> [args]
+
+Commands:
+  create           Create the Sprite and configure the repo environment
+  rebuild          Re-sync HEAD and re-apply the remote home-manager config
+  exec -- CMD...   Run a command from the remote repo directory
+  console          Open an interactive shell in the remote repo directory
+  proxy ...        Forward ports with sprite proxy
+  doctor           Show remote environment status
+  destroy ...      Destroy the Sprite
+EOF
+}
+
+die() {
+  printf 'remote: %s\n' "$*" >&2
+  exit 1
+}
+
+warn() {
+  printf 'remote: %s\n' "$*" >&2
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || die "missing required command: $1"
+}
+
+sanitize_name() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9-' '-'
+}
+
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || die "must be run from a git repository"
+repo_name=$(basename "$repo_root")
+repo_slug=$(sanitize_name "$repo_name")
+remote_repo_dir="/home/sprite/src/$repo_slug"
+sync_marker="$remote_repo_dir/.remote-sync-sha"
+
+sprite_name="${REMOTE_SPRITE_NAME:-$repo_slug}"
+org_name="${REMOTE_SPRITE_ORG:-}"
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o|--org)
+      [ "$#" -ge 2 ] || die "missing value for $1"
+      org_name="$2"
+      shift 2
+      ;;
+    -s|--sprite)
+      [ "$#" -ge 2 ] || die "missing value for $1"
+      sprite_name="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+[ "$#" -gt 0 ] || {
+  usage
+  exit 1
+}
+
+subcommand="$1"
+shift
+
+sprite_scope_args=(-s "$sprite_name")
+sprite_org_args=()
+if [ -n "$org_name" ]; then
+  sprite_scope_args=(-o "$org_name" "${sprite_scope_args[@]}")
+  sprite_org_args=(-o "$org_name")
+fi
+
+require_command git
+require_command sprite
+require_command tar
+require_command mktemp
+
+sprite_exists() {
+  local output
+
+  output=$(sprite api "${sprite_org_args[@]}" /sprites 2>/dev/null || true)
+  printf '%s' "$output" | grep -Eq '"name"[[:space:]]*:[[:space:]]*"'"$sprite_name"'"'
+}
+
+require_sprite() {
+  sprite_exists || die "remote environment not created; run 'remote create' first"
+}
+
+repo_head() {
+  git -C "$repo_root" rev-parse HEAD
+}
+
+warn_if_dirty() {
+  if [ -n "$(git -C "$repo_root" status --porcelain)" ]; then
+    warn "working tree is dirty; only committed HEAD will be synced"
+  fi
+}
+
+run_remote_exec() {
+  sprite exec "${sprite_scope_args[@]}" "$@"
+}
+
+sync_repo() {
+  local archive
+  local head_sha
+
+  archive=$(mktemp -t remote-repo.XXXXXX.tar.gz)
+  head_sha=$(repo_head)
+
+  git -C "$repo_root" archive --format=tar.gz --output "$archive" HEAD
+  run_remote_exec --file "$archive:/tmp/$repo_slug.tar.gz" -- bash -lc '
+    set -euo pipefail
+    repo_dir="$1"
+    archive_path="$2"
+    head_sha="$3"
+    parent_dir=$(dirname "$repo_dir")
+    temp_dir=$(mktemp -d)
+    trap "rm -rf \"$temp_dir\" \"$archive_path\"" EXIT
+    mkdir -p "$parent_dir"
+    tar -xzf "$archive_path" -C "$temp_dir"
+    rm -rf "$repo_dir"
+    mv "$temp_dir" "$repo_dir"
+    printf "%s\n" "$head_sha" > "$repo_dir/.remote-sync-sha"
+  ' _ "$remote_repo_dir" "/tmp/$repo_slug.tar.gz" "$head_sha"
+  rm -f "$archive"
+}
+
+apply_home() {
+  run_remote_exec -- bash -lc '
+    set -euo pipefail
+    repo_dir="$1"
+    export PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+    export NIX_CONFIG="experimental-features = nix-command flakes"
+
+    if ! command -v nix >/dev/null 2>&1; then
+      curl -fsSL https://nixos.org/nix/install -o /tmp/nix-install.sh
+      sh /tmp/nix-install.sh --no-daemon
+      rm -f /tmp/nix-install.sh
+      export PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+    fi
+
+    if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+      . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+    fi
+
+    REPO_DIR="$repo_dir" nix run home-manager -- switch --flake "$repo_dir#sprite" --impure
+  ' _ "$remote_repo_dir"
+}
+
+verify_remote() {
+  run_remote_exec -- bash -lc '
+    set -euo pipefail
+    repo_dir="$1"
+    test -f "$repo_dir/flake.nix"
+    test -f "$repo_dir/.remote-sync-sha"
+    test -x "$HOME/.local/bin/remote"
+    test -e "$HOME/.config/opencode"
+  ' _ "$remote_repo_dir"
+}
+
+run_rebuild() {
+  warn_if_dirty
+  sync_repo
+  apply_home
+  verify_remote
+}
+
+show_doctor() {
+  printf 'repo: %s\n' "$repo_root"
+  printf 'sprite: %s\n' "$sprite_name"
+  if [ -n "$org_name" ]; then
+    printf 'org: %s\n' "$org_name"
+  fi
+
+  if ! sprite_exists; then
+    printf 'status: missing\n'
+    exit 0
+  fi
+
+  printf 'status: created\n'
+  printf 'remote_repo_dir: %s\n' "$remote_repo_dir"
+
+  if sha=$(run_remote_exec -- bash -lc 'set -euo pipefail; marker="$1"; if [ -f "$marker" ]; then cat "$marker"; fi' _ "$sync_marker" 2>/dev/null); then
+    if [ -n "$sha" ]; then
+      printf 'synced_sha: %s\n' "$sha"
+    fi
+  fi
+
+  if run_remote_exec -- bash -lc 'test -x "$HOME/.local/bin/remote" && test -e "$HOME/.config/opencode"' >/dev/null 2>&1; then
+    printf 'config: applied\n'
+  else
+    printf 'config: unknown\n'
+  fi
+}
+
+case "$subcommand" in
+  create)
+    sprite_exists && die "remote environment already exists; use 'remote rebuild' instead"
+    sprite create "${sprite_org_args[@]}" --skip-console "$sprite_name"
+    run_rebuild
+    printf 'remote: created %s at %s\n' "$sprite_name" "$(repo_head)"
+    ;;
+  rebuild)
+    require_sprite
+    run_rebuild
+    printf 'remote: rebuilt %s at %s\n' "$sprite_name" "$(repo_head)"
+    ;;
+  exec)
+    require_sprite
+    [ "$#" -gt 0 ] || die "missing command for exec"
+    if [ "$1" = "--" ]; then
+      shift
+    fi
+    [ "$#" -gt 0 ] || die "missing command for exec"
+    run_remote_exec --dir "$remote_repo_dir" "$@"
+    ;;
+  console)
+    require_sprite
+    run_remote_exec --tty -- bash -lc 'set -euo pipefail; cd "$1"; if command -v fish >/dev/null 2>&1; then exec fish; fi; exec bash' _ "$remote_repo_dir"
+    ;;
+  proxy)
+    require_sprite
+    [ "$#" -gt 0 ] || die "missing ports for proxy"
+    sprite proxy "${sprite_scope_args[@]}" "$@"
+    ;;
+  doctor)
+    show_doctor
+    ;;
+  destroy)
+    require_sprite
+    sprite destroy "${sprite_scope_args[@]}" "$@"
+    ;;
+  *)
+    usage
+    die "unknown command: $subcommand"
+    ;;
+esac
