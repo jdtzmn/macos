@@ -144,6 +144,9 @@ apply_home() {
     repo_dir="$1"
     export PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
     export NIX_CONFIG="experimental-features = nix-command flakes"
+    export USER="${USER:-sprite}"
+    export LOGNAME="${LOGNAME:-$USER}"
+    export SHELL="${SHELL:-/usr/bin/bash}"
 
     if ! command -v nix >/dev/null 2>&1; then
       curl -fsSL https://nixos.org/nix/install -o /tmp/nix-install.sh
