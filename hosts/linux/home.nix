@@ -1,4 +1,9 @@
-{ repoDir ? null, ... }:
+{
+  repoDir ? null,
+  username ? "jacob",
+  homeDirectory ? "/home/jacob",
+  ...
+}:
 {
     imports = [
         ../../shared/index.nix
@@ -6,8 +11,7 @@
 
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
     home = {
-        username = "jacob";
-        homeDirectory = "/home/jacob";
+        inherit username homeDirectory;
         stateVersion = "25.11";
     };
 

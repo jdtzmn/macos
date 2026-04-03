@@ -45,6 +45,20 @@
             system = "x86_64-linux";
             overlays = [ sprite-cli.overlays.default ];
         };
+        mkLinuxHome = { username, homeDirectory }: home-manager.lib.homeManagerConfiguration {
+            pkgs = linuxPkgs;
+            modules = [
+                ({ ... }: {
+                    home = {
+                        inherit username homeDirectory;
+                    };
+                })
+                ./hosts/linux/home.nix
+            ];
+            extraSpecialArgs = {
+                inherit repoDir username homeDirectory;
+            };
+        };
     in {
         # macOS system configuration (run from admin account)
         darwinConfigurations.macbook = mkDarwinSystem { };
@@ -53,14 +67,14 @@
         darwinConfigurations.macbook-admin = mkDarwinSystem { separateAdminAccount = true; };
 
         # Linux home-manager standalone configuration
-        homeConfigurations.linux = home-manager.lib.homeManagerConfiguration {
-            pkgs = linuxPkgs;
-            modules = [
-                ./hosts/linux/home.nix
-            ];
-            extraSpecialArgs = {
-                inherit repoDir;
-            };
+        homeConfigurations.linux = mkLinuxHome {
+            username = "jacob";
+            homeDirectory = "/home/jacob";
+        };
+
+        homeConfigurations.sprite = mkLinuxHome {
+            username = "sprite";
+            homeDirectory = "/home/sprite";
         };
     };
 }

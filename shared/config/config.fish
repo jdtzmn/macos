@@ -12,8 +12,10 @@ set -gx RAILWAY_NO_TELEMETRY 1
 fish_add_path -g "$HOME/.local/bin"
 
 # Port shell hook
-port shell-hook fish | source
-port completion fish | source
+if command -q port
+    port shell-hook fish | source
+    port completion fish | source
+end
 
 set -l repo_env "$HOME/Documents/GitHub/macos/.env"
 if test -f "$repo_env"
