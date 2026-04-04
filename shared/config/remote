@@ -249,7 +249,6 @@ ensure_remote_ssh() {
     fi
 
     sudo mkdir -p /run/sshd
-    sudo sh -c "if grep -Eq '^[#[:space:]]*AllowAgentForwarding' /etc/ssh/sshd_config; then sed -i 's/^[#[:space:]]*AllowAgentForwarding.*/AllowAgentForwarding yes/' /etc/ssh/sshd_config; else printf '\nAllowAgentForwarding yes\n' >> /etc/ssh/sshd_config; fi"
     sudo sshd -t
     if command -v systemctl >/dev/null 2>&1; then
       sudo systemctl enable --now ssh >/dev/null 2>&1 || sudo systemctl enable --now sshd >/dev/null 2>&1 || sudo /usr/sbin/sshd
