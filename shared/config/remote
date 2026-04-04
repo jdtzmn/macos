@@ -10,6 +10,7 @@ Commands:
   rebuild          Re-sync HEAD and re-apply the remote home-manager config
   exec -- CMD...   Run a command from the remote repo directory
   console          Open an interactive shell in the remote repo directory
+  ssh              Open an SSH session through sprite proxy with agent forwarding
   proxy ...        Forward ports with sprite proxy
   doctor           Show remote environment status
   destroy ...      Destroy the Sprite
@@ -23,6 +24,10 @@ die() {
 
 warn() {
   printf 'remote: %s\n' "$*" >&2
+}
+
+log() {
+  printf 'remote: %s\n' "$*"
 }
 
 require_command() {
@@ -75,6 +80,7 @@ done
 
 subcommand="$1"
 shift
+ssh_pubkey_path=""
 
 sprite_scope_args=(-s "$sprite_name")
 sprite_org_args=()
@@ -87,6 +93,9 @@ require_command git
 require_command sprite
 require_command tar
 require_command mktemp
+require_command ssh
+require_command lsof
+require_command nc
 
 sprite_exists() {
   local output
@@ -181,6 +190,124 @@ run_rebuild() {
   verify_remote
 }
 
+resolve_pubkey() {
+  local candidate
+
+  if [ -n "${ssh_pubkey_path:-}" ]; then
+    [ -f "$ssh_pubkey_path" ] || die "public key not found: $ssh_pubkey_path"
+    printf '%s\n' "$ssh_pubkey_path"
+    return
+  fi
+
+  for candidate in \
+    "$HOME/.ssh/id_ed25519.pub" \
+    "$HOME/.ssh/id_ecdsa.pub" \
+    "$HOME/.ssh/id_rsa.pub"
+  do
+    if [ -f "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return
+    fi
+  done
+
+  die "no public key found; pass --pubkey or create ~/.ssh/id_ed25519.pub"
+}
+
+find_free_ssh_port() {
+  local port
+
+  port=2201
+  while lsof -nP -iTCP:"$port" >/dev/null 2>&1; do
+    port=$((port + 1))
+  done
+
+  printf '%s\n' "$port"
+}
+
+ensure_remote_ssh() {
+  local pubkey_file
+  local pubkey_value
+
+  pubkey_file=$(resolve_pubkey)
+  pubkey_value=$(<"$pubkey_file")
+
+  log "preparing ssh access with $(basename "$pubkey_file")"
+  run_remote_exec --env "PUBKEY=$pubkey_value" -- bash -lc '
+    set -euo pipefail
+
+    if ! command -v sshd >/dev/null 2>&1; then
+      sudo apt-get update
+      sudo apt-get install -y openssh-server
+    fi
+
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+    touch "$HOME/.ssh/authorized_keys"
+    chmod 600 "$HOME/.ssh/authorized_keys"
+    if ! grep -Fqx "$PUBKEY" "$HOME/.ssh/authorized_keys"; then
+      printf "%s\n" "$PUBKEY" >> "$HOME/.ssh/authorized_keys"
+    fi
+
+    sudo mkdir -p /run/sshd
+    sudo sh -c "if grep -Eq '^[#[:space:]]*AllowAgentForwarding' /etc/ssh/sshd_config; then sed -i 's/^[#[:space:]]*AllowAgentForwarding.*/AllowAgentForwarding yes/' /etc/ssh/sshd_config; else printf '\nAllowAgentForwarding yes\n' >> /etc/ssh/sshd_config; fi"
+    sudo sshd -t
+    if command -v systemctl >/dev/null 2>&1; then
+      sudo systemctl enable --now ssh >/dev/null 2>&1 || sudo systemctl enable --now sshd >/dev/null 2>&1 || sudo /usr/sbin/sshd
+    else
+      sudo service ssh start >/dev/null 2>&1 || sudo service sshd start >/dev/null 2>&1 || sudo /usr/sbin/sshd
+    fi
+  '
+}
+
+wait_for_proxy() {
+  local port
+  local attempts
+
+  port="$1"
+  attempts=0
+  while [ "$attempts" -lt 50 ]; do
+    if nc -z localhost "$port" >/dev/null 2>&1; then
+      return 0
+    fi
+    attempts=$((attempts + 1))
+    sleep 0.2
+  done
+
+  return 1
+}
+
+run_ssh() {
+  local local_port
+  local proxy_log
+  local proxy_pid
+
+  ensure_remote_ssh
+  local_port=$(find_free_ssh_port)
+  proxy_log=$(mktemp -t remote-ssh-proxy.XXXXXX.log)
+
+  cleanup_proxy() {
+    if [ -n "${proxy_pid:-}" ] && kill -0 "$proxy_pid" >/dev/null 2>&1; then
+      kill "$proxy_pid" >/dev/null 2>&1 || true
+      wait "$proxy_pid" >/dev/null 2>&1 || true
+    fi
+    rm -f "$proxy_log"
+  }
+
+  trap cleanup_proxy EXIT INT TERM
+
+  log "starting ssh proxy on localhost:$local_port"
+  sprite proxy "${sprite_scope_args[@]}" "$local_port:22" >"$proxy_log" 2>&1 &
+  proxy_pid=$!
+
+  if ! wait_for_proxy "$local_port"; then
+    cat "$proxy_log" >&2 || true
+    die "ssh proxy did not become ready on localhost:$local_port"
+  fi
+
+  log "connecting to $sprite_name over ssh"
+  ssh -A -o StrictHostKeyChecking=accept-new -p "$local_port" sprite@localhost
+}
+
 show_doctor() {
   printf 'repo: %s\n' "$repo_root"
   printf 'sprite: %s\n' "$sprite_name"
@@ -233,6 +360,22 @@ case "$subcommand" in
   console)
     require_sprite
     run_remote_exec --tty -- bash -lc 'set -euo pipefail; cd "$1"; if command -v fish >/dev/null 2>&1; then exec fish; fi; exec bash' _ "$remote_repo_dir"
+    ;;
+  ssh)
+    require_sprite
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+        --pubkey)
+          [ "$#" -ge 2 ] || die "missing value for --pubkey"
+          ssh_pubkey_path="$2"
+          shift 2
+          ;;
+        *)
+          die "unknown ssh option: $1"
+          ;;
+      esac
+    done
+    run_ssh
     ;;
   proxy)
     require_sprite
