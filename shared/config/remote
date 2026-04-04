@@ -159,7 +159,7 @@ apply_home() {
       . "$HOME/.nix-profile/etc/profile.d/nix.sh"
     fi
 
-    REPO_DIR="$repo_dir" nix run home-manager -- switch --flake "$repo_dir#sprite" --impure
+    REPO_DIR="$repo_dir" nix run home-manager -- switch -b backup --flake "$repo_dir#sprite" --impure
   ' _ "$remote_repo_dir"
 }
 
