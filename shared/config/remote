@@ -6,10 +6,10 @@ usage() {
 Usage: remote [--org ORG] [--sprite NAME] <command> [args]
 
 Commands:
-  create           Create the Sprite and configure the repo environment
-  rebuild          Re-sync HEAD and re-apply the remote home-manager config
-  exec -- CMD...   Run a command from the remote repo directory
-  console          Open an interactive shell in the remote repo directory
+  create           Create the Sprite and configure it from the macos repo
+  rebuild          Update the macos bootstrap repo and re-apply the config
+  exec -- CMD...   Run a command in the Sprite home directory
+  console          Open an interactive shell in the Sprite home directory
   ssh              Open an SSH session through sprite proxy with agent forwarding
   proxy ...        Forward ports with sprite proxy
   doctor           Show remote environment status
@@ -38,13 +38,44 @@ sanitize_name() {
   printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9-' '-'
 }
 
-repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || die "must be run from a git repository"
-repo_name=$(basename "$repo_root")
-repo_slug=$(sanitize_name "$repo_name")
-remote_repo_dir="/home/sprite/src/$repo_slug"
-sync_marker="$remote_repo_dir/.remote-sync-sha"
+canonical_git_url() {
+  case "$1" in
+    git@github.com:*)
+      printf 'https://github.com/%s\n' "${1#git@github.com:}"
+      ;;
+    ssh://git@github.com/*)
+      printf 'https://github.com/%s\n' "${1#ssh://git@github.com/}"
+      ;;
+    *)
+      printf '%s\n' "$1"
+      ;;
+  esac
+}
 
-sprite_name="${REMOTE_SPRITE_NAME:-$repo_slug}"
+script_path="${BASH_SOURCE[0]}"
+while [ -L "$script_path" ]; do
+  script_dir=$(cd -P "$(dirname "$script_path")" && pwd)
+  script_path=$(readlink "$script_path")
+  case "$script_path" in
+    /*) ;;
+    *) script_path="$script_dir/$script_path" ;;
+  esac
+done
+
+script_dir=$(cd -P "$(dirname "$script_path")" && pwd)
+bootstrap_local_repo_root=$(cd "$script_dir/../.." && pwd)
+bootstrap_repo_url=$(git -C "$bootstrap_local_repo_root" remote get-url origin 2>/dev/null) || die "bootstrap macos repo must have an origin remote"
+bootstrap_repo_url=$(canonical_git_url "$bootstrap_repo_url")
+bootstrap_repo_dir="/home/sprite/.local/share/remote/macos"
+remote_home_dir="/home/sprite"
+
+workload_repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || die "must be run from a git repository"
+workload_repo_name=$(basename "$workload_repo_root")
+workload_repo_slug=$(sanitize_name "$workload_repo_name")
+workload_identity=$(git -C "$workload_repo_root" remote get-url origin 2>/dev/null || printf '%s' "$workload_repo_root")
+workload_hash=$(printf '%s' "$workload_identity" | git hash-object --stdin | cut -c1-6)
+
+sprite_name="${REMOTE_SPRITE_NAME:-}"
 org_name="${REMOTE_SPRITE_ORG:-}"
 
 while [ "$#" -gt 0 ]; do
@@ -82,6 +113,10 @@ subcommand="$1"
 shift
 ssh_pubkey_path=""
 
+if [ -z "$sprite_name" ]; then
+  sprite_name="${workload_repo_slug}-${workload_hash}"
+fi
+
 sprite_scope_args=(-s "$sprite_name")
 sprite_org_args=()
 if [ -n "$org_name" ]; then
@@ -90,8 +125,8 @@ if [ -n "$org_name" ]; then
 fi
 
 require_command git
+require_command readlink
 require_command sprite
-require_command tar
 require_command mktemp
 require_command ssh
 require_command lsof
@@ -108,46 +143,27 @@ require_sprite() {
   sprite_exists || die "remote environment not created; run 'remote create' first"
 }
 
-repo_head() {
-  git -C "$repo_root" rev-parse HEAD
-}
-
-warn_if_dirty() {
-  if [ -n "$(git -C "$repo_root" status --porcelain)" ]; then
-    warn "working tree is dirty; only committed HEAD will be synced"
-  fi
-}
-
 run_remote_exec() {
   sprite exec "${sprite_scope_args[@]}" "$@"
 }
 
-sync_repo() {
-  local archive
-  local head_sha
-
-  archive=$(mktemp -t remote-repo.XXXXXX.tar.gz)
-  head_sha=$(repo_head)
-
-  git -C "$repo_root" archive --format=tar.gz --output "$archive" HEAD
-  run_remote_exec --file "$archive:/tmp/$repo_slug.tar.gz" -- bash -lc '
+sync_bootstrap_repo() {
+  log "syncing bootstrap repo from origin/main"
+  run_remote_exec --env "BOOTSTRAP_REPO_URL=$bootstrap_repo_url" -- bash -lc '
     set -euo pipefail
     repo_dir="$1"
-    archive_path="$2"
-    head_sha="$3"
     parent_dir=$(dirname "$repo_dir")
     temp_dir=$(mktemp -d)
-    trap "rm -rf \"$temp_dir\" \"$archive_path\"" EXIT
+    trap "rm -rf \"$temp_dir\"" EXIT
     mkdir -p "$parent_dir"
-    tar -xzf "$archive_path" -C "$temp_dir"
+    git clone --depth 1 --branch main "$BOOTSTRAP_REPO_URL" "$temp_dir/repo"
     rm -rf "$repo_dir"
-    mv "$temp_dir" "$repo_dir"
-    printf "%s\n" "$head_sha" > "$repo_dir/.remote-sync-sha"
-  ' _ "$remote_repo_dir" "/tmp/$repo_slug.tar.gz" "$head_sha"
-  rm -f "$archive"
+    mv "$temp_dir/repo" "$repo_dir"
+  ' _ "$bootstrap_repo_dir"
 }
 
 apply_home() {
+  log "applying sprite home-manager config"
   run_remote_exec -- bash -lc '
     set -euo pipefail
     repo_dir="$1"
@@ -169,25 +185,32 @@ apply_home() {
     fi
 
     REPO_DIR="$repo_dir" nix run home-manager -- switch -b backup --flake "$repo_dir#sprite" --impure
-  ' _ "$remote_repo_dir"
+  ' _ "$bootstrap_repo_dir"
 }
 
 verify_remote() {
+  log "verifying remote bootstrap state"
   run_remote_exec -- bash -lc '
     set -euo pipefail
     repo_dir="$1"
     test -f "$repo_dir/flake.nix"
-    test -f "$repo_dir/.remote-sync-sha"
     test -x "$HOME/.local/bin/remote"
     test -e "$HOME/.config/opencode"
-  ' _ "$remote_repo_dir"
+  ' _ "$bootstrap_repo_dir"
 }
 
 run_rebuild() {
-  warn_if_dirty
-  sync_repo
+  sync_bootstrap_repo
   apply_home
   verify_remote
+}
+
+run_create() {
+  sprite_exists && die "remote environment already exists; use 'remote rebuild' instead"
+  log "creating sprite $sprite_name"
+  sprite create "${sprite_org_args[@]}" --skip-console "$sprite_name"
+  run_rebuild
+  printf 'remote: created %s for %s\n' "$sprite_name" "$workload_repo_name"
 }
 
 resolve_pubkey() {
@@ -308,7 +331,11 @@ run_ssh() {
 }
 
 show_doctor() {
-  printf 'repo: %s\n' "$repo_root"
+  printf 'workload_repo: %s\n' "$workload_repo_root"
+  printf 'workload_identity: %s\n' "$workload_identity"
+  printf 'bootstrap_repo: %s\n' "$bootstrap_local_repo_root"
+  printf 'bootstrap_url: %s\n' "$bootstrap_repo_url"
+  printf 'bootstrap_remote: %s\n' "$bootstrap_repo_dir"
   printf 'sprite: %s\n' "$sprite_name"
   if [ -n "$org_name" ]; then
     printf 'org: %s\n' "$org_name"
@@ -320,11 +347,11 @@ show_doctor() {
   fi
 
   printf 'status: created\n'
-  printf 'remote_repo_dir: %s\n' "$remote_repo_dir"
+  printf 'home: %s\n' "$remote_home_dir"
 
-  if sha=$(run_remote_exec -- bash -lc 'set -euo pipefail; marker="$1"; if [ -f "$marker" ]; then cat "$marker"; fi' _ "$sync_marker" 2>/dev/null); then
+  if sha=$(run_remote_exec -- bash -lc 'set -euo pipefail; repo_dir="$1"; if [ -d "$repo_dir/.git" ]; then git -C "$repo_dir" rev-parse HEAD; fi' _ "$bootstrap_repo_dir" 2>/dev/null); then
     if [ -n "$sha" ]; then
-      printf 'synced_sha: %s\n' "$sha"
+      printf 'bootstrap_sha: %s\n' "$sha"
     fi
   fi
 
@@ -337,15 +364,12 @@ show_doctor() {
 
 case "$subcommand" in
   create)
-    sprite_exists && die "remote environment already exists; use 'remote rebuild' instead"
-    sprite create "${sprite_org_args[@]}" --skip-console "$sprite_name"
-    run_rebuild
-    printf 'remote: created %s at %s\n' "$sprite_name" "$(repo_head)"
+    run_create
     ;;
   rebuild)
     require_sprite
     run_rebuild
-    printf 'remote: rebuilt %s at %s\n' "$sprite_name" "$(repo_head)"
+    printf 'remote: rebuilt %s from macos origin/main\n' "$sprite_name"
     ;;
   exec)
     require_sprite
@@ -354,14 +378,13 @@ case "$subcommand" in
       shift
     fi
     [ "$#" -gt 0 ] || die "missing command for exec"
-    run_remote_exec --dir "$remote_repo_dir" "$@"
+    run_remote_exec --dir "$remote_home_dir" "$@"
     ;;
   console)
     require_sprite
-    run_remote_exec --tty -- bash -lc 'set -euo pipefail; cd "$1"; if command -v fish >/dev/null 2>&1; then exec fish; fi; exec bash' _ "$remote_repo_dir"
+    run_remote_exec --tty -- bash -lc 'set -euo pipefail; cd "$1"; if command -v fish >/dev/null 2>&1; then exec fish; fi; exec bash' _ "$remote_home_dir"
     ;;
   ssh)
-    require_sprite
     while [ "$#" -gt 0 ]; do
       case "$1" in
         --pubkey)
@@ -374,6 +397,10 @@ case "$subcommand" in
           ;;
       esac
     done
+    if ! sprite_exists; then
+      log "sprite missing, creating it first"
+      run_create
+    fi
     run_ssh
     ;;
   proxy)
