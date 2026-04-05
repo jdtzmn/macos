@@ -12,6 +12,13 @@
       "enabled": true,
       "timeout": 30000,
     },
+    // Switch back to the npm package once a release includes the latest fixes:
+    // https://github.com/waylaidwanderer/background-process-mcp/issues/1
+    "backgroundProcess": {
+      "type": "local",
+      "command": ["bunx", "--package", "github:waylaidwanderer/background-process-mcp#v1.2.13", "bgpm"],
+      "enabled": true,
+    },
     "github": {
       "type": "remote",
       "url": "https://api.githubcopilot.com/mcp/readonly",
