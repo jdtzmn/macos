@@ -8,7 +8,7 @@
     },
     "peekaboo": {
       "type": "local",
-      "command": ["npx", "-y", "@steipete/peekaboo", "mcp", "serve", "--transport", "stdio"],
+      "command": ["bunx", "-y", "@steipete/peekaboo", "mcp", "serve", "--transport", "stdio"],
       "enabled": true,
       "timeout": 30000,
     },
