@@ -82,6 +82,7 @@
   home-manager.useUserPackages = true;
   home-manager.extraSpecialArgs = {
     inherit repoDir;
+    enableSprite = true;
   };
   home-manager.users.jacob = {
     imports = [ ./home.nix ];

@@ -45,7 +45,7 @@
             system = "x86_64-linux";
             overlays = [ sprite-cli.overlays.default ];
         };
-        mkLinuxHome = { username, homeDirectory }: home-manager.lib.homeManagerConfiguration {
+        mkLinuxHome = { username, homeDirectory, enableSprite ? false }: home-manager.lib.homeManagerConfiguration {
             pkgs = linuxPkgs;
             modules = [
                 ({ ... }: {
@@ -56,7 +56,7 @@
                 ./hosts/linux/home.nix
             ];
             extraSpecialArgs = {
-                inherit repoDir username homeDirectory;
+                inherit repoDir username homeDirectory enableSprite;
             };
         };
     in {
@@ -75,6 +75,7 @@
         homeConfigurations.sprite = mkLinuxHome {
             username = "sprite";
             homeDirectory = "/home/sprite";
+            enableSprite = true;
         };
     };
 }
