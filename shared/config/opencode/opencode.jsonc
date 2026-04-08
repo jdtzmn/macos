@@ -41,7 +41,7 @@
       "enabled": true,
     },
   },
-  "plugin": ["@0xsero/open-queue"],
+  "plugin": ["@0xsero/open-queue", "github:jdtzmn/premind"],
   "instructions": [
     "~/.config/opencode/me.md",
     "https://raw.githubusercontent.com/jdtzmn/port/refs/heads/main/ONBOARD.md",
