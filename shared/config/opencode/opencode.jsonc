@@ -65,6 +65,8 @@
       "bunx prettier --write *": "allow",
       "bunx vitest": "allow",
       "bunx vitest *": "allow",
+      "uv run pytest": "allow",
+      "uv run pytest *": "allow",
       "make": "allow",
       "make *": "allow",
       "cd *": "allow",
