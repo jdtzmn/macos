@@ -67,6 +67,8 @@
       "bunx vitest *": "allow",
       "uv run pytest": "allow",
       "uv run pytest *": "allow",
+      "uv run ruff": "allow",
+      "uv run ruff *": "allow",
       "make": "allow",
       "make *": "allow",
       "cd *": "allow",
