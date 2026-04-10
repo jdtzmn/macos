@@ -12,11 +12,9 @@
       "enabled": true,
       "timeout": 30000,
     },
-    // Switch back to the npm package once a release includes the latest fixes:
-    // https://github.com/waylaidwanderer/background-process-mcp/issues/1
     "backgroundProcess": {
       "type": "local",
-      "command": ["bunx", "--package", "github:waylaidwanderer/background-process-mcp#v1.2.13", "bgpm"],
+      "command": ["bunx", "--package", "github:jdtzmn/background-process-mcp#main", "bgpm"],
       "enabled": true,
     },
     "github": {
