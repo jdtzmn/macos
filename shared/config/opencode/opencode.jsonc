@@ -39,7 +39,11 @@
       "enabled": true,
     },
   },
-  "plugin": ["@0xsero/open-queue", "github:jdtzmn/premind"],
+  "plugin": [
+    "@0xsero/open-queue",
+    "premind@git+https://github.com/jdtzmn/premind.git",
+    "superpowers@git+https://github.com/obra/superpowers.git",
+  ],
   "instructions": [
     "~/.config/opencode/me.md",
     "https://raw.githubusercontent.com/jdtzmn/port/refs/heads/main/ONBOARD.md",
