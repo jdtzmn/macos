@@ -140,6 +140,7 @@
       # Productivity
       "bettertouchtool"
       "alfred"
+      "raycast"
       "alt-tab"
       "homerow"
       "betterdisplay"
