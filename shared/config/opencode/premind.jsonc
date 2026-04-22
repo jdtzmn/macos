@@ -1,0 +1,10 @@
+// premind configuration
+//
+// This file lives outside opencode.jsonc so opencode's schema validator does
+// not reject it. Any field can also be overridden via environment variables
+// of the form PREMIND_<FIELD_IN_UPPER_SNAKE>.
+
+{
+  // Wait 10 seconds of idle before delivering PR updates.
+  "idleDeliveryThresholdMs": 10000
+}
