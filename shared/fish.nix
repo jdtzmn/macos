@@ -33,6 +33,7 @@
 
       # Programs
       "oc" = "opencode";
+      "occ" = "opencode --continue";
       "n" = "nvim";
       "t" = "tmux";
       "y" = "yazi";
