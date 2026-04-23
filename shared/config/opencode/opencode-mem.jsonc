@@ -1,0 +1,19 @@
+// opencode-mem configuration
+// See https://github.com/tickernelz/opencode-mem for full docs.
+{
+  "opencodeProvider": "anthropic",
+  "opencodeModel": "claude-sonnet-4-5-20250929",
+
+  "autoCaptureEnabled": true,
+  "autoCaptureLanguage": "auto",
+
+  "webServerEnabled": true,
+  "webServerPort": 4747,
+
+  "chatMessage": {
+    "enabled": true,
+    "maxMemories": 3,
+    "excludeCurrentSession": true,
+    "injectOn": "first",
+  },
+}
