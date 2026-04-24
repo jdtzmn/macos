@@ -63,6 +63,14 @@ if not contains $_asdf_shims $PATH
 end
 set --erase _asdf_shims
 
+# rustup (Homebrew keg-only): prepend its shim dir so cargo/rustc/rustfmt
+# resolve to rustup's proxies, which delegate to the active toolchain.
+set _rustup_bin /opt/homebrew/opt/rustup/bin
+if test -d $_rustup_bin; and not contains $_rustup_bin $PATH
+    set -gx --prepend PATH $_rustup_bin
+end
+set --erase _rustup_bin
+
 # GitHub alias function
 function github
     if test -z "$argv"
