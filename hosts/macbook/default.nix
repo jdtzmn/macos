@@ -125,6 +125,7 @@
       "temporal"
       "uv"
       "bun"
+      "rustup"
       "dagger/tap/dagger"
       "beads"
  
