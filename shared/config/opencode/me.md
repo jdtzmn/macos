@@ -33,3 +33,23 @@ Use this file to capture my personal development workflow preferences.
 - The primary agent may run normal git operations directly, including branch switch/create/delete, merge, rebase, cherry-pick, fetch, pull, and push (when requested).
 - Do not delegate routine branch-management operations to `committer`.
 - The `committer` subagent is for commit packaging only: staging files and creating commits.
+
+## GitHub Communication
+
+- When posting any text to GitHub on my behalf, append the following footer on its own line at the end of the message body:
+
+      _(Drafted by Jacob's coding agent on his behalf)_
+
+- Apply to all GitHub text output, including but not limited to:
+  - PR descriptions (`gh pr create --body`, `gh pr edit --body`)
+  - PR comments (`gh pr comment`)
+  - Issue descriptions and comments (`gh issue create`, `gh issue comment`)
+  - PR reviews and review replies (`gh pr review`, review comment threads)
+  - Equivalent GitHub MCP tools (`github_*` issue/PR comment and review actions)
+- Do NOT add the footer to:
+  - Git commit messages or commit trailers
+  - PR or issue titles
+  - Code, code suggestions, or file contents inside diffs
+  - Messages that already contain an equivalent attribution
+- If I explicitly ask to omit the footer for a specific message, omit it.
+- Place the footer as the final line, separated from the preceding content by one blank line.
