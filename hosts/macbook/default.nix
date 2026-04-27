@@ -126,6 +126,7 @@
       "uv"
       "bun"
       "rustup"
+      "wasm-pack"
       "dagger/tap/dagger"
       "beads"
  
