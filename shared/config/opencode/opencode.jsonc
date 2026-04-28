@@ -6,12 +6,6 @@
       "command": ["bunx", "-y", "@playwright/mcp@latest"],
       "enabled": true,
     },
-    "peekaboo": {
-      "type": "local",
-      "command": ["bunx", "-y", "@steipete/peekaboo", "mcp", "serve", "--transport", "stdio"],
-      "enabled": true,
-      "timeout": 30000,
-    },
     "backgroundProcess": {
       "type": "local",
       "command": ["bunx", "--package", "github:jdtzmn/background-process-mcp#main", "bgpm"],
@@ -152,7 +146,6 @@
       "*.env.example": "allow",
       "*.env.template": "allow",
     },
-    "peekaboo_*": "ask",
   },
   "agent": {
     "explore": {
