@@ -48,6 +48,7 @@
     "external_directory": {
       "*": "ask",
       "/tmp/**": "allow",
+      "~/Library/Application Support/premind/event-details/**": "allow",
     },
     "bash": {
       "*": "ask",
