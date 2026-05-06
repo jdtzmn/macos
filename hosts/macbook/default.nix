@@ -75,6 +75,31 @@
   };
 
   ##############################
+  # Scheduled maintenance
+  ##############################
+
+  # Daily Docker prune. Runs at 03:00 local time. launchd runs missed jobs
+  # on next wake when the machine was asleep at the scheduled time.
+  launchd.user.agents.docker-prune = {
+    serviceConfig = {
+      Label = "com.jacob.docker-prune";
+      ProgramArguments = [
+        "/bin/sh"
+        "-c"
+        # PATH includes Homebrew (OrbStack) and the user's nix profile so
+        # `docker` resolves regardless of which provider is active.
+        "PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.nix-profile/bin:$PATH docker system prune -af --filter 'until=168h' --volumes"
+      ];
+      StartCalendarInterval = [
+        { Hour = 3; Minute = 0; }
+      ];
+      RunAtLoad = false;
+      StandardOutPath = "/Users/jacob/Library/Logs/docker-prune.log";
+      StandardErrorPath = "/Users/jacob/Library/Logs/docker-prune.log";
+    };
+  };
+
+  ##############################
   # Home Manager
   ##############################
 
