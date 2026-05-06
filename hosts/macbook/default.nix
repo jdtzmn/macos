@@ -88,7 +88,10 @@
         "-c"
         # PATH includes Homebrew (OrbStack) and the user's nix profile so
         # `docker` resolves regardless of which provider is active.
-        "PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.nix-profile/bin:$PATH docker system prune -af --filter 'until=168h' --volumes"
+        # Split into two steps: docker rejects `--volumes` together with the
+        # `until` filter, so we time-filter the system prune and then prune
+        # dangling volumes separately.
+        "PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.nix-profile/bin:$PATH docker system prune -af --filter 'until=168h' && PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.nix-profile/bin:$PATH docker volume prune -af"
       ];
       StartCalendarInterval = [
         { Hour = 3; Minute = 0; }
