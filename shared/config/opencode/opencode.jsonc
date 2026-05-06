@@ -37,7 +37,10 @@
     "@0xsero/open-queue",
     "premind@git+https://github.com/jdtzmn/premind.git",
     "superpowers@git+https://github.com/obra/superpowers.git",
-    "opencode-delegated-access@git+https://github.com/jdtzmn/opencode-delegated-access.git",
+    [
+      "opencode-delegated-access@git+https://github.com/jdtzmn/opencode-delegated-access.git",
+      { "safeCountdownMs": 0 },
+    ],
     "opencode-mem",
   ],
   "instructions": [
