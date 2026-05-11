@@ -2,7 +2,7 @@
 // See https://github.com/tickernelz/opencode-mem for full docs.
 {
   "opencodeProvider": "anthropic",
-  "opencodeModel": "claude-sonnet-4-5-20250929",
+  "opencodeModel": "claude-haiku-4-5-20251001",
 
   "autoCaptureEnabled": true,
   "autoCaptureLanguage": "auto",
