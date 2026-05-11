@@ -1,0 +1,9 @@
+# Ignore worktrees (they're local only)
+trees/
+
+# Generated override file for main repo
+override.yml
+override.user.yml
+
+# Hook logs
+logs/
