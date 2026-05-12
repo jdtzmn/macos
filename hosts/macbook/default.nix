@@ -142,6 +142,7 @@
     caskArgs.appdir =
       if separateAdminAccount then "/Users/jacob/Applications" else "/Applications";
     taps = [
+      "datadog-labs/pack"
       "entireio/tap"
       "oven-sh/bun"
     ];
@@ -157,6 +158,7 @@
       "wasm-pack"
       "dagger/tap/dagger"
       "beads"
+      "datadog-labs/pack/pup"
  
       # CLI File Explorer
       "yazi"

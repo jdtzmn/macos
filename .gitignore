@@ -82,3 +82,6 @@ $RECYCLE.BIN/
 
 # Node
 package-lock.json
+
+# Generated pup skills (installed by home-manager activation script)
+shared/config/opencode/skills/
