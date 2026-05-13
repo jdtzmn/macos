@@ -18,13 +18,6 @@
         };
         model_parameters = [ ];
       };
-      agent_servers = {
-        OpenCode = {
-          command = "opencode";
-          args = [ "acp" ];
-          env = { };
-        };
-      };
       vim_mode = true;
       relative_line_numbers = "enabled";
       telemetry = {
