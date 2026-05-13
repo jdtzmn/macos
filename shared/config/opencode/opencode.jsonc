@@ -42,7 +42,7 @@
       { "safeCountdownMs": 0 },
     ],
     "opencode-mem",
-    "@attamusc/opencode-cmux",
+    "file:///Users/jacob/.config/opencode/plugins/opencode-cmux.js",
   ],
   "instructions": [
     "~/.config/opencode/me.md",
