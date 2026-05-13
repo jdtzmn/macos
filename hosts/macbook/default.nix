@@ -231,4 +231,16 @@
   system.activationScripts.extraActivation.text = ''
     softwareupdate --install-rosetta --agree-to-license
   '';
+
+  ##############################
+  # Nixpkgs overlays
+  ##############################
+
+  nixpkgs.overlays = [
+    (final: prev: {
+      # nix-homebrew 2026-05 expects ruby_4_0, which doesn't exist in nixpkgs 25.11
+      # Alias it to ruby_3_5 as a workaround
+      ruby_4_0 = prev.ruby_3_5;
+    })
+  ];
 }
