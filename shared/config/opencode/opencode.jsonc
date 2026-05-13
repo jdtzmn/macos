@@ -42,6 +42,7 @@
       { "safeCountdownMs": 0 },
     ],
     "opencode-mem",
+    "@attamusc/opencode-cmux",
   ],
   "instructions": [
     "~/.config/opencode/me.md",
