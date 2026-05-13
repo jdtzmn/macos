@@ -143,6 +143,7 @@
       if separateAdminAccount then "/Users/jacob/Applications" else "/Applications";
     taps = [
       "datadog-labs/pack"
+      "entireio/tap"
       "oven-sh/bun"
     ];
     brews = [
@@ -208,6 +209,7 @@
 
       # Work
       "slack"
+      "entireio/tap/entire"
     ] ++ (if !separateAdminAccount then [
       # These casks require sudo during install
       "tailscale-app"
