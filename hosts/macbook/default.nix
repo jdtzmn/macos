@@ -201,6 +201,7 @@
       "1password-cli"
       "tower"
       "orbstack"
+      "cmux"
       "conductor"
       "bruno"
       "dbeaver-community"
