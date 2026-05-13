@@ -176,7 +176,7 @@
       "alt-tab"
       "homerow"
       "betterdisplay"
-      "linear-linear"
+      "linear"
 
       # Design
       "kap"
