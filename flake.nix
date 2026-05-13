@@ -17,6 +17,9 @@
         # Nix-Homebrew
         nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
+        # Nixpkgs unstable (used to source ruby_4_0 for nix-homebrew)
+        nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
         # Sprite CLI
         sprite-cli.url = "github:jamiebrynes7/sprite-cli-nix";
         sprite-cli.inputs.nixpkgs.follows = "nixpkgs";
@@ -24,16 +27,21 @@
 
 
     # Flake outputs
-    outputs = { self, nixpkgs, home-manager, darwin, nix-homebrew, sprite-cli }:
+    outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, darwin, nix-homebrew, sprite-cli }:
     let
         repoDir = builtins.getEnv "REPO_DIR";
+        unstablePkgsDarwin = import nixpkgs-unstable { system = "aarch64-darwin"; };
         mkDarwinSystem = { separateAdminAccount ? false }: darwin.lib.darwinSystem {
             system = "aarch64-darwin";
             modules = [
                 home-manager.darwinModules.home-manager
                 nix-homebrew.darwinModules.nix-homebrew
                 {
-                    nixpkgs.overlays = [ sprite-cli.overlays.default ];
+                    nixpkgs.overlays = [
+                        sprite-cli.overlays.default
+                        # nix-homebrew 2026-05+ requires ruby_4_0, not in nixpkgs 25.11
+                        (final: prev: { ruby_4_0 = unstablePkgsDarwin.ruby_4_0; })
+                    ];
                 }
                 ./hosts/macbook/default.nix
             ];
