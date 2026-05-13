@@ -1,5 +1,6 @@
 {
   imports = [
+    ./cmux.nix
     ./dev-packages.nix
     ./direnv.nix
     ./fish.nix
