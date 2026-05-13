@@ -86,6 +86,13 @@
     "matchTerminalBackground": true
   },
 
+  "shortcuts": {
+    "bindings": {
+      "prevSidebarTab": "cmd+shift+↑",
+      "nextSidebarTab": "cmd+shift+↓"
+    }
+  },
+
   // ── Reference: defaults (commented) ────────────────────────────────
 
   //   "app" : {
