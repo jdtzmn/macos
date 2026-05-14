@@ -46,6 +46,11 @@ Use this file to capture my personal development workflow preferences.
   - Issue descriptions and comments (`gh issue create`, `gh issue comment`)
   - PR reviews and review replies (`gh pr review`, review comment threads)
   - Equivalent GitHub MCP tools (`github_*` issue/PR comment and review actions)
+- When processing PR review comments, reply to each comment/thread that the agent addresses or intentionally declines to address:
+  - If a change is made, briefly state what changed.
+  - If no change is made, briefly explain why.
+- Do not reply to comments that are purely informational, conversational between humans, status-only, praise-only, or unrelated to the agent's work.
+- Avoid generic acknowledgements; only reply when closing the loop on actionable feedback.
 - Do NOT add the footer to:
   - Git commit messages or commit trailers
   - PR or issue titles
