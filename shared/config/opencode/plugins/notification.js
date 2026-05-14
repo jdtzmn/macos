@@ -192,8 +192,9 @@ export const NotificationPlugin = async ({
       return;
     }
 
-    const command = `terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' ${notifierFocusFlags} > /dev/null 2>&1`;
-    await $`sh -c ${command}`;
+    // opencode-delegated-access now handles permission/input attention.
+    // const command = `terminal-notifier -title 'Opencode' -message 'Waiting for user input...' -sound 'Pop' -group 'opencode-input' ${notifierFocusFlags} > /dev/null 2>&1`;
+    // await $`sh -c ${command}`;
   };
 
   const getEventSessionID = (event) => {
