@@ -206,6 +206,7 @@
       "conductor"
       "bruno"
       "dbeaver-community"
+      "session-manager-plugin"
 
       # Work
       "slack"

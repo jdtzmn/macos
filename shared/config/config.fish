@@ -11,6 +11,9 @@ set -gx RAILWAY_NO_TELEMETRY 1
 # Add uv tool binaries to path
 fish_add_path -g "$HOME/.local/bin"
 
+# Add layerone-infrastructure scripts to path
+fish_add_path -g "$HOME/Documents/GitHub/layerone-infrastructure/scripts/od"
+
 # Port shell hook
 if command -q port
     port shell-hook fish | source
