@@ -150,6 +150,7 @@
       # Prefer Homebrew for faster-moving CLI releases that lag in nixpkgs.
       # Programming
       "opencode"
+      "agent-browser"
       "asdf"
       "temporal"
       "uv"
@@ -206,7 +207,6 @@
       "conductor"
       "bruno"
       "dbeaver-community"
-      "session-manager-plugin"
 
       # Work
       "slack"
@@ -217,6 +217,7 @@
       "wezterm@nightly"
       "zoom"
       "nordvpn"
+      "session-manager-plugin"
     ] else []);
   };
 
