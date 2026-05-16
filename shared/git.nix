@@ -19,6 +19,20 @@ in
         s = "status";
       };
 
+      core = {
+        pager = "delta";
+      };
+
+      delta = {
+        navigate = true;
+        "side-by-side" = true;
+        "line-numbers" = true;
+      };
+
+      interactive = {
+        diffFilter = "delta --color-only";
+      };
+
       user = {
         name = gitUserName;
         email = gitUserEmail;

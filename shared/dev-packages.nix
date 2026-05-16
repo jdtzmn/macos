@@ -9,6 +9,7 @@
       gh-dash
       gnumake
       ripgrep
+      delta
       lazygit
       eza
       opentofu
