@@ -1,5 +1,7 @@
 { config, lib, repoDir, ... }:
 {
+  home.file.".agents/skills".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode/skills";
+
   xdg.configFile."opencode".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode";
 
   home.sessionVariables = {
