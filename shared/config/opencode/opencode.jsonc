@@ -43,6 +43,7 @@
     ],
     "opencode-mem",
     "file:///Users/jacob/.config/opencode/plugins/opencode-cmux.js",
+    "./plugins/cmux-session.js",
   ],
   "instructions": [
     "~/.config/opencode/me.md",
