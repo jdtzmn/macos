@@ -151,6 +151,7 @@
       # Programming
       "opencode"
       "agent-browser"
+      "aoe"
       "asdf"
       "temporal"
       "uv"
