@@ -380,8 +380,8 @@ config.status_update_interval = 200
 
 -- Pane navigation with Alt + hjkl
 config.keys = {
-  { key = 'd', mods = 'CMD', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' } },
-  { key = 'd', mods = 'CMD|SHIFT', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+  { key = 'd', mods = 'CMD', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+  { key = 'd', mods = 'CMD|SHIFT', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' } },
   { key = 'h', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Left' },
   { key = 'j', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Down' },
   { key = 'k', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Up' },
