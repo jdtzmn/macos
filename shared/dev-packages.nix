@@ -5,6 +5,7 @@
       docker
       docker-compose
       atlas
+      glow
       gh
       gh-dash
       gnumake
