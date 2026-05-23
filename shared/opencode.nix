@@ -2,6 +2,9 @@
 {
   home.file.".agents/skills".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode/skills";
 
+  home.file.".agent-of-empires/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/agent-of-empires/config.toml";
+
   xdg.configFile."opencode".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode";
 
   home.sessionVariables = {
