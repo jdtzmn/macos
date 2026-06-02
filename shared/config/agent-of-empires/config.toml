@@ -51,8 +51,8 @@ strict_hotkeys = false
 context_lines = 3
 
 [hooks]
-on_launch = ["port ls"]
-on_destroy = ["port rm --force"]
+on_launch = ["port $AOE_SESSION_TITLE"]
+on_destroy = ["port rm --force $AOE_SESSION_TITLE"]
 
 [sound]
 enabled = false
