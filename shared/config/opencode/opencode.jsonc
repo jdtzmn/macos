@@ -42,6 +42,7 @@
       { "safeCountdownMs": 0 },
     ],
     "opencode-mem",
+    "@datadog/opencode-plugin",
     "file:///Users/jacob/.config/opencode/plugins/opencode-cmux.js",
     "./plugins/cmux-session.js",
   ],
