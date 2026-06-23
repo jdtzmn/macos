@@ -15,6 +15,7 @@
       eza
       opentofu
       awscli2
+      kubectl
       # Nix language servers
       nil
       nixd
