@@ -54,23 +54,27 @@ on a low-probability match.
    `title`, `url`.
 3. Session title = `gitBranchName` verbatim (carries the `jacob/` prefix,
    valid git branch name).
-4. Launch with a single command:
+4. Launch with two commands:
 
    ```sh
    aoe add . \
      --title "<gitBranchName>" \
      --worktree "<gitBranchName>" -b \
-     --launch \
      --extra-args "--agent plan --prompt 'Come up with a plan for <ID>'"
+   aoe session start "<gitBranchName>"
    ```
 
    - `--worktree <branch> -b` -> fresh worktree at `./.port/trees/{branch}`
      and new branch off the default base.
-   - `--launch` -> starts immediately.
    - `--extra-args` -> spawned session runs `opencode --agent plan
      --prompt '...'` (plan mode, minimal prompt; spawned agent has Linear MCP
      to fetch details itself).
-5. Report back: session title, worktree path, launch confirmation.
+   - `aoe session start` -> boots the tmux process **without** attaching, so
+     no `not a terminal` error. We deliberately drop `--launch` (it tries to
+     attach the current terminal, which fails from a non-interactive agent).
+     The started session appears in any already-running aoe TUI / dashboard.
+5. Report back: session title, plan-mode + dashboard confirmation, ticket
+   title and URL.
 
 ## Decisions (from brainstorming)
 
@@ -81,8 +85,10 @@ on a low-probability match.
 - Branch: always create new (`-b`) off the default base.
 - Prompt: minimal (`Come up with a plan for <ID>`); spawned agent has Linear
   MCP.
-- Launch flags: `--launch` + `--agent plan`. No `--model`, no group, terminal
-  view (not `--structured-view`).
+- Launch: `aoe add` (no `--launch`) + `aoe session start` so the session boots
+  without attaching the current terminal (avoids `not a terminal`); user
+  already keeps the aoe TUI open. `--agent plan` for plan mode. No `--model`,
+  no group, terminal view (not `--structured-view`).
 
 ## File layout
 

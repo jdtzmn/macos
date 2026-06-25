@@ -67,15 +67,22 @@ Call this `<TITLE>` (it equals `gitBranchName`).
 
 ### 4. Launch the aoe session
 
-Run exactly one bash command. Replace `<TITLE>` and `<ID>` with the real
-values:
+Run two bash commands. Replace `<TITLE>` and `<ID>` with the real values.
+
+First, create the session (note: **no** `--launch`):
 
 ```sh
 aoe add . \
   --title "<TITLE>" \
   --worktree "<TITLE>" -b \
-  --launch \
   --extra-args "--agent plan --prompt 'Come up with a plan for <ID>'"
+```
+
+Then start its tmux process (this does **not** attach your terminal, so it
+never emits a `not a terminal` error):
+
+```sh
+aoe session start "<TITLE>"
 ```
 
 Notes on each flag:
@@ -86,20 +93,27 @@ Notes on each flag:
   `<TITLE>`, off the repository's default base branch. (The repo's aoe config
   places worktrees under `./.port/trees/{branch}` and runs `port <title>` on
   launch; these are complementary — do not add extra worktree handling.)
-- `--launch` — start the session immediately.
 - `--extra-args "--agent plan --prompt 'Come up with a plan for <ID>'"` —
   appended after the `opencode` binary, so the spawned session runs
   `opencode --agent plan --prompt 'Come up with a plan for <ID>'`: plan mode
   with a minimal prompt. The spawned agent has the Linear MCP and can fetch
   full ticket details itself, so the prompt stays minimal.
+- `aoe session start "<TITLE>"` — boots the session's tmux process without
+  attaching. We deliberately avoid `--launch` (which tries to attach the
+  current terminal and fails with `not a terminal` when run from a
+  non-interactive agent). The started session shows up in any already-running
+  aoe TUI / dashboard.
 
 ### 5. Report back
 
 Tell the user, concisely:
 
 - the session title (`<TITLE>`),
-- that it launched in plan mode,
+- that it started in plan mode and is now visible in the aoe dashboard,
 - the ticket title and URL for reference.
+
+Optionally mention that they can attach from a terminal with
+`aoe session attach "<TITLE>"` if they want to jump straight in.
 
 ## Guardrails
 
