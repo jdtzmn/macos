@@ -65,17 +65,37 @@ produces the desired format and a valid git branch name.
 
 Call this `<TITLE>` (it equals `gitBranchName`).
 
+### 3b. Derive the group
+
+Sessions are organized under a `<repo>/in-progress` group, where `<repo>` is
+the current repository's name (the git toplevel basename):
+
+```sh
+REPO="$(basename "$(git rev-parse --show-toplevel)")"
+```
+
+The group is `"$REPO/in-progress"`. Call this `<GROUP>`.
+
 ### 4. Launch the aoe session
 
-Run two bash commands. Replace `<TITLE>` and `<ID>` with the real values.
+Run two bash commands. Replace `<TITLE>`, `<GROUP>`, and `<ID>` with the real
+values.
 
 First, create the session (note: **no** `--launch`):
 
 ```sh
 aoe add . \
   --title "<TITLE>" \
+  --group "<GROUP>" \
   --worktree "<TITLE>" -b \
   --extra-args "--agent plan --prompt 'Come up with a plan for <ID>'"
+```
+
+If `aoe add` fails because the nested group path does not exist, create it and
+retry the command above:
+
+```sh
+aoe group create in-progress --parent "<REPO>"
 ```
 
 Then start its tmux process (this does **not** attach your terminal, so it
@@ -89,6 +109,10 @@ Notes on each flag:
 
 - `aoe add .` — target the **current repository** as the project path.
 - `--title "<TITLE>"` — the Linear git branch name.
+- `--group "<GROUP>"` — organize the session under `<repo>/in-progress`
+  (slash-delimited group path; `<repo>` is the git toplevel basename). aoe
+  normally auto-creates the nested path; the `aoe group create` fallback above
+  covers the case where it does not.
 - `--worktree "<TITLE>" -b` — create a **new** git worktree and branch named
   `<TITLE>`, off the repository's default base branch. (The repo's aoe config
   places worktrees under `./.port/trees/{branch}` and runs `port <title>` on

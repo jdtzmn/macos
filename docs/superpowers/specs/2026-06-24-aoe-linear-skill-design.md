@@ -57,12 +57,18 @@ on a low-probability match.
 4. Launch with two commands:
 
    ```sh
+   REPO="$(basename "$(git rev-parse --show-toplevel)")"
    aoe add . \
      --title "<gitBranchName>" \
+     --group "$REPO/in-progress" \
      --worktree "<gitBranchName>" -b \
      --extra-args "--agent plan --prompt 'Come up with a plan for <ID>'"
    aoe session start "<gitBranchName>"
    ```
+
+   - `--group "$REPO/in-progress"` -> nested group path; `$REPO` is the git
+     toplevel basename. aoe normally auto-creates the path; fall back to
+     `aoe group create in-progress --parent "$REPO"` if `add` errors.
 
    - `--worktree <branch> -b` -> fresh worktree at `./.port/trees/{branch}`
      and new branch off the default base.
@@ -88,7 +94,10 @@ on a low-probability match.
 - Launch: `aoe add` (no `--launch`) + `aoe session start` so the session boots
   without attaching the current terminal (avoids `not a terminal`); user
   already keeps the aoe TUI open. `--agent plan` for plan mode. No `--model`,
-  no group, terminal view (not `--structured-view`).
+  terminal view (not `--structured-view`).
+- Group: `<repo>/in-progress` where `<repo>` is the git toplevel basename
+  (mirrors the existing `port/in-progress` hierarchy). Try `-g` directly;
+  fall back to `aoe group create in-progress --parent <repo>` if needed.
 
 ## File layout
 
