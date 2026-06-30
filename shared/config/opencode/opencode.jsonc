@@ -59,6 +59,7 @@
     "external_directory": {
       "*": "ask",
       "/tmp/**": "allow",
+      "~/.cache/opencode/packages/**": "allow",
       "~/Library/Application Support/premind/event-details/**": "allow",
     },
     "bash": {
