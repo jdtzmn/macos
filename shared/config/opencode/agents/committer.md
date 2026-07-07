@@ -1,7 +1,7 @@
 ---
 description: Stage and commit changes using concise imperative messages
 mode: subagent
-model: openai/gpt-5.4-mini
+model: anthropic/claude-haiku-4-5
 permission:
   read: deny
   edit: deny
