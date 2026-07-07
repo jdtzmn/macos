@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# devpod dotfiles install script (see:
+# https://devpod.sh/docs/developing-in-workspaces/dotfiles-in-a-workspace).
+#
+# devpod runs this automatically in any workspace once
+# `devpod context set-options -o DOTFILES_URL=... -o DOTFILES_SCRIPT=setup.sh`
+# has been set (shared/devpod.nix does this on every home-manager switch).
+# It installs Nix and applies this repo's `homeConfigurations.devpod`
+# home-manager configuration (fish, git, nvim, tmux, opencode, etc.),
+# regardless of which project the workspace was opened for.
+#
+# Nix is installed single-user (no daemon) here rather than multi-user:
+# devcontainers/devpod workspaces have no init system to run `nix-daemon`
+# as a persistent service, which a multi-user install requires.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if ! command -v nix >/dev/null 2>&1; then
+    if [ ! -d /nix ]; then
+        if command -v sudo >/dev/null 2>&1; then
+            sudo mkdir -m 0755 -p /nix
+            sudo chown "$(id -u):$(id -g)" /nix
+        else
+            mkdir -m 0755 -p /nix
+        fi
+    fi
+
+    tmp_installer="$(mktemp)"
+    curl -sSL https://nixos.org/nix/install -o "$tmp_installer"
+    sh "$tmp_installer" --no-daemon --yes
+    rm -f "$tmp_installer"
+fi
+
+# shellcheck disable=SC1091
+source "$HOME/.nix-profile/etc/profile.d/nix.sh"
+
+mkdir -p "$HOME/.config/nix"
+if ! grep -q "experimental-features" "$HOME/.config/nix/nix.conf" 2>/dev/null; then
+    echo "experimental-features = nix-command flakes" >> "$HOME/.config/nix/nix.conf"
+fi
+
+REPO_DIR="$SCRIPT_DIR" nix run home-manager -- switch --flake "${SCRIPT_DIR}#devpod" --impure

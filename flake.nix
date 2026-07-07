@@ -74,6 +74,44 @@
                 inherit repoDir username homeDirectory enableSprite;
             };
         };
+
+        # devpod dotfiles target: resolves user, home, and architecture at
+        # evaluation time (rather than hardcoding "jacob"/"x86_64-linux" like
+        # the targets above) so it works inside any devpod workspace,
+        # regardless of container user or host CPU architecture (e.g. the
+        # arm64 containers OrbStack runs natively on Apple Silicon). Evaluated
+        # by setup.sh, running inside the container itself, so these reflect
+        # that container's real user/arch, not the machine driving `nix eval`.
+        devpodSystem = builtins.currentSystem;
+        unstablePkgsDevpod = import nixpkgs-unstable { system = devpodSystem; };
+        devpodPkgs = import nixpkgs {
+            system = devpodSystem;
+            overlays = [
+                sprite-cli.overlays.default
+                # pi-coding-agent not yet in nixpkgs 25.11
+                (final: prev: { pi-coding-agent = unstablePkgsDevpod.pi-coding-agent; })
+            ];
+        };
+        devpodUsername = builtins.getEnv "USER";
+        devpodHomeDirectory = builtins.getEnv "HOME";
+        mkDevpodHome = home-manager.lib.homeManagerConfiguration {
+            pkgs = devpodPkgs;
+            modules = [
+                ({ ... }: {
+                    home = {
+                        username = devpodUsername;
+                        homeDirectory = devpodHomeDirectory;
+                    };
+                })
+                ./hosts/linux/home.nix
+            ];
+            extraSpecialArgs = {
+                inherit repoDir;
+                username = devpodUsername;
+                homeDirectory = devpodHomeDirectory;
+                enableSprite = false;
+            };
+        };
     in {
         # macOS system configuration (run from admin account)
         darwinConfigurations.macbook = mkDarwinSystem { };
@@ -92,5 +130,10 @@
             homeDirectory = "/home/sprite";
             enableSprite = true;
         };
+
+        # Generic target for devpod workspaces (see shared/devpod.nix and
+        # setup.sh) - adapts to whatever user/home/architecture the
+        # container actually has.
+        homeConfigurations.devpod = mkDevpodHome;
     };
 }
