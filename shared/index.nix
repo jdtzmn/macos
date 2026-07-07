@@ -10,6 +10,7 @@
     ./lazygit.nix
     ./nvim.nix
     ./opencode.nix
+    ./pi.nix
     ./remote.nix
     ./tmux.nix
     ./wezterm.nix

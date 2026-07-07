@@ -16,6 +16,7 @@
       opentofu
       awscli2
       kubectl
+      pi-coding-agent
       # Nix language servers
       nil
       nixd
