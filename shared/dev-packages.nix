@@ -4,7 +4,6 @@
     [
       docker
       docker-compose
-      devpod
       atlas
       glow
       gh

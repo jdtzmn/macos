@@ -2,6 +2,7 @@
   imports = [
     ./cmux.nix
     ./dev-packages.nix
+    ./devpod.nix
     ./direnv.nix
     ./fish.nix
     ./gh.nix
