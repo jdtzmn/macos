@@ -27,6 +27,10 @@
     # without this, home-manager's activation overwrites ~/.profile/~/.bashrc
     # and drops whatever PATH setup the Nix installer added there.
     targets.genericLinux.enable = true;
+    # GPU driver detection isn't needed in a headless devcontainer, and
+    # pulls in x86_64-only packages (e.g. intel-gmmlib) that fail to
+    # evaluate on aarch64-linux (e.g. OrbStack's native arm64 containers).
+    targets.genericLinux.gpu.enable = false;
 
     # Enable bash to launch fish interactively
     programs.bash = {
