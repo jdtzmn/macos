@@ -40,4 +40,4 @@ if ! grep -q "experimental-features" "$HOME/.config/nix/nix.conf" 2>/dev/null; t
     echo "experimental-features = nix-command flakes" >> "$HOME/.config/nix/nix.conf"
 fi
 
-REPO_DIR="$SCRIPT_DIR" nix run home-manager -- switch --flake "${SCRIPT_DIR}#devpod" --impure
+REPO_DIR="$SCRIPT_DIR" nix run home-manager -- switch -b backup --flake "${SCRIPT_DIR}#devpod" --impure
