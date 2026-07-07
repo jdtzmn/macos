@@ -20,6 +20,14 @@
     # Linux-specific Git Configuration
     ##############################
 
+    # Ensures Nix's own profile (~/.nix-profile/bin) and home-manager's
+    # session vars get sourced on every shell, even outside NixOS. Needed in
+    # particular for single-user Nix installs (e.g. devpod/devcontainer
+    # sandboxes, which have no systemd to run a multi-user nix-daemon):
+    # without this, home-manager's activation overwrites ~/.profile/~/.bashrc
+    # and drops whatever PATH setup the Nix installer added there.
+    targets.genericLinux.enable = true;
+
     # Enable bash to launch fish interactively
     programs.bash = {
         enable = true;
