@@ -14,6 +14,7 @@
     "npm:pi-web-access",
     "npm:@tintinweb/pi-subagents",
     "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:pi-lens"
+    "npm:pi-lens",
+    "npm:pi-mono-linear"
   ]
 }

@@ -81,5 +81,8 @@ $RECYCLE.BIN/
 .env
 shared/config/pi/auth.json
 
+# pi agent session transcripts
+shared/config/pi/sessions/
+
 # Node
 package-lock.json
