@@ -8,5 +8,12 @@
     "anthropic/claude-sonnet-5",
     "anthropic/claude-haiku-4-5-20251001"
   ],
-  "lastChangelogVersion": "0.80.3"
+  "lastChangelogVersion": "0.80.3",
+  "packages": [
+    "npm:@hypabolic/pi-hypa",
+    "npm:pi-web-access",
+    "npm:@tintinweb/pi-subagents",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-lens"
+  ]
 }
