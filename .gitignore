@@ -84,5 +84,8 @@ shared/config/pi/auth.json
 # pi agent session transcripts
 shared/config/pi/sessions/
 
+# context-mode persistent memory (FTS5 index + session state)
+pi-hermes-memory/
+
 # Node
 package-lock.json
