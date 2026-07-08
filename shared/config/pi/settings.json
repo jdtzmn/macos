@@ -20,6 +20,7 @@
     "npm:pi-hermes-memory",
     "npm:@fink-andreas/pi-linear-tools",
     "npm:pi-ultra-compact",
-    "npm:@gotgenes/pi-permission-system"
+    "npm:@gotgenes/pi-permission-system",
+    "npm:@ff-labs/pi-fff"
   ]
 }
