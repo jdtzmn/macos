@@ -388,6 +388,8 @@ config.keys = {
   { key = 'l', mods = 'ALT', action = wezterm.action.ActivatePaneDirection 'Right' },
   { key = 'LeftArrow', mods = 'CMD|ALT', action = wezterm.action.ActivateTabRelative(-1) },
   { key = 'RightArrow', mods = 'CMD|ALT', action = wezterm.action.ActivateTabRelative(1) },
+  -- Disable default ALT+Enter ToggleFullScreen binding
+  { key = 'Enter', mods = 'ALT', action = wezterm.action.DisableDefaultAssignment },
 }
 
 -- Return the configuration to wezterm
