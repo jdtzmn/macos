@@ -14,8 +14,10 @@
     "npm:@tintinweb/pi-subagents",
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-lens",
-    "npm:pi-mono-linear",
     "npm:@firstpick/pi-themes-bundle",
-    "npm:context-mode"
+    "npm:context-mode",
+    "npm:pi-zentui",
+    "npm:@alasano/pi-linear",
+    "npm:pi-hermes-memory"
   ]
 }
