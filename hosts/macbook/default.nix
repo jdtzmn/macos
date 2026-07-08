@@ -149,7 +149,6 @@
       "datadog-labs/pack"
       "entireio/tap"
       "oven-sh/bun"
-      "Hypabolic/tap"
     ];
     brews = [
       # Prefer Homebrew for faster-moving CLI releases that lag in nixpkgs.
@@ -166,7 +165,6 @@
       "dagger/tap/dagger"
       "beads"
       "datadog-labs/pack/pup"
-      "Hypabolic/tap/hypa"
  
       # CLI File Explorer
       "yazi"
