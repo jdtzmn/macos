@@ -10,11 +10,12 @@
   ],
   "lastChangelogVersion": "0.80.3",
   "packages": [
-    "npm:@hypabolic/pi-hypa",
     "npm:pi-web-access",
     "npm:@tintinweb/pi-subagents",
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-lens",
-    "npm:pi-mono-linear"
+    "npm:pi-mono-linear",
+    "npm:@firstpick/pi-themes-bundle",
+    "npm:context-mode"
   ]
 }
