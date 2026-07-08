@@ -5,7 +5,8 @@
       "*": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
-      "*.env.example": "allow"
+      "*.env.example": "allow",
+      "*.env.template": "allow"
     },
     "bash": {
       "*": "allow",
@@ -27,6 +28,9 @@
       "$HOME": { "action": "deny", "reason": "Unscoped find over the whole home directory stalls; scope the search to a specific directory" },
       "/Users/jacob": { "action": "deny", "reason": "Unscoped find over the whole home directory stalls; scope the search to a specific directory" }
     },
-    "external_directory": "ask"
+    "external_directory": {
+      "*": "ask",
+      "/tmp/*": "allow"
+    }
   }
 }
