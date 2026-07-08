@@ -91,5 +91,8 @@ pi-hermes-memory/
 # projects-memory directory (internal state)
 projects-memory/
 
+# pi-permission-system logs
+shared/config/pi/extensions/pi-permission-system/logs/
+
 # Node
 package-lock.json
