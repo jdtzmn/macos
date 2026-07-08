@@ -80,6 +80,7 @@ $RECYCLE.BIN/
 # Secrets
 .env
 shared/config/pi/auth.json
+shared/config/pi/extensions/pi-linear-tools/settings.json
 
 # pi agent session transcripts
 shared/config/pi/sessions/
