@@ -87,5 +87,8 @@ shared/config/pi/sessions/
 # context-mode persistent memory (FTS5 index + session state)
 pi-hermes-memory/
 
+# projects-memory directory (internal state)
+projects-memory/
+
 # Node
 package-lock.json
