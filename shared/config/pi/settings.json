@@ -17,7 +17,8 @@
     "npm:@firstpick/pi-themes-bundle",
     "npm:context-mode",
     "npm:pi-zentui",
-    "npm:@alasano/pi-linear",
-    "npm:pi-hermes-memory"
+    "npm:pi-hermes-memory",
+    "npm:@fink-andreas/pi-linear-tools",
+    "npm:pi-ultra-compact"
   ]
 }
