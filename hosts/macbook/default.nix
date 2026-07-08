@@ -108,6 +108,10 @@
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
+  # nix-darwin module equivalent of `home-manager switch -b backup`: renames
+  # pre-existing files/directories that collide with a managed path instead
+  # of refusing to switch.
+  home-manager.backupFileExtension = "backup";
   home-manager.extraSpecialArgs = {
     inherit repoDir;
     enableSprite = true;
