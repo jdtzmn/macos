@@ -13,6 +13,7 @@
     ./opencode.nix
     ./pi.nix
     ./remote.nix
+    ./skills.nix
     ./tmux.nix
     ./wezterm.nix
     ./zed.nix
