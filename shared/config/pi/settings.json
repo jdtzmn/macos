@@ -18,7 +18,7 @@
     "npm:context-mode",
     "npm:pi-zentui",
     "npm:pi-hermes-memory",
-    "npm:@fink-andreas/pi-linear-tools",
+    "npm:pi-mcp-adapter",
     "npm:pi-ultra-compact",
     "npm:@gotgenes/pi-permission-system",
     "npm:@ff-labs/pi-fff"
