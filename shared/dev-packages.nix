@@ -17,6 +17,7 @@
       awscli2
       kubectl
       pi-coding-agent
+      nodejs
       # Nix language servers
       nil
       nixd
