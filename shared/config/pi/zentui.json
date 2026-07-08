@@ -8,7 +8,8 @@
     "editor": false
   },
   "footerSegments": {
-    "gitStatus": false
+    "gitStatus": false,
+    "runtime": false
   },
   "extensionStatuses": {
     "placements": {
