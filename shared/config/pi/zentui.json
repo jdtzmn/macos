@@ -1,5 +1,18 @@
 {
+  "colorSources": {
+    "editor": "theme",
+    "userMessages": "theme",
+    "starship": "theme"
+  },
   "features": {
     "editor": false
   },
+  "footerSegments": {
+    "gitStatus": false
+  },
+  "extensionStatuses": {
+    "placements": {
+      "pi-lens-lsp": "right"
+    }
+  }
 }
