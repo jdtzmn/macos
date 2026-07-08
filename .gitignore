@@ -79,6 +79,7 @@ $RECYCLE.BIN/
 
 # Secrets
 .env
+shared/config/pi/auth.json
 
 # Node
 package-lock.json
