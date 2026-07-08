@@ -8,7 +8,7 @@
       "*.env.example": "allow"
     },
     "bash": {
-      "*": "ask",
+      "*": "allow",
       "rm -rf *": "deny",
       "sudo *": "ask",
       "find /": { "action": "deny", "reason": "Unscoped find from filesystem root stalls; scope the search to a specific directory" },
