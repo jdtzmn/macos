@@ -19,6 +19,7 @@
     "npm:pi-zentui",
     "npm:pi-hermes-memory",
     "npm:@fink-andreas/pi-linear-tools",
-    "npm:pi-ultra-compact"
+    "npm:pi-ultra-compact",
+    "npm:@gotgenes/pi-permission-system"
   ]
 }
