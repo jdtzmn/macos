@@ -29,11 +29,13 @@
       "/Users/jacob": { "action": "deny", "reason": "Unscoped find over the whole home directory stalls; scope the search to a specific directory" }
     },
     "external_directory": {
-      "*": "ask",
+      "*": "deny",
       "/tmp/*": "allow",
       "/private/tmp/*": "allow",
       "/var/folders/*": "allow",
-      "/private/var/folders/*": "allow"
+      "/private/var/folders/*": "allow",
+      "~/Documents/GitHub/*": "allow",
+      "~/Documents/orca/*": "allow"
     }
   }
 }
