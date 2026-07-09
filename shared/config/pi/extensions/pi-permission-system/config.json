@@ -35,7 +35,8 @@
       "/var/folders/*": "allow",
       "/private/var/folders/*": "allow",
       "~/Documents/GitHub/*": "allow",
-      "~/Documents/orca/*": "allow"
+      "~/Documents/orca/*": "allow",
+      "~/Downloads/*": "ask"
     }
   }
 }
