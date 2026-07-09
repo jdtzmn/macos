@@ -30,7 +30,10 @@
     },
     "external_directory": {
       "*": "ask",
-      "/tmp/*": "allow"
+      "/tmp/*": "allow",
+      "/private/tmp/*": "allow",
+      "/var/folders/*": "allow",
+      "/private/var/folders/*": "allow"
     }
   }
 }
