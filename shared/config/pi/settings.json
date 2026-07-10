@@ -21,6 +21,7 @@
     "npm:pi-mcp-adapter",
     "npm:pi-ultra-compact",
     "npm:@gotgenes/pi-permission-system",
-    "npm:@ff-labs/pi-fff"
+    "npm:@ff-labs/pi-fff",
+    "npm:pi-hashline-edit-pro"
   ]
 }
