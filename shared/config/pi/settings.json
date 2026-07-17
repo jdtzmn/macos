@@ -6,7 +6,8 @@
   "enabledModels": [
     "anthropic/claude-opus-4-8",
     "anthropic/claude-sonnet-5",
-    "anthropic/claude-haiku-4-5-20251001"
+    "anthropic/claude-haiku-4-5-20251001",
+    "openai-codex/gpt-5.5"
   ],
   "lastChangelogVersion": "0.80.3",
   "packages": [
@@ -22,6 +23,8 @@
     "npm:pi-ultra-compact",
     "npm:@gotgenes/pi-permission-system",
     "npm:@ff-labs/pi-fff",
-    "npm:pi-hashline-edit-pro"
-  ]
+    "npm:pi-hashline-edit-pro",
+    "npm:pi-btw"
+  ],
+  "npmCommand": ["bun"]
 }
