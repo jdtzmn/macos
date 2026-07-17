@@ -26,5 +26,7 @@
     "npm:pi-hashline-edit-pro",
     "npm:pi-btw"
   ],
-  "npmCommand": ["bun"]
+  "npmCommand": [
+    "bun"
+  ]
 }
