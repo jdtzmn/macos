@@ -24,7 +24,8 @@
     "npm:@gotgenes/pi-permission-system",
     "npm:@ff-labs/pi-fff",
     "npm:pi-hashline-edit-pro",
-    "npm:pi-btw"
+    "npm:pi-btw",
+    "npm:pi-background-tasks"
   ],
   "npmCommand": [
     "bun"
