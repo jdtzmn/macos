@@ -12,6 +12,17 @@
     shellInit = ''
       source ${./config/config.fish}
     '';
+    functions = {
+      f = {
+        description = "Select files with fzf and open them in nvim";
+        body = ''
+          set -l files (fzf -m --preview 'bat --color=always {}')
+          if test -n "$files"
+            nvim $files
+          end
+        '';
+      };
+    };
     plugins = [
       {
         name = "done";
@@ -35,7 +46,6 @@
       # Programs
       "oc" = "opencode";
       "occ" = "opencode --continue";
-      "f" = "fzf";
       "n" = "nvim";
       "t" = "tmux";
       "y" = "yazi";

@@ -10,6 +10,7 @@
       gh-dash
       gnumake
       fzf
+      bat
       ripgrep
       delta
       lazygit
