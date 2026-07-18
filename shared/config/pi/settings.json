@@ -25,7 +25,8 @@
     "npm:@ff-labs/pi-fff",
     "npm:pi-hashline-edit-pro",
     "npm:pi-btw",
-    "npm:pi-background-tasks"
+    "npm:pi-background-tasks",
+    "npm:pi-pr-status"
   ],
   "npmCommand": [
     "bun"
