@@ -35,6 +35,7 @@
       # Programs
       "oc" = "opencode";
       "occ" = "opencode --continue";
+      "f" = "fzf";
       "n" = "nvim";
       "t" = "tmux";
       "y" = "yazi";

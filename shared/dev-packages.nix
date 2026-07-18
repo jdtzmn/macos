@@ -9,6 +9,7 @@
       gh
       gh-dash
       gnumake
+      fzf
       ripgrep
       delta
       lazygit
