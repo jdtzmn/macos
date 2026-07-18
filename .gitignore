@@ -85,9 +85,10 @@ shared/config/pi/mcp-cache.json
 
 # pi agent session transcripts
 shared/config/pi/sessions/
-
+.pi/tasks/
 # context-mode persistent memory (FTS5 index + session state)
 pi-hermes-memory/
+shared/config/pi/.pi-hermes-locks.sqlite
 
 # projects-memory directory (internal state)
 projects-memory/
