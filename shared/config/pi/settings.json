@@ -27,7 +27,8 @@
     "npm:pi-btw",
     "npm:pi-background-tasks",
     "npm:pi-pr-status",
-    "git:github.com/jdtzmn/premind"
+    "git:github.com/jdtzmn/premind",
+    "npm:pi-lmstudio"
   ],
   "npmCommand": [
     "bun"
