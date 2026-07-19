@@ -28,7 +28,8 @@
     "npm:pi-background-tasks",
     "npm:pi-pr-status",
     "git:github.com/jdtzmn/premind",
-    "npm:pi-lmstudio"
+    "npm:pi-lmstudio",
+    "npm:@juicesharp/rpiv-todo"
   ],
   "npmCommand": [
     "bun"
