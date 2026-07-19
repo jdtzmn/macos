@@ -82,6 +82,7 @@ $RECYCLE.BIN/
 shared/config/pi/auth.json
 shared/config/pi/mcp-oauth/
 shared/config/pi/mcp-cache.json
+models-store.json
 
 # pi agent session transcripts
 shared/config/pi/sessions/
