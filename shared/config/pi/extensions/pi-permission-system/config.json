@@ -36,7 +36,8 @@
       "/private/var/folders/*": "allow",
       "~/Documents/GitHub/*": "allow",
       "~/Documents/orca/*": "allow",
-      "~/Downloads/*": "ask"
+      "~/Downloads/*": "ask",
+      "~/Library/Application Support/premind/event-details/*": "allow"
     }
   }
 }
