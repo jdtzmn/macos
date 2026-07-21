@@ -3,6 +3,11 @@
     "linear": {
       "url": "https://mcp.linear.app/mcp",
       "auth": "oauth"
+    },
+    "datadog": {
+      "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy"
     }
   }
 }
