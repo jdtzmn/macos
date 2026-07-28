@@ -80,6 +80,7 @@ $RECYCLE.BIN/
 # Secrets
 .env
 shared/config/pi/auth.json
+shared/config/pi/trust.json
 shared/config/pi/mcp-oauth/
 shared/config/pi/mcp-cache.json
 models-store.json
