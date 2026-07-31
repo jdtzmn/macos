@@ -91,6 +91,9 @@ shared/config/pi/sessions/
 # context-mode persistent memory (FTS5 index + session state)
 pi-hermes-memory/
 shared/config/pi/.pi-hermes-locks.sqlite
+shared/config/pi/.pi-hermes-locks.sqlite-shm
+shared/config/pi/.pi-hermes-locks.sqlite-wal
+shared/config/pi/intercom/broker.pid
 
 # projects-memory directory (internal state)
 projects-memory/
