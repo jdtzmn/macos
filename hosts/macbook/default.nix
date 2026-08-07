@@ -72,6 +72,9 @@
         enabled = false;
       };
     };
+    "com.apple.screencaptureui" = {
+      thumbnailExpiration = 60.0;
+    };
   };
 
   ##############################
