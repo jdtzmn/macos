@@ -24,7 +24,13 @@
     "npm:@ff-labs/pi-fff",
     "npm:pi-hashline-edit-pro",
     "npm:pi-btw",
-    "npm:pi-background-tasks",
+    {
+      "_comment": "Exclude Anthropic attribution because remote VMs may not have ~/.claude.json, causing provider-request failures.",
+      "source": "npm:pi-background-tasks",
+      "extensions": [
+        "-extensions/anthropic-attribution.ts"
+      ]
+    },
     "git:github.com/jdtzmn/premind",
     "npm:pi-lmstudio",
     "npm:@juicesharp/rpiv-todo",
