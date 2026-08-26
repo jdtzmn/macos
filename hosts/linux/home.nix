@@ -31,6 +31,7 @@
     # pulls in x86_64-only packages (e.g. intel-gmmlib) that fail to
     # evaluate on aarch64-linux (e.g. OrbStack's native arm64 containers).
     targets.genericLinux.gpu.enable = false;
+    home.sessionVariables.COLORTERM = "truecolor";
 
     # Enable bash to launch fish interactively
     programs.bash = {
