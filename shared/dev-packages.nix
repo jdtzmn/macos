@@ -18,6 +18,7 @@
       opentofu
       awscli2
       kubectl
+      croc
       pi-coding-agent
       nodejs
       # Nix language servers
