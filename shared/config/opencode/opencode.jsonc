@@ -52,7 +52,8 @@
     "./plugins/cmux-session.js",
   ],
   "instructions": [
-    "~/.config/opencode/me.md",
+    "~/.config/agents/personal-base.md",
+    "~/.config/agents/overlays/opencode.md",
     "https://raw.githubusercontent.com/jdtzmn/port/refs/heads/main/ONBOARD.md",
   ],
   "permission": {
