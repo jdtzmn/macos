@@ -20,8 +20,10 @@ if command -q port
     port completion fish | source
 end
 
-# od shell hook
-if command -q od
+# od shell hook (LayerOne internal `od`; coreutils `od` has no shell-hook
+# subcommand, so probe the capability rather than the bare command name to
+# avoid firing on VMs where only coreutils `od` exists).
+if command -q od; and od shell-hook fish >/dev/null 2>&1
     od shell-hook fish | source
 end
 
