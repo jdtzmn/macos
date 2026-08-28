@@ -1,5 +1,6 @@
 {
   imports = [
+    ./agents.nix
     ./cmux.nix
     ./dev-packages.nix
     ./devpod.nix
