@@ -20,6 +20,11 @@ if command -q port
     port completion fish | source
 end
 
+# od shell hook
+if command -q od
+    od shell-hook fish | source
+end
+
 set -l repo_env "$HOME/Documents/GitHub/macos/.env"
 if test -f "$repo_env"
     set -l allowlisted_env_keys GITHUB_MCP_TOKEN
