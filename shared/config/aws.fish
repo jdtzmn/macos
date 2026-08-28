@@ -1,11 +1,15 @@
 # AWS SSO login + set AWS_PROFILE + point kubectl at the account's EKS cluster
-# Use the default profile in every new Fish terminal.
-set -gx AWS_PROFILE dev-admin
 
 function awsso --description "AWS SSO login, set AWS_PROFILE, configure kubectl for EKS"
     set -l profile $argv[1]
     set -l region $argv[2]
-    test -z "$profile"; and set profile dev-admin
+    if test -z "$profile"
+        if not set -q AWS_PROFILE[1]
+            echo "AWS_PROFILE is not set. Set it in the project's .envrc or pass a profile to awsso."
+            return 1
+        end
+        set profile "$AWS_PROFILE"
+    end
     test -z "$region"; and set region us-east-1
 
     set -gx AWS_PROFILE "$profile"
