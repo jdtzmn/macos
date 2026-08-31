@@ -137,6 +137,12 @@
     # User owning the Homebrew prefix
     user = "jacob";
     autoMigrate = true;
+    # Trust third-party taps required by the declarative Homebrew packages.
+    trust.taps = [
+      "datadog-labs/pack"
+      "entireio/tap"
+      "oven-sh/bun"
+    ];
   };
 
   ##############################
