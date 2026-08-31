@@ -32,5 +32,8 @@
     ++ lib.optionals (!pkgs.stdenv.isDarwin) [
       bun
       opencode
+      # C/C++ toolchain (provides cc/c++/g++) so node-gyp can build native
+      # modules like node-pty on VMs without a system compiler.
+      gcc
     ];
 }
