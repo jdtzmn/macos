@@ -165,7 +165,6 @@
       "bun"
       "rustup"
       "wasm-pack"
-      "dagger/tap/dagger"
       "beads"
       "datadog-labs/pack/pup"
  
