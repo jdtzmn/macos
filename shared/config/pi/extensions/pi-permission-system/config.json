@@ -12,6 +12,7 @@
       "*": "allow",
       "rm -rf *": "deny",
       "sudo *": "ask",
+      "timeout *": { "action": "deny", "reason": "Do not wrap commands in the shell 'timeout' binary; it is an indirection wrapper that pauses agents. Bound long-running commands with bg_run and timeoutSeconds so the command runs plainly within the permission rules." },
       "find /": { "action": "deny", "reason": "Unscoped find from filesystem root stalls; scope the search to a specific directory" },
       "find / *": { "action": "deny", "reason": "Unscoped find from filesystem root stalls; scope the search to a specific directory" },
       "find ~": { "action": "deny", "reason": "Unscoped find over the whole home directory stalls; scope the search to a specific directory" },
