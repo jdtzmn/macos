@@ -19,6 +19,7 @@
       awscli2
       kubectl
       croc
+      mosh
       pi-coding-agent
       nodejs
       # Nix language servers
