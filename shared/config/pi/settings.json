@@ -76,6 +76,7 @@
       "extensions": []
     },
     "npm:entities@6.0.1",
+    "npm:highlight.js@10.7.3",
     {
       "source": "npm:pi-intercom@0.12.0",
       "extensions": []

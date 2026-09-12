@@ -92,6 +92,8 @@ shared/config/pi/pi-sessions/
 # Fusion workflow artifacts
 .pi/fusion/
 # pi-fff runtime state
+# Background delegate artifacts
+.pi/delegate/
 shared/config/pi/fff/
 # context-mode persistent memory (FTS5 index + session state)
 pi-hermes-memory/
