@@ -3,6 +3,7 @@ let
   globalNpmPackages = [
     "@earendil-works/pi-coding-agent"
     "opencode-ai"
+    "@jdtzmn/port"
   ];
   globalNpmPackageArgs =
     lib.concatMapStringsSep " " (package: lib.escapeShellArg "${package}@latest") globalNpmPackages;
