@@ -156,19 +156,6 @@
       "description": "Code intelligence and diagnostics"
     },
     {
-      "name": "plannotator",
-      "source": "npm:@plannotator/pi-extension",
-      "lazy": true,
-      "cmd": [
-        "plannotator"
-      ],
-      "keywords": [
-        "plannotator",
-        "plan mode"
-      ],
-      "description": "Plan review workflow"
-    },
-    {
       "name": "btw",
       "source": "npm:pi-btw",
       "lazy": true,

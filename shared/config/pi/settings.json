@@ -31,6 +31,7 @@
       "source": "npm:context-mode@1.0.169",
       "extensions": []
     },
+    "npm:pi-image-view@0.4.0",
     "npm:pi-zentui@0.21.0",
     {
       "source": "npm:pi-hermes-memory@0.9.6",
@@ -62,10 +63,6 @@
     "npm:pi-lmstudio@1.5.0",
     {
       "source": "npm:@juicesharp/rpiv-todo@2.7.1",
-      "extensions": []
-    },
-    {
-      "source": "npm:@plannotator/pi-extension@0.27.8",
       "extensions": []
     },
     "npm:@narumitw/pi-plan-mode@0.58.0",
