@@ -82,6 +82,23 @@
       "description": "Enhanced context compaction"
     },
     {
+      "name": "fff",
+      "source": "npm:@ff-labs/pi-fff",
+      "lazy": "after-start",
+      "priority": 10,
+      "description": "Fuzzy file and content search"
+    },
+    {
+      "name": "image-view",
+      "source": "npm:pi-image-view",
+      "lazy": "after-start",
+      "priority": 20,
+      "cmd": [
+        "pi-image-view"
+      ],
+      "description": "Clipboard image previews and stable image references"
+    },
+    {
       "name": "web",
       "source": "npm:pi-web-access",
       "lazy": true,
@@ -193,6 +210,39 @@
         "terminal tab"
       ],
       "description": "cmux terminal integration"
+    },
+    {
+      "name": "plan-mode",
+      "source": "npm:@narumitw/pi-plan-mode",
+      "lazy": true,
+      "cmd": [
+        "plan"
+      ],
+      "keywords": [
+        "plan mode",
+        "read-only plan"
+      ],
+      "description": "Read-only planning workflow"
+    },
+    {
+      "name": "sessions",
+      "source": "npm:pi-sessions",
+      "lazy": true,
+      "tools": [
+        "session_search",
+        "session_reachable",
+        "session_send_message",
+        "session_cancel",
+        "create_handoff_context",
+        "session_handoff",
+        "session_ask"
+      ],
+      "keywords": [
+        "search past sessions",
+        "session handoff",
+        "session history"
+      ],
+      "description": "Session search, handoff, and messaging"
     }
   ]
 }

@@ -20,6 +20,7 @@ Deferred extension factories are intentionally absent at Pi startup. Their skill
 
 Configured package names:
 
+- `fff`, `image-view` — loaded after startup
 - `context-mode` — context-preserving data processing
 - `lens` — code intelligence and diagnostics
 - `web` — web search, fetching, and video analysis
@@ -28,7 +29,8 @@ Configured package names:
 - `btw` — side conversations
 - `intercom` — local Pi-session communication
 - `cmux` — cmux terminal integration
-- `hermes-memory`, `subagents`, `ask-user`, `todo`, `ultra-compact` — loaded after startup
+- `plan-mode`, `sessions` — planning and cross-session workflows
+- `hermes-memory`, `subagents`, `ask-user`, `todo`, `ultra-compact` — on-demand utilities
 
 ## Trigger Behavior
 

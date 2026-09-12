@@ -1,5 +1,5 @@
 {
-  "theme": "dark",
+  "theme": "tokyo-night",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-luna",
   "defaultThinkingLevel": "medium",
@@ -31,7 +31,10 @@
       "source": "npm:context-mode@1.0.169",
       "extensions": []
     },
-    "npm:pi-image-view@0.4.0",
+    {
+      "source": "npm:pi-image-view@0.4.0",
+      "extensions": []
+    },
     "npm:pi-zentui@0.21.0",
     {
       "source": "npm:pi-hermes-memory@0.9.6",
@@ -46,7 +49,10 @@
       "extensions": []
     },
     "npm:@gotgenes/pi-permission-system@27.1.0",
-    "npm:@ff-labs/pi-fff@0.10.5",
+    {
+      "source": "npm:@ff-labs/pi-fff@0.10.5",
+      "extensions": []
+    },
     "npm:pi-hashline-edit-pro@2.7.2",
     {
       "source": "npm:pi-btw@0.4.1",
@@ -65,7 +71,10 @@
       "source": "npm:@juicesharp/rpiv-todo@2.7.1",
       "extensions": []
     },
-    "npm:@narumitw/pi-plan-mode@0.58.0",
+    {
+      "source": "npm:@narumitw/pi-plan-mode@0.58.0",
+      "extensions": []
+    },
     "npm:entities@6.0.1",
     {
       "source": "npm:pi-intercom@0.12.0",
@@ -76,7 +85,10 @@
       "extensions": []
     },
     "npm:@rahularya01/pi-lazy",
-    "npm:pi-sessions"
+    {
+      "source": "npm:pi-sessions",
+      "extensions": []
+    }
   ],
   "npmCommand": [
     "bun"
