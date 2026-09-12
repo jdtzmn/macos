@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "defaults": {
+    "lazy": true
+  },
+  "auto": true,
+  "autoLoadLimit": 1,
+  "afterStartBatchSize": 1,
+  "afterStartDelayMs": 0,
+  "afterStartInitialDelayMs": 750,
+  "afterStartPauseDuringTurn": true,
+  "afterStartAdaptiveYield": true,
+  "afterStartPrefetch": true,
+  "specs": [
+    {
+      "name": "hermes-memory",
+      "source": "npm:pi-hermes-memory",
+      "lazy": "after-start",
+      "priority": 10,
+      "description": "Persistent memory and session indexing"
+    },
+    {
+      "name": "subagents",
+      "source": "npm:@tintinweb/pi-subagents",
+      "lazy": "after-start",
+      "priority": 20,
+      "description": "Subagent orchestration"
+    },
+    {
+      "name": "ask-user",
+      "source": "npm:@juicesharp/rpiv-ask-user-question",
+      "lazy": "after-start",
+      "priority": 30,
+      "tools": [
+        "ask_user_question"
+      ]
+    },
+    {
+      "name": "todo",
+      "source": "npm:@juicesharp/rpiv-todo",
+      "lazy": "after-start",
+      "priority": 40,
+      "tools": [
+        "todo"
+      ]
+    },
+    {
+      "name": "ultra-compact",
+      "source": "npm:pi-ultra-compact",
+      "lazy": "after-start",
+      "priority": 50,
+      "keywords": [
+        "compact context",
+        "ultracompact"
+      ],
+      "description": "Enhanced context compaction"
+    },
+    {
+      "name": "web",
+      "source": "npm:pi-web-access",
+      "lazy": true,
+      "cmd": [
+        "web"
+      ],
+      "tools": [
+        "web_search",
+        "fetch_content",
+        "get_search_content"
+      ],
+      "keywords": [
+        "web search",
+        "search the web",
+        "fetch url",
+        "youtube"
+      ],
+      "description": "Web search, page fetches, and video analysis"
+    },
+    {
+      "name": "mcp",
+      "source": "npm:pi-mcp-adapter",
+      "lazy": true,
+      "cmd": [
+        "mcp"
+      ],
+      "keywords": [
+        "mcp",
+        "playwright",
+        "clickup"
+      ],
+      "description": "MCP server bridge"
+    },
+    {
+      "name": "context-mode",
+      "source": "npm:context-mode",
+      "lazy": true,
+      "cmd": [
+        "context-mode",
+        "ctx"
+      ],
+      "tools": [
+        "ctx_execute",
+        "ctx_search",
+        "ctx_index"
+      ],
+      "keywords": [
+        "context-mode",
+        "ctx_execute"
+      ],
+      "description": "Context-preserving data-processing tools"
+    },
+    {
+      "name": "lens",
+      "source": "npm:pi-lens",
+      "lazy": true,
+      "cmd": [
+        "lens"
+      ],
+      "tools": [
+        "lens_diagnostics",
+        "symbol_search",
+        "module_report",
+        "lsp_diagnostics"
+      ],
+      "keywords": [
+        "diagnostics",
+        "symbol search",
+        "ast-grep",
+        "lsp"
+      ],
+      "description": "Code intelligence and diagnostics"
+    },
+    {
+      "name": "plannotator",
+      "source": "npm:@plannotator/pi-extension",
+      "lazy": true,
+      "cmd": [
+        "plannotator",
+        "plan"
+      ],
+      "keywords": [
+        "plannotator",
+        "plan mode"
+      ],
+      "description": "Plan review workflow"
+    },
+    {
+      "name": "btw",
+      "source": "npm:pi-btw",
+      "lazy": true,
+      "cmd": [
+        "btw"
+      ],
+      "keywords": [
+        "side conversation"
+      ],
+      "description": "Parallel side conversation"
+    },
+    {
+      "name": "intercom",
+      "source": "npm:pi-intercom",
+      "lazy": true,
+      "tools": [
+        "intercom"
+      ],
+      "keywords": [
+        "intercom",
+        "other pi session"
+      ],
+      "description": "Local Pi session coordination"
+    },
+    {
+      "name": "cmux",
+      "source": "npm:pi-cmux",
+      "lazy": true,
+      "tools": [
+        "cmux_open_terminal"
+      ],
+      "keywords": [
+        "cmux",
+        "terminal pane",
+        "terminal tab"
+      ],
+      "description": "cmux terminal integration"
+    }
+  ]
+}
