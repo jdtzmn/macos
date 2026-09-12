@@ -227,7 +227,7 @@
     {
       "name": "sessions",
       "source": "npm:pi-sessions",
-      "lazy": true,
+      "lazy": "after-start",
       "tools": [
         "session_search",
         "session_reachable",
