@@ -37,9 +37,9 @@ via per-tool overlays.
 
 ## Testing and Validation
 
-- Run only fast, targeted validation locally by default.
-- Do not run full test suites, builds, or other expensive checks locally unless explicitly requested or needed to diagnose a failure.
-- When a repository has CI, use it for comprehensive verification: push the work and rely on CI feedback, inspecting failed checks and logs rather than routinely duplicating them locally.
+- When a repository has CI, run only fast, targeted validation locally by default and use CI for comprehensive verification. Inspect failed checks and logs rather than routinely duplicating them locally.
+- For CI-backed repositories, do not run full test suites, builds, or other expensive checks locally unless explicitly requested or needed to diagnose a failure.
+- When a repository has no CI, run the complete relevant validation locally before declaring the work complete.
 
 ## Git Workflow
 
