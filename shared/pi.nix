@@ -3,7 +3,7 @@
   home.file.".pi/agent".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/pi";
 
   # pi runs `npm install -g pi-web-access` on startup/first-use. nixpkgs'
-  # `nodejs` (added in dev-packages.nix) has no writable global-install
+  # `nodejs` (added in npm-cli-packages.nix) has no writable global-install
   # prefix by default: npm's global prefix defaults to the nodejs package's
   # own Nix store path, which is always read-only ("dr-xr-xr-x", immutable
   # by Nix's design). That makes ANY `npm install -g` fail with EACCES, not
