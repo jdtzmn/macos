@@ -35,8 +35,9 @@ via per-tool overlays.
 
 ## Testing and Validation
 
-- Prefer the smallest relevant validation for the current phase before committing.
-- If a full test suite or build is expensive, run a targeted check first and note any broader validation that still remains.
+- Run only fast, targeted validation locally by default.
+- Do not run full test suites, builds, or other expensive checks locally unless explicitly requested or needed to diagnose a failure.
+- When a repository has CI, use it for comprehensive verification: push the work and rely on CI feedback, inspecting failed checks and logs rather than routinely duplicating them locally.
 
 ## Git Workflow
 
