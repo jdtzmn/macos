@@ -89,6 +89,8 @@ models-store.json
 shared/config/pi/sessions/
 shared/config/pi/pi-sessions/
 .pi/tasks/
+# Fusion workflow artifacts
+.pi/fusion/
 # pi-fff runtime state
 shared/config/pi/fff/
 # context-mode persistent memory (FTS5 index + session state)
