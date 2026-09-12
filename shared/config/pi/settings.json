@@ -85,10 +85,7 @@
       "extensions": []
     },
     "npm:@rahularya01/pi-lazy",
-    {
-      "source": "npm:pi-sessions",
-      "extensions": []
-    }
+    "npm:pi-sessions"
   ],
   "npmCommand": [
     "bun"
