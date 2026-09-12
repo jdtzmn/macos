@@ -15,40 +15,66 @@
     {
       "name": "hermes-memory",
       "source": "npm:pi-hermes-memory",
-      "lazy": "after-start",
-      "priority": 10,
+      "lazy": true,
+      "tools": [
+        "memory_search",
+        "memory_add",
+        "memory_replace",
+        "memory_remove",
+        "skill_manage"
+      ],
+      "keywords": [
+        "remember this",
+        "memory search",
+        "previous session"
+      ],
       "description": "Persistent memory and session indexing"
     },
     {
       "name": "subagents",
       "source": "npm:@tintinweb/pi-subagents",
-      "lazy": "after-start",
-      "priority": 20,
+      "lazy": true,
+      "tools": [
+        "Agent",
+        "SubagentWorkflow",
+        "get_subagent_result",
+        "steer_subagent"
+      ],
+      "keywords": [
+        "subagent",
+        "delegate task",
+        "workflow"
+      ],
       "description": "Subagent orchestration"
     },
     {
       "name": "ask-user",
       "source": "npm:@juicesharp/rpiv-ask-user-question",
-      "lazy": "after-start",
-      "priority": 30,
+      "lazy": true,
       "tools": [
         "ask_user_question"
+      ],
+      "keywords": [
+        "ask a question",
+        "clarify requirements"
       ]
     },
     {
       "name": "todo",
       "source": "npm:@juicesharp/rpiv-todo",
-      "lazy": "after-start",
-      "priority": 40,
+      "lazy": true,
       "tools": [
         "todo"
+      ],
+      "keywords": [
+        "task list",
+        "todo list"
       ]
     },
     {
       "name": "ultra-compact",
       "source": "npm:pi-ultra-compact",
-      "lazy": "after-start",
-      "priority": 50,
+      "lazy": true,
       "keywords": [
         "compact context",
         "ultracompact"
