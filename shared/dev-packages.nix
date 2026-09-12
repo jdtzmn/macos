@@ -20,8 +20,6 @@
       kubectl
       croc
       mosh
-      pi-coding-agent
-      nodejs
       # Nix language servers
       nil
       nixd
@@ -29,10 +27,7 @@
     ++ lib.optionals enableSprite [
       sprite
     ]
-    # Prefer newer Homebrew releases on macOS, but keep Linux/Sprite complete.
     ++ lib.optionals (!pkgs.stdenv.isDarwin) [
-      bun
-      opencode
       # C/C++ toolchain (provides cc/c++/g++) so node-gyp can build native
       # modules like node-pty on VMs without a system compiler.
       gcc

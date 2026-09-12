@@ -41,8 +41,6 @@
                         sprite-cli.overlays.default
                         # nix-homebrew 2026-05+ requires ruby_4_0, not in nixpkgs 25.11
                         (final: prev: { ruby_4_0 = unstablePkgsDarwin.ruby_4_0; })
-                        # pi-coding-agent not yet in nixpkgs 25.11
-                        (final: prev: { pi-coding-agent = unstablePkgsDarwin.pi-coding-agent; })
                     ];
                 }
                 ./hosts/macbook/default.nix
@@ -51,13 +49,10 @@
                 inherit repoDir separateAdminAccount;
             };
         };
-        unstablePkgsLinux = import nixpkgs-unstable { system = "x86_64-linux"; };
         linuxPkgs = import nixpkgs {
             system = "x86_64-linux";
             overlays = [
                 sprite-cli.overlays.default
-                # pi-coding-agent not yet in nixpkgs 25.11
-                (final: prev: { pi-coding-agent = unstablePkgsLinux.pi-coding-agent; })
             ];
         };
         mkLinuxHome = { username, homeDirectory, enableSprite ? false }: home-manager.lib.homeManagerConfiguration {
@@ -83,13 +78,10 @@
         # by setup.sh, running inside the container itself, so these reflect
         # that container's real user/arch, not the machine driving `nix eval`.
         devpodSystem = builtins.currentSystem;
-        unstablePkgsDevpod = import nixpkgs-unstable { system = devpodSystem; };
         devpodPkgs = import nixpkgs {
             system = devpodSystem;
             overlays = [
                 sprite-cli.overlays.default
-                # pi-coding-agent not yet in nixpkgs 25.11
-                (final: prev: { pi-coding-agent = unstablePkgsDevpod.pi-coding-agent; })
             ];
         };
         devpodUsername = builtins.getEnv "USER";

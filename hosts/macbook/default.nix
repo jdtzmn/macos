@@ -162,7 +162,6 @@
     brews = [
       # Prefer Homebrew for faster-moving CLI releases that lag in nixpkgs.
       # Programming
-      "opencode"
       "agent-browser"
       "aoe"
       "asdf"

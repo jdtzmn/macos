@@ -2,6 +2,7 @@
   imports = [
     ./agents.nix
     ./cmux.nix
+    ./npm-cli-packages.nix
     ./dev-packages.nix
     ./devpod.nix
     ./direnv.nix
