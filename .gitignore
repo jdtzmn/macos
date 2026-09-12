@@ -87,6 +87,7 @@ models-store.json
 
 # pi agent session transcripts
 shared/config/pi/sessions/
+shared/config/pi/pi-sessions/
 .pi/tasks/
 # pi-fff runtime state
 shared/config/pi/fff/

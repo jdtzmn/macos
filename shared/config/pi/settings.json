@@ -75,7 +75,8 @@
       "source": "npm:pi-cmux@0.1.16",
       "extensions": []
     },
-    "npm:@rahularya01/pi-lazy"
+    "npm:@rahularya01/pi-lazy",
+    "npm:pi-sessions"
   ],
   "npmCommand": [
     "bun"
