@@ -68,6 +68,7 @@
       "source": "npm:@plannotator/pi-extension@0.27.8",
       "extensions": []
     },
+    "npm:@narumitw/pi-plan-mode@0.58.0",
     "npm:entities@6.0.1",
     {
       "source": "npm:pi-intercom@0.12.0",

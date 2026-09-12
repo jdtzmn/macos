@@ -160,8 +160,7 @@
       "source": "npm:@plannotator/pi-extension",
       "lazy": true,
       "cmd": [
-        "plannotator",
-        "plan"
+        "plannotator"
       ],
       "keywords": [
         "plannotator",
