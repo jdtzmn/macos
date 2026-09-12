@@ -7,8 +7,9 @@ let
   ];
   globalNpmPackageArgs =
     lib.concatMapStringsSep " " (package: lib.escapeShellArg "${package}@latest") globalNpmPackages;
-  bunGlobalDir = "${config.xdg.dataHome}/bun/install/global";
-  bunGlobalBinDir = "${config.xdg.dataHome}/bun/bin";
+  # Use Bun's default locations so `bun pm ls -g` and PATH resolve the same CLIs.
+  bunGlobalDir = "${config.home.homeDirectory}/.bun/install/global";
+  bunGlobalBinDir = "${config.home.homeDirectory}/.bun/bin";
 in
 {
   # Keep Node available for globally installed CLIs with a Node shebang.
