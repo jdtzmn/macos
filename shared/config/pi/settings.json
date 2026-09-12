@@ -85,7 +85,9 @@
       "extensions": []
     },
     "npm:@rahularya01/pi-lazy",
-    "npm:pi-sessions"
+    "npm:pi-sessions",
+    "npm:pi-suggest",
+    "npm:@petechu/pi-rewrite"
   ],
   "npmCommand": [
     "bun"
