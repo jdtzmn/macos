@@ -128,7 +128,17 @@
       "keywords": [
         "mcp",
         "playwright",
-        "clickup"
+        "clickup",
+        "linear",
+        "datadog",
+        "dd",
+        "issue",
+        "ticket",
+        "bug",
+        "incident",
+        "monitoring",
+        "logs",
+        "metrics"
       ],
       "description": "MCP server bridge"
     },
@@ -200,7 +210,7 @@
     {
       "name": "cmux",
       "source": "npm:pi-cmux",
-      "lazy": true,
+      "lazy": "after-start",
       "tools": [
         "cmux_open_terminal"
       ],
