@@ -90,5 +90,10 @@
   "npmCommand": [
     "bun"
   ],
-  "hideThinkingBlock": false
+  "hideThinkingBlock": false,
+  "sessions": {
+    "search": {
+      "enable": false
+    }
+  }
 }
