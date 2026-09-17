@@ -62,7 +62,7 @@
         "-extensions/anthropic-attribution.ts"
       ]
     },
-    "git:github.com/jdtzmn/premind@5b81173c789c1a5a968c4f4e3c4d229d0a671c2e",
+    "git:github.com/jdtzmn/premind@31b89f53fcf8b8cb21fb1de9a7698bf136ecf00a",
     "npm:pi-lmstudio@1.5.0",
     {
       "source": "npm:@juicesharp/rpiv-todo@2.7.1",
