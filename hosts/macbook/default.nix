@@ -235,6 +235,7 @@ in
 
       # Browser
       "brave-browser"
+      "terminal-browser"
 
       # Music
       "spotify"
