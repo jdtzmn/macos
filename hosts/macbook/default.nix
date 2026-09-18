@@ -4,6 +4,24 @@
   separateAdminAccount ? false,
   ...
 }:
+let
+  screenshotDirectory = "/Users/jacob/Downloads";
+  normalizeScreenshotNames = pkgs.writeShellScript "normalize-screenshot-names" ''
+    set -eu
+    shopt -s nullglob
+
+    for source in "${screenshotDirectory}"/Screenshot\ *; do
+      [ -f "$source" ] || continue
+
+      filename="''${source##*/}"
+      target="''${source%/*}/''${filename// /_}"
+
+      if [ "$source" != "$target" ] && [ ! -e "$target" ]; then
+        /bin/mv "$source" "$target"
+      fi
+    done
+  '';
+in
 {
   # Disable nix because we're using Determinate Nix
   nix.enable = false;
@@ -74,6 +92,19 @@
     };
     "com.apple.screencaptureui" = {
       thumbnailExpiration = 60.0;
+    };
+  };
+
+  # Save screenshots to Downloads and normalize their names as they appear.
+  system.defaults.screencapture.location = screenshotDirectory;
+
+  launchd.user.agents.normalize-screenshot-names = {
+    serviceConfig = {
+      Label = "com.jacob.normalize-screenshot-names";
+      ProgramArguments = [ "${normalizeScreenshotNames}" ];
+      WatchPaths = [ screenshotDirectory ];
+      RunAtLoad = false;
+      ThrottleInterval = 1;
     };
   };
 
