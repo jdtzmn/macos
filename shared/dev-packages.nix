@@ -1,4 +1,4 @@
-{ lib, pkgs, enableSprite ? false, ... }:
+{ lib, pkgs, herdr, enableSprite ? false, ... }:
 {
   home.packages = with pkgs;
     [
@@ -12,6 +12,7 @@
       fzf
       bat
       ripgrep
+      herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
       delta
       lazygit
       eza

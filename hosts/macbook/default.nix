@@ -1,5 +1,6 @@
 {
   pkgs,
+  herdr,
   repoDir ? null,
   separateAdminAccount ? false,
   ...
@@ -147,7 +148,7 @@ in
   # of refusing to switch.
   home-manager.backupFileExtension = "backup";
   home-manager.extraSpecialArgs = {
-    inherit repoDir;
+    inherit repoDir herdr;
     enableSprite = true;
   };
   home-manager.users.jacob = {

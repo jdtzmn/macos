@@ -23,11 +23,14 @@
         # Sprite CLI
         sprite-cli.url = "github:jamiebrynes7/sprite-cli-nix";
         sprite-cli.inputs.nixpkgs.follows = "nixpkgs";
+
+        # Herdr terminal workspace manager
+        herdr.url = "github:herdrdev/herdr/v0.9.1";
     };
 
 
     # Flake outputs
-    outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, darwin, nix-homebrew, sprite-cli }:
+    outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, darwin, nix-homebrew, sprite-cli, herdr }:
     let
         repoDir = builtins.getEnv "REPO_DIR";
         unstablePkgsDarwin = import nixpkgs-unstable { system = "aarch64-darwin"; };
@@ -46,7 +49,7 @@
                 ./hosts/macbook/default.nix
             ];
             specialArgs = {
-                inherit repoDir separateAdminAccount;
+                inherit repoDir separateAdminAccount herdr;
             };
         };
         linuxPkgs = import nixpkgs {
@@ -66,7 +69,7 @@
                 ./hosts/linux/home.nix
             ];
             extraSpecialArgs = {
-                inherit repoDir username homeDirectory enableSprite;
+                inherit repoDir username homeDirectory enableSprite herdr;
             };
         };
 
@@ -98,7 +101,7 @@
                 ./hosts/linux/home.nix
             ];
             extraSpecialArgs = {
-                inherit repoDir;
+                inherit repoDir herdr;
                 username = devpodUsername;
                 homeDirectory = devpodHomeDirectory;
                 enableSprite = false;
