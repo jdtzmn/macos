@@ -15,11 +15,18 @@ via per-tool overlays.
 
 ## Worktrees and Branch Safety
 
-- Before making any change that will need its own branch or PR — any non-trivial edit you would not commit directly to the default branch — first ask whether to use a Port worktree.
-- Do not create, edit, or stage files, and do not run write-oriented or git-mutating commands, until I choose between (a) the current checkout and (b) a new Port worktree.
-- Ask explicitly, e.g.: "This will need a branch/PR — use a Port worktree, or work in the current checkout?"
-- If I choose a Port worktree, follow the `port-cli` workflow to create/enter it before editing.
-- Skip this question only for: read-only investigation, a trivial single-file fix I ask you to commit directly, or when I've already said where to work.
+- Before starting a change that would normally be made on an independent branch
+  or PR, choose the working location using the repository’s already-loaded
+  worktree policy.
+- The default policy is **Port worktrees**. Create and use one without asking
+  when the repository does not declare a different policy.
+- A repository’s `AGENTS.md` may declare **Current checkout by default**.
+  Follow that policy directly.
+- Do not inspect files, Git state, or Port state solely to choose the working
+  location, and do not ask for confirmation when the applicable policy is clear.
+- Ask only when the user’s request conflicts with the applicable policy or
+  requires a choice that the policy does not cover.
+- If using a Port worktree, follow the `port-cli` workflow.
 
 ## Secrets and .env Safety
 
