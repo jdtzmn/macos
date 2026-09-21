@@ -249,6 +249,7 @@ in
       "tower"
       "orbstack"
       "cmux"
+      "ghostty"
       "conductor"
       "bruno"
       "dbeaver-community"
