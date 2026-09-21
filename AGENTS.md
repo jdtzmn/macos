@@ -167,6 +167,10 @@ stylua shared/nvim
 - Fail safely with early returns when required context is missing.
 - Do not swallow errors silently unless intentional and low risk; when ignoring, do it explicitly.
 
+## Worktree Policy
+
+- **Current checkout by default.** Use a Port worktree only when the user explicitly requests one or parallel work needs isolation.
+
 ## Agent Workflow Expectations
 
 Repo-specific expectations (general workflow rules are in the shared base):
