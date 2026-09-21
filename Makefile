@@ -34,8 +34,9 @@ macbook: agents
 
 # macOS system configuration from administrator account
 macbook-admin: agents
-	rm -rf /tmp/macos-config
-	sudo cp -r $(CURDIR) /tmp/macos-config
+	sudo rm -rf /tmp/macos-config
+	mkdir -p /tmp/macos-config
+	git ls-files -z | rsync -a --from0 --files-from=- ./ /tmp/macos-config/
 	REPO_DIR=$(CURDIR) sudo -E -H nix run nix-darwin -- switch --flake /tmp/macos-config#macbook-admin --impure
 
 # Linux home-manager standalone configuration
