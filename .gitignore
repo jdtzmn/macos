@@ -95,6 +95,8 @@ shared/config/pi/pi-sessions/
 # Background delegate artifacts
 .pi/delegate/
 shared/config/pi/fff/
+# pi-image-view cached previews
+shared/config/pi/image-view/
 # context-mode persistent memory (FTS5 index + session state)
 pi-hermes-memory/
 shared/config/pi/.pi-hermes-locks.sqlite
