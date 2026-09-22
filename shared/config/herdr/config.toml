@@ -6,5 +6,11 @@ rename_tab = "prefix+comma"
 split_horizontal = "prefix+\""
 split_vertical = "prefix+%"
 
+[[keys.command]]
+key = "prefix+t"
+type = "plugin_action"
+command = "herdr-navigator.open"
+description = "open Herdr Navigator"
+
 [experimental]
 kitty_graphics = true
