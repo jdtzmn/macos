@@ -36,7 +36,7 @@
       "extensions": []
     },
     "npm:pi-zentui@0.21.0",
-    "npm:pi-hermes-memory@0.9.6",
+    "npm:pi-hermes-memory@0.9.9",
     {
       "source": "npm:pi-mcp-adapter@2.29.0",
       "extensions": []
