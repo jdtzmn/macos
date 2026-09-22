@@ -1,6 +1,10 @@
+onboarding = false
 [keys]
 prefix = "ctrl+space"
 detach = "prefix+d"
 rename_tab = "prefix+comma"
 split_horizontal = "prefix+%"
 split_vertical = "prefix+\""
+
+[experimental]
+kitty_graphics = true
