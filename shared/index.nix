@@ -9,6 +9,7 @@
     ./fish.nix
     ./gh.nix
     ./gh-dash.nix
+    ./herdr.nix
     ./git.nix
     ./lazygit.nix
     ./nvim.nix
