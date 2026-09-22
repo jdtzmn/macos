@@ -2,6 +2,7 @@ onboarding = false
 [keys]
 prefix = "ctrl+space"
 detach = "prefix+d"
+next_agent = "prefix+a"
 rename_tab = "prefix+comma"
 split_horizontal = "prefix+\""
 split_vertical = "prefix+%"
