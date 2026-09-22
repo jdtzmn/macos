@@ -3,8 +3,8 @@ onboarding = false
 prefix = "ctrl+space"
 detach = "prefix+d"
 rename_tab = "prefix+comma"
-split_horizontal = "prefix+%"
-split_vertical = "prefix+\""
+split_horizontal = "prefix+\""
+split_vertical = "prefix+%"
 
 [experimental]
 kitty_graphics = true
