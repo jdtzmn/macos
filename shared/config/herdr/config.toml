@@ -13,5 +13,5 @@ type = "plugin_action"
 command = "herdr-navigator.open"
 description = "open Herdr Navigator"
 
-[experimental]
+[terminal]
 kitty_graphics = true
