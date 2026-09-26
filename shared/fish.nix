@@ -49,6 +49,7 @@
       "n" = "nvim";
       "t" = "tmux";
       "y" = "yazi";
+      "h" = "herdr";
       "terraform" = "tofu";
       "tf" = "tofu";
       "lg" = "lazygit";
