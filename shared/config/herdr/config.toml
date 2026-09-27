@@ -20,11 +20,11 @@ kitty_graphics = true
 rows = [
   ["state_icon", "machine", "workspace", "tab"],
   [
-    "agent",
     { token = "$agent_progress_pct_early", fg = "#a9b1d6" },
     { token = "$agent_progress_pct_mid", fg = "#7aa2f7" },
     { token = "$agent_progress_pct_late", fg = "#7dcfff" },
     { token = "$agent_progress_pct_done", fg = "#9ece6a", bold = true },
+    "agent",
     { token = "$agent_progress_freshness", fg = "#e0af68" },
   ],
   ["$agent_progress_activity"],
