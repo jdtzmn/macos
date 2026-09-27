@@ -17,4 +17,15 @@ description = "open Herdr Navigator"
 kitty_graphics = true
 
 [ui.sidebar.agents]
-rows = [["state_icon", "machine", "workspace", "tab"], ["agent"], [{ token = "$agent_progress_summary", dim = true }]]
+rows = [
+  ["state_icon", "machine", "workspace", "tab"],
+  [
+    "agent",
+    { token = "$agent_progress_pct_early", fg = "#a9b1d6" },
+    { token = "$agent_progress_pct_mid", fg = "#7aa2f7" },
+    { token = "$agent_progress_pct_late", fg = "#7dcfff" },
+    { token = "$agent_progress_pct_done", fg = "#9ece6a", bold = true },
+    { token = "$agent_progress_freshness", fg = "#e0af68" },
+  ],
+  ["$agent_progress_activity"],
+]
