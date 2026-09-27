@@ -37,7 +37,7 @@ macbook-admin: agents
 	sudo rm -rf /tmp/macos-config
 	mkdir -p /tmp/macos-config
 	git ls-files -z | rsync -a --from0 --files-from=- ./ /tmp/macos-config/
-	REPO_DIR=$(CURDIR) sudo -E -H nix run nix-darwin -- switch --flake /tmp/macos-config#macbook-admin --impure
+	REPO_DIR=$(CURDIR) sudo -E env HOME=/var/root NIX_CACHE_HOME=/var/root/.cache/nix /run/current-system/sw/bin/darwin-rebuild switch --flake /tmp/macos-config#macbook-admin --impure
 
 # Linux home-manager standalone configuration
 linux: agents
