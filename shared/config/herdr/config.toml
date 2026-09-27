@@ -15,3 +15,6 @@ description = "open Herdr Navigator"
 
 [terminal]
 kitty_graphics = true
+
+[ui.sidebar.agents]
+rows = [["state_icon", "machine", "workspace", "tab"], ["agent"], [{ token = "$agent_progress_summary", dim = true }]]
