@@ -25,6 +25,7 @@ Usage: shepherd <command> [args]
   mode [observe|nudge]          Show or set the global mode
   auto <pane> on|off            Opt an agent in or out of automatic nudges
   ignore <pane> on|off          Hide an agent from triage
+  prs [--force] [--all]         List PRs awaiting the user's merge or review (NEW = unreported)
   path                          Print the state directory
 EOF
 }
@@ -278,6 +279,65 @@ cmd_flag() {
   echo "$field=$3 for $pane"
 }
 
+# PRs waiting on the user: their own approved PRs (to merge) and PRs that
+# request their review directly. Only changes since the last report are NEW.
+cmd_prs() {
+  local force=0 all=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --force) force=1; shift ;;
+      --all) all=1; shift ;;
+      *) die "unknown prs option: $1" ;;
+    esac
+  done
+  init_ledger
+  command -v gh >/dev/null || die "gh is required"
+  if [ "$force" -eq 0 ] && jq -e '.last_pr_check and ((.last_pr_check | fromdateiso8601) > now - (.policy.pr_check_minutes // 5) * 60)' "$LEDGER" >/dev/null; then
+    echo "prs: checked under $(jq -r '.policy.pr_check_minutes // 5' "$LEDGER")m ago; skipped (use --force)"
+    return 0
+  fi
+  local since approved review merge_states='[]' repo number state
+  since="$(jq -r '(now - (.policy.pr_lookback_days // 30) * 86400) | strftime("%Y-%m-%d")' "$LEDGER")"
+  approved="$(gh search prs --author=@me --state=open --review=approved --updated=">=$since" --json number,title,url,repository,isDraft --limit 50)" || die "gh search (approved) failed"
+  review="$(gh search prs 'user-review-requested:@me' --state=open --updated=">=$since" --json number,title,url,repository,author,isDraft --limit 50)" || die "gh search (review requested) failed"
+  while read -r repo number; do
+    [ -n "$repo" ] || continue
+    state="$(gh pr view -R "$repo" "$number" --json mergeStateStatus --jq .mergeStateStatus 2>/dev/null || echo UNKNOWN)"
+    merge_states="$(jq -c --arg r "$repo" --arg n "$number" --arg s "$state" '. + [{key: "\($r)#\($n)", state: $s}]' <<<"$merge_states")"
+  done < <(jq -r '.[] | select(.isDraft | not) | "\(.repository.nameWithOwner) \(.number)"' <<<"$approved")
+
+  local items
+  items="$(jq -c -n --argjson approved "$approved" --argjson review "$review" --argjson states "$merge_states" '
+    ($states | map({key, value: .state}) | from_entries) as $s
+    | [($approved[] | select(.isDraft | not)
+        | "\(.repository.nameWithOwner)#\(.number)" as $k
+        | {key: $k, kind: "merge", title, url, state: ($s[$k] // "UNKNOWN")}),
+       ($review[] | select(.isDraft | not)
+        | {key: "\(.repository.nameWithOwner)#\(.number)", kind: "review", title, url, author: .author.login, state: "REQUESTED"})]')"
+
+  # A state change re-reports a PR, except flapping into GitHub's lazy UNKNOWN.
+  jq -r --argjson items "$items" --argjson all "$all" '
+    def pr_label: if .kind == "review" then "review requested by \(.author)"
+      else {"CLEAN": "approved, ready to merge", "BEHIND": "approved, branch is behind its base",
+            "DIRTY": "approved, has merge conflicts", "BLOCKED": "approved, blocked by checks or rules",
+            "UNSTABLE": "approved, some checks failing", "HAS_HOOKS": "approved, ready to merge"}[.state]
+           // "approved, merge state pending" end;
+    (.prs // {}) as $old
+    | ($items | map(. + {new: ($old[.key] == null or $old[.key].kind != .kind
+        or (.state != "UNKNOWN" and $old[.key].state != .state))})) as $rows
+    | "prs: \($rows | map(select(.kind == "merge")) | length) approved, \($rows | map(select(.kind == "review")) | length) review requests, \($rows | map(select(.new)) | length) new",
+      ($rows[] | select(.new or $all == 1)
+        | "\(if .new then "NEW" else "   " end)  \(.key)  \(pr_label): \(.title[0:80])  \(.url)")
+  ' "$LEDGER"
+  update_ledger --argjson items "$items" '
+    (now | todate) as $ts
+    | (.prs // {}) as $old
+    | .prs = ($items | map({key, value: {kind, title, url,
+        state: (if .state == "UNKNOWN" and $old[.key] then $old[.key].state else .state end),
+        first_seen: ($old[.key].first_seen // $ts)}}) | from_entries)
+    | .last_pr_check = $ts'
+}
+
 case "${1:-}" in
   sweep) cmd_sweep ;;
   baseline) cmd_baseline ;;
@@ -287,6 +347,7 @@ case "${1:-}" in
   mode) shift; cmd_mode "$@" ;;
   auto) [ $# -eq 3 ] || die "usage: shepherd auto <pane> on|off"; cmd_flag auto_nudge "$2" "$3" ;;
   ignore) [ $# -eq 3 ] || die "usage: shepherd ignore <pane> on|off"; cmd_flag ignore "$2" "$3" ;;
+  prs) shift; cmd_prs "$@" ;;
   path) echo "$STATE_DIR" ;;
   -h | --help | help | "") usage ;;
   *) usage >&2; exit 2 ;;

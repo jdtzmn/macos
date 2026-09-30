@@ -15,6 +15,16 @@
   "mode": "observe",
   "policy": { "cooldown_minutes": 10, "max_nudges": 2, "window_minutes": 120, "triage_limit": 5 },
   "last_sweep": "2026-09-30T19:01:42Z",
+  "last_pr_check": "2026-09-30T21:30:00Z",
+  "prs": {
+    "Standard-Template-Labs/repo#12386": {
+      "kind": "review",
+      "state": "REQUESTED",
+      "title": "feat(ui): mobile ticket detail page …",
+      "url": "https://github.com/Standard-Template-Labs/repo/pull/12386",
+      "first_seen": "2026-09-30T21:30:00Z"
+    }
+  },
   "agents": {
     "<agent session path, or pane id when Herdr reports none>": {
       "pane_id": "wQ:p1",
@@ -51,6 +61,10 @@
 - **`nudges`** holds automatic-nudge timestamps inside the rolling window; user-approved `send`s
   are not counted.
 - **Gone agents** get `gone_at` and are dropped after seven days.
+- **`prs`** is the set of PRs waiting on the user as of `last_pr_check`: `kind` is `merge` (their
+  own approved PR, `state` is GitHub's `mergeStateStatus`, `CLEAN` meaning ready) or `review` (their
+  review is requested directly; team requests are left out). A PR is `NEW` when it first appears or
+  its kind or state changes; it leaves the set once merged, reviewed, or closed.
 
 ## Policy
 
@@ -62,6 +76,8 @@ Edit `policy` in `ledger.json` to tune it:
 | `max_nudges` | Automatic nudges allowed per agent within the window before escalating. |
 | `window_minutes` | Rolling window for `max_nudges`. |
 | `triage_limit` | Most rows to triage per sweep; the remainder wait for the next sweep. |
+| `pr_check_minutes` | Minimum gap between GitHub PR checks (default 5; `prs --force` skips it). |
+| `pr_lookback_days` | Only PRs updated within this many days count (default 30). |
 
 ## `events.jsonl`
 

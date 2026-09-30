@@ -25,7 +25,7 @@ Change the mode, opt-ins, or ignores only when the user asks: `shepherd mode nud
 
 ## Loop
 
-1. **Sweep.** Run `shepherd sweep` to refresh the ledger and print the board.
+1. **Sweep.** Run `shepherd sweep` to refresh the ledger and print the board, then `shepherd prs` to check GitHub for PRs waiting on the user: their own approved PRs to merge, and PRs that request their review directly. `prs` checks at most every 5 minutes and marks only unreported PRs and state changes `NEW`.
 2. **Triage** each `TRIAGE` row, top to bottom, up to `triage_limit` rows per sweep; the rest wait for the next sweep.
    - Read the tail: `herdr agent read <pane> --source recent-unwrapped --lines 60`. Read further back only when the tail cuts off the agent's final message.
    - Classify it as one allowlist class, one escalation, or **park** (finished, waiting on the user's review, or waiting on something with nothing trivial to unblock).
@@ -39,7 +39,7 @@ Change the mode, opt-ins, or ignores only when the user asks: `shepherd mode nud
    ```
 
    On success, log it as `nudge`. On any error (`agent_blocked`, `agent_prompt_stalled`, `timeout`), send nothing further, since the prompt may already have landed; log an `escalate` describing the failure. When `can-nudge` says the budget is spent, log an `escalate`; for any other refusal, log the `suggest`.
-4. **Report** what changed since your last report, escalations first, then suggestions awaiting approval, nudges sent, and agents that newly finished. Leave out unchanged rows, and skip the report entirely when nothing changed.
+4. **Report** what changed since your last report: `NEW` PRs waiting on the user first (what the PR does, whether it's theirs to merge or someone's to review, and the link), then escalations, suggestions awaiting approval, nudges sent, and agents that newly finished. Also call out a PR when an agent's tail shows it is now waiting only on the user's approval or merge. Leave out unchanged rows, and skip the report entirely when nothing changed.
 
    Name each agent by its work in plain words ("the rate-limiter PR review", "the onboarding persona conflict fix"), then say what it is doing and what it needs. Pane IDs are unreadable to the user: keep them out of prose, and if you include one, put it last in parentheses as a handle.
 5. **Wait.** Start `shepherd watch` as a background task that wakes you when it exits (in Pi: `bg_run` with `isAgent: false` and default notifications). It exits when an agent enters an attention state or after a 30-minute heartbeat. Then return to step 1. Keep looping until the user says stop, then kill the watch task.
