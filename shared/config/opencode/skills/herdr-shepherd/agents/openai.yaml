@@ -1,0 +1,3 @@
+interface:
+  display_name: "Herdr Shepherd"
+  short_description: "Watch Herdr agents and nudge trivial stalls"

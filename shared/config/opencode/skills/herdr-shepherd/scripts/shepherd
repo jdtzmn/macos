@@ -1,0 +1,293 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2016 # single-quoted strings are jq programs
+# Deterministic bookkeeping for the herdr-shepherd skill.
+# The ledger is the shepherd's memory, so the agent never has to carry
+# per-agent history in its own context. Format: ../LEDGER.md
+set -euo pipefail
+
+STATE_DIR="${HERDR_SHEPHERD_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/herdr-shepherd}"
+LEDGER="$STATE_DIR/ledger.json"
+EVENTS="$STATE_DIR/events.jsonl"
+SELF="${HERDR_PANE_ID:-}"
+
+usage() {
+  cat <<'EOF'
+Usage: shepherd <command> [args]
+
+  sweep                         Refresh the ledger from Herdr and print the board
+  baseline                      Mark every idle/done agent as already triaged
+  watch [--interval S] [--max S]
+                                Block until an agent needs attention, or heartbeat
+  log <pane> <action> <class> [message]
+                                Record a triage outcome
+                                action: park | suggest | escalate | nudge | send
+  can-nudge <pane>              Exit 0 only if an automatic nudge is allowed now
+  mode [observe|nudge]          Show or set the global mode
+  auto <pane> on|off            Opt an agent in or out of automatic nudges
+  ignore <pane> on|off          Hide an agent from triage
+  path                          Print the state directory
+EOF
+}
+
+die() {
+  echo "shepherd: $*" >&2
+  exit 1
+}
+
+command -v jq >/dev/null || die "jq is required"
+
+init_ledger() {
+  mkdir -p "$STATE_DIR"
+  [ -f "$LEDGER" ] && return 0
+  jq -n '{
+    version: 1,
+    mode: "observe",
+    policy: {cooldown_minutes: 10, max_nudges: 2, window_minutes: 120, triage_limit: 5},
+    last_sweep: null,
+    agents: {}
+  }' >"$LEDGER"
+  echo "shepherd: created $LEDGER (mode=observe)" >&2
+}
+
+# Apply a jq program to the ledger atomically.
+update_ledger() {
+  local tmp
+  tmp="$(mktemp "$STATE_DIR/ledger.XXXXXX")"
+  if jq "$@" "$LEDGER" >"$tmp"; then
+    mv "$tmp" "$LEDGER"
+  else
+    rm -f "$tmp"
+    die "ledger update failed"
+  fi
+}
+
+log_event() {
+  jq -cn --arg action "$1" --arg key "$2" --arg pane "$3" --arg class "$4" --arg message "$5" \
+    '{ts: (now | todate), action: $action, key: $key, pane_id: $pane, class: $class, message: $message}' >>"$EVENTS"
+}
+
+live_agents() {
+  herdr agent list || die "herdr agent list failed (is this running inside Herdr?)"
+}
+
+# Resolve a pane id (or a raw ledger key) to a ledger key.
+resolve_key() {
+  local key
+  key="$(jq -r --arg t "$1" '
+    if .agents[$t] then $t
+    else [.agents | to_entries[] | select(.value.pane_id == $t and .value.gone_at == null) | .key] | first // empty
+    end' "$LEDGER")"
+  [ -n "$key" ] || die "no live agent for '$1' in the ledger; run 'shepherd sweep' first"
+  printf '%s' "$key"
+}
+
+JQ_DEFS='
+def ready_class: if . == "idle" or . == "done" then "ready" else . end;
+def attention_status: ready_class | . == "ready" or . == "blocked" or . == "unknown";
+def pad($n): tostring | if length >= $n then .[0:$n - 1] + " " else . + (" " * ($n - length)) end;
+def age($now): ($now - (fromdateiso8601)) / 60 | floor
+  | if . < 60 then "\(.)m" elif . < 1440 then "\(. / 60 | floor)h" else "\(. / 1440 | floor)d" end;
+def flag:
+  if .ignore then "IGN"
+  elif .attention and .attention.seq == .state_change_seq then (.attention.action | ascii_upcase)
+  elif .focused then "USER"
+  elif (.status | attention_status) and .triaged_seq != .state_change_seq then "TRIAGE"
+  else "" end;
+def rank:
+  {"TRIAGE": 0, "ESCALATE": 1, "SUGGEST": 2, "USER": 3, "": 4, "IGN": 5}[flag] // 4;
+'
+
+cmd_sweep() {
+  init_ledger
+  local list
+  list="$(live_agents)"
+  update_ledger --argjson list "$list" --arg self "$SELF" "$JQ_DEFS"'
+    now as $now | ($now | todate) as $ts
+    | .policy.window_minutes as $window
+    | ($list.result.agents | map(select(.pane_id != $self))) as $live
+    | ($live | map(.agent_session.value // .pane_id)) as $keys
+    | .agents as $old
+    | reduce $live[] as $a (.;
+        ($a.agent_session.value // $a.pane_id) as $k
+        | ($old[$k] // {auto_nudge: false, ignore: false, nudges: [], triaged_seq: null, attention: null}) as $e
+        | .agents[$k] = ($e + {
+            pane_id: $a.pane_id,
+            workspace_id: $a.workspace_id,
+            title: (($a.terminal_title_stripped // "") | sub("^π - "; "")),
+            cwd: $a.cwd,
+            focused: $a.focused,
+            progress: ($a.tokens.agent_progress_summary // null),
+            status: $a.agent_status,
+            state_change_seq: $a.state_change_seq,
+            status_since: (if $e.state_change_seq == $a.state_change_seq then $e.status_since else $ts end),
+            last_seen: $ts,
+            gone_at: null,
+            nudges: ($e.nudges | map(select(fromdateiso8601 > $now - $window * 60))),
+            attention: (if $e.attention and $e.attention.seq == $a.state_change_seq then $e.attention else null end)
+          }))
+    | .agents |= with_entries(
+        .key as $k
+        | if any($keys[]; . == $k) then .
+          else .value.gone_at //= $ts end)
+    | .agents |= with_entries(select(.value.gone_at == null or (.value.gone_at | fromdateiso8601) > $now - 7 * 86400))
+    | .last_sweep = $ts'
+  print_board
+}
+
+print_board() {
+  jq -r "$JQ_DEFS"'
+    now as $now
+    | [.agents[] | select(.gone_at == null)] as $live
+    | ($live | map(select(flag == "TRIAGE")) | length) as $triage
+    | "mode=\(.mode)  agents=\($live | length)  working=\($live | map(select(.status == "working")) | length)  triage=\($triage)  pending=\($live | map(select(flag == "ESCALATE" or flag == "SUGGEST")) | length)  triage_limit=\(.policy.triage_limit)",
+      "",
+      ("FLAG" | pad(9)) + ("PANE" | pad(9)) + ("STATUS" | pad(8)) + ("FOR" | pad(5)) + ("AUTO" | pad(5)) + ("N" | pad(3)) + ("PROGRESS" | pad(22)) + "TITLE",
+      ($live | sort_by(rank, .status_since) | .[]
+        | (flag | pad(9)) + (.pane_id | pad(9)) + (.status | pad(8)) + (.status_since | age($now) | pad(5))
+          + ((if .auto_nudge then "on" else "off" end) | pad(5)) + ((.nudges | length) | pad(3))
+          + ((.progress // "-") | pad(22)) + (.title | .[0:90])),
+      ($live | map(select(flag == "ESCALATE" or flag == "SUGGEST")) as $pending
+        | if ($pending | length) > 0 then
+            "", "PENDING",
+            ($pending[] | "  \(.pane_id)  \(.attention.action)/\(.attention.class): \(.attention.message)")
+          else empty end)
+  ' "$LEDGER"
+}
+
+cmd_baseline() {
+  init_ledger
+  update_ledger "$JQ_DEFS"'
+    .agents |= map_values(
+      if .gone_at == null and (.status | ready_class) == "ready" then .triaged_seq = .state_change_seq else . end)'
+  log_event baseline "" "" "" "marked idle/done agents as triaged"
+  print_board
+}
+
+cmd_watch() {
+  local interval=20 max=1800
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --interval) interval="$2"; shift 2 ;;
+      --max) max="$2"; shift 2 ;;
+      *) die "unknown watch option: $1" ;;
+    esac
+  done
+  init_ledger
+  # Seed the previous snapshot from the ledger so changes since the last
+  # sweep are caught on the first poll.
+  local prev start failures=0 list result
+  prev="$(jq -c '.agents | map_values({status, ignore, focused})' "$LEDGER")"
+  start="$(date +%s)"
+  while :; do
+    if list="$(herdr agent list 2>/dev/null)"; then
+      failures=0
+      result="$(jq -c -n --argjson list "$list" --argjson prev "$prev" --arg self "$SELF" "$JQ_DEFS"'
+        ($list.result.agents | map(select(.pane_id != $self))) as $live
+        | {
+            snapshot: ($live | map({key: (.agent_session.value // .pane_id), value: {status: .agent_status, focused, ignore: ($prev[.agent_session.value // .pane_id].ignore // false)}}) | from_entries),
+            triggers: [$live[]
+              | (.agent_session.value // .pane_id) as $k
+              | select(($prev[$k].ignore // false) | not)
+              | select(.focused | not)
+              | select(.agent_status | attention_status)
+              | .agent_status as $s
+              | select(($prev[$k].status // "" | ready_class) != ($s | ready_class))
+              | "\(.pane_id)\t\(.agent_status)\t\((.terminal_title_stripped // "") | sub("^π - "; "") | .[0:90])"]
+          }')"
+      if [ "$(jq '.triggers | length' <<<"$result")" -gt 0 ]; then
+        echo "attention:"
+        jq -r '.triggers[]' <<<"$result"
+        return 0
+      fi
+      prev="$(jq -c '.snapshot' <<<"$result")"
+    else
+      failures=$((failures + 1))
+      [ "$failures" -ge 3 ] && die "herdr agent list failed 3 times in a row"
+    fi
+    if [ $(($(date +%s) - start)) -ge "$max" ]; then
+      echo "heartbeat: no new attention states in ${max}s"
+      return 0
+    fi
+    sleep "$interval"
+  done
+}
+
+cmd_log() {
+  [ $# -ge 3 ] || die "usage: shepherd log <pane> <action> <class> [message]"
+  init_ledger
+  local key pane action="$2" class="$3" message="${4:-}"
+  case "$action" in park | suggest | escalate | nudge | send) ;; *) die "unknown action: $action" ;; esac
+  case "$action" in suggest | escalate | nudge | send) [ -n "$message" ] || die "$action needs a message" ;; esac
+  key="$(resolve_key "$1")"
+  pane="$(jq -r --arg k "$key" '.agents[$k].pane_id' "$LEDGER")"
+  update_ledger --arg k "$key" --arg action "$action" --arg class "$class" --arg message "$message" '
+    (now | todate) as $ts
+    | .agents[$k] |= (
+        .triaged_seq = .state_change_seq
+        | if $action == "suggest" or $action == "escalate" then
+            .attention = {action: $action, class: $class, message: $message, seq: .state_change_seq, at: $ts}
+          else .attention = null end
+        | if $action == "nudge" then .nudges += [$ts] else . end)'
+  log_event "$action" "$key" "$pane" "$class" "$message"
+  echo "logged $action/$class for $pane"
+}
+
+cmd_can_nudge() {
+  [ $# -eq 1 ] || die "usage: shepherd can-nudge <pane>"
+  init_ledger
+  local key reason
+  key="$(resolve_key "$1")"
+  reason="$(jq -r --arg k "$key" '
+    now as $now | .policy as $p | .agents[$k] as $a
+    | ($a.nudges | map(fromdateiso8601) | map(select(. > $now - $p.window_minutes * 60))) as $recent
+    | if .mode != "nudge" then "mode is \(.mode)"
+      elif ($a.auto_nudge | not) then "auto-nudge is off for this agent"
+      elif $a.ignore then "agent is ignored"
+      elif $a.focused then "user is focused on this agent"
+      elif $a.status == "blocked" then "agent is blocked; escalate"
+      elif ($recent | length) >= $p.max_nudges then "nudge budget spent (\($recent | length)/\($p.max_nudges) in \($p.window_minutes)m); escalate"
+      elif ($recent | length) > 0 and ($recent | max) > $now - $p.cooldown_minutes * 60 then "cooling down (\($p.cooldown_minutes)m between nudges)"
+      else "ok" end' "$LEDGER")"
+  if [ "$reason" = "ok" ]; then
+    echo "ok"
+  else
+    echo "no: $reason"
+    return 1
+  fi
+}
+
+cmd_mode() {
+  init_ledger
+  if [ $# -eq 0 ]; then
+    jq -r '.mode' "$LEDGER"
+    return 0
+  fi
+  case "$1" in observe | nudge) ;; *) die "mode must be observe or nudge" ;; esac
+  update_ledger --arg m "$1" '.mode = $m'
+  log_event mode "" "" "" "$1"
+  echo "mode=$1"
+}
+
+cmd_flag() {
+  local field="$1" pane="$2" value="$3" key
+  case "$value" in on) value=true ;; off) value=false ;; *) die "expected on or off" ;; esac
+  init_ledger
+  key="$(resolve_key "$pane")"
+  update_ledger --arg k "$key" --argjson v "$value" ".agents[\$k].$field = \$v"
+  log_event "$field" "$key" "$pane" "" "$3"
+  echo "$field=$3 for $pane"
+}
+
+case "${1:-}" in
+  sweep) cmd_sweep ;;
+  baseline) cmd_baseline ;;
+  watch) shift; cmd_watch "$@" ;;
+  log) shift; cmd_log "$@" ;;
+  can-nudge) shift; cmd_can_nudge "$@" ;;
+  mode) shift; cmd_mode "$@" ;;
+  auto) [ $# -eq 3 ] || die "usage: shepherd auto <pane> on|off"; cmd_flag auto_nudge "$2" "$3" ;;
+  ignore) [ $# -eq 3 ] || die "usage: shepherd ignore <pane> on|off"; cmd_flag ignore "$2" "$3" ;;
+  path) echo "$STATE_DIR" ;;
+  -h | --help | help | "") usage ;;
+  *) usage >&2; exit 2 ;;
+esac
