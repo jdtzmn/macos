@@ -20,7 +20,7 @@ Change the mode, opt-ins, or ignores only when the user asks: `shepherd mode nud
 ## Start
 
 1. Run `test "${HERDR_ENV:-}" = 1`. If it fails, tell the user you are not inside Herdr and stop.
-2. Run `shepherd sweep`. If it reports creating the ledger, run `shepherd baseline` so agents that were already idle count as seen, and list those agents to the user by title, one line each, without reading their output. Triage any of them later only if the user asks.
+2. Run `shepherd sweep`. If it reports creating the ledger, run `shepherd baseline` so agents that were already idle count as seen, and list those agents to the user by their work (see **Report**), one line each, without reading their output. Triage any of them later only if the user asks.
 3. Enter the loop.
 
 ## Loop
@@ -39,12 +39,14 @@ Change the mode, opt-ins, or ignores only when the user asks: `shepherd mode nud
    ```
 
    On success, log it as `nudge`. On any error (`agent_blocked`, `agent_prompt_stalled`, `timeout`), send nothing further, since the prompt may already have landed; log an `escalate` describing the failure. When `can-nudge` says the budget is spent, log an `escalate`; for any other refusal, log the `suggest`.
-4. **Report** what changed since your last report, escalations first: pane, title, and what the agent needs. Then suggestions awaiting approval, nudges sent, and agents that newly finished. Leave out unchanged rows, and skip the report entirely when nothing changed.
+4. **Report** what changed since your last report, escalations first, then suggestions awaiting approval, nudges sent, and agents that newly finished. Leave out unchanged rows, and skip the report entirely when nothing changed.
+
+   Name each agent by its work in plain words ("the rate-limiter PR review", "the onboarding persona conflict fix"), then say what it is doing and what it needs. Pane IDs are unreadable to the user: keep them out of prose, and if you include one, put it last in parentheses as a handle.
 5. **Wait.** Start `shepherd watch` as a background task that wakes you when it exits (in Pi: `bg_run` with `isAgent: false` and default notifications). It exits when an agent enters an attention state or after a 30-minute heartbeat. Then return to step 1. Keep looping until the user says stop, then kill the watch task.
 
 ## User approvals
 
-- **Suggestion approved** ("send wQ's"): run `shepherd sweep`. If the row still shows `SUGGEST`, send the recorded message verbatim with the `herdr agent prompt` command above and log it as `send`. If the row changed, the suggestion is stale; tell the user.
+- **Suggestion approved** ("send the onboarding fix its nudge"): match the agent the user describes to its row, then run `shepherd sweep`. If the row still shows `SUGGEST`, send the recorded message verbatim with the `herdr agent prompt` command above and log it as `send`. If the row changed, the suggestion is stale; tell the user. If the description matches more than one agent, ask which.
 - **Escalation answered**: send the user's answer as they gave it and log it as `send`. A `blocked` agent is waiting on a dialog only the user can answer in its pane; offer to focus that pane with `herdr agent focus <pane>`.
 
 ## Nudge allowlist
