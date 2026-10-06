@@ -15,6 +15,7 @@
 
   home.packages = with pkgs; [
     terminal-notifier
+    vhs # Terminal demo recording; Nix wrapper supplies ttyd and ffmpeg.
   ];
 
   ##############################
