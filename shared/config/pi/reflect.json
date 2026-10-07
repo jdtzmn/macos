@@ -1,0 +1,15 @@
+{
+  "targets": [
+    {
+      "path": "/Users/jacob/Documents/GitHub/macos/shared/config/agents/overlays/pi.md",
+      "model": "openai-codex/gpt-5.6-terra",
+      "lookbackDays": 1,
+      "maxSessionBytes": 614400,
+      "backupDir": "~/.pi/agent/reflect-backups",
+      "transcriptSource": {
+        "type": "pi-sessions"
+      },
+      "prompt": "Improve this Pi-specific agent-guidance source using only recurring, well-supported behavioral evidence from recent Pi sessions. Make surgical changes that preserve its concise, layered role: universal rules belong in personal-base.md, while this file should contain only Pi-specific guidance. Do not edit generated files or add rules for one-off incidents."
+    }
+  ]
+}

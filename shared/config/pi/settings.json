@@ -86,7 +86,8 @@
     "npm:@rahularya01/pi-lazy",
     "npm:pi-sessions",
     "npm:pi-suggest",
-    "npm:@petechu/pi-rewrite"
+    "npm:@petechu/pi-rewrite",
+    "git:github.com/jo-inc/pi-reflect@33a72886c8d5882b8b89a4a0ace1bb8d35403ef2"
   ],
   "npmCommand": [
     "bun"
