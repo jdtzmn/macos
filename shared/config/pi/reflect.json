@@ -9,7 +9,7 @@
       "transcriptSource": {
         "type": "pi-sessions"
       },
-      "prompt": "Improve this Pi-specific agent-guidance source using only recurring, well-supported behavioral evidence from recent Pi sessions. Make surgical changes that preserve its concise, layered role: universal rules belong in personal-base.md, while this file should contain only Pi-specific guidance. Do not edit generated files or add rules for one-off incidents."
+      "prompt": "Improve this Pi-specific agent-guidance source ({fileName}) using only recurring, well-supported behavioral evidence from recent Pi sessions. Make surgical changes that preserve its concise, layered role: universal rules belong in personal-base.md, while this file should contain only Pi-specific guidance. Do not edit generated files or add rules for one-off incidents.\n\n## Current target\n{targetContent}\n\n## Recent Pi-session evidence\n{transcripts}\n\n## Additional context\n{context}"
     }
   ]
 }
