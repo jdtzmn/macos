@@ -1,4 +1,5 @@
 {
+  "promptNotifications": ["bell"],
   "permission": {
     "*": "allow",
     "path": {

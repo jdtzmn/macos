@@ -46,7 +46,7 @@
       "source": "npm:pi-ultra-compact@1.3.0",
       "extensions": []
     },
-    "npm:@gotgenes/pi-permission-system@27.1.0",
+    "npm:@gotgenes/pi-permission-system@36.2.1",
     {
       "source": "npm:@ff-labs/pi-fff@0.10.5",
       "extensions": []
