@@ -279,11 +279,14 @@ in
   };
 
   ##############################
-  # Install Rosetta 2 for Done.fish plugin.
+  # Ensure Rosetta 2 is available for the Done.fish plugin without blocking activation.
   ##############################
 
   system.activationScripts.extraActivation.text = ''
-    softwareupdate --install-rosetta --agree-to-license
+    if ! /usr/sbin/pkgutil --pkg-info com.apple.pkg.RosettaUpdateAuto >/dev/null 2>&1; then
+      /usr/sbin/softwareupdate --install-rosetta --agree-to-license \
+        || echo "Warning: Rosetta 2 installation was unavailable; continuing activation." >&2
+    fi
   '';
 
 }
