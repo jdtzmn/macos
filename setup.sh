@@ -5,9 +5,9 @@
 # devpod runs this automatically in any workspace once
 # `devpod context set-options -o DOTFILES_URL=... -o DOTFILES_SCRIPT=setup.sh`
 # has been set (shared/devpod.nix does this on every home-manager switch).
-# It installs Nix and applies this repo's `homeConfigurations.devpod`
-# home-manager configuration (fish, git, nvim, tmux, opencode, etc.),
-# regardless of which project the workspace was opened for.
+# It installs Nix and applies the selected Home Manager configuration (fish,
+# git, nvim, tmux, opencode, etc.). DOTFILES_HOME_CONFIGURATION defaults to
+# devpod for DevPod, while other bootstrap clients can select their own target.
 #
 # Nix is installed single-user (no daemon) here rather than multi-user:
 # devcontainers/devpod workspaces have no init system to run `nix-daemon`
@@ -50,4 +50,5 @@ if ! grep -q "experimental-features" "$HOME/.config/nix/nix.conf" 2>/dev/null; t
 	echo "experimental-features = nix-command flakes" >>"$HOME/.config/nix/nix.conf"
 fi
 
-REPO_DIR="$SCRIPT_DIR" nix run home-manager -- switch -b backup --flake "${SCRIPT_DIR}#devpod" --impure
+home_configuration="${DOTFILES_HOME_CONFIGURATION:-devpod}"
+REPO_DIR="$SCRIPT_DIR" nix run home-manager -- switch -b backup --flake "${SCRIPT_DIR}#${home_configuration}" --impure
