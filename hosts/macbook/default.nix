@@ -126,7 +126,7 @@ in
         # Split into two steps: docker rejects `--volumes` together with the
         # `until` filter, so we time-filter the system prune and then prune
         # dangling volumes separately.
-        "PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.nix-profile/bin:$PATH docker system prune -af --filter 'until=168h' && PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.nix-profile/bin:$PATH docker volume prune -af"
+        "PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.nix-profile/bin:$PATH; export PATH; printf '[%s] Docker prune started\\n' \"$(date '+%Y-%m-%dT%H:%M:%S%z')\"; docker system prune -af --filter 'until=168h' && docker volume prune -af; status=$?; printf '[%s] Docker prune finished (exit=%s)\\n' \"$(date '+%Y-%m-%dT%H:%M:%S%z')\" \"$status\"; exit \"$status\""
       ];
       StartCalendarInterval = [
         { Hour = 3; Minute = 0; }
