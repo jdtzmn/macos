@@ -160,6 +160,9 @@ validate_dotfiles_configuration() {
   [ -n "$dotfiles_repo_url" ] || die "dotfiles repo URL cannot be empty"
   [ -n "$dotfiles_ref" ] || die "dotfiles ref cannot be empty"
   [ -n "$dotfiles_script" ] || die "dotfiles script cannot be empty"
+  case "$dotfiles_script" in
+    *$'\n'*|*$'\r'*) die "dotfiles script cannot contain newlines" ;;
+  esac
 
   case "$dotfiles_repo_url" in
     *$'\n'*|*$'\r'*) die "dotfiles repo URL cannot contain newlines" ;;
