@@ -204,17 +204,16 @@ load_dotfiles_configuration() {
 }
 
 write_dotfiles_configuration() {
-  run_remote_exec \
-    --env "DOTFILES_REPO_URL=$dotfiles_repo_url" \
-    --env "DOTFILES_REF=$dotfiles_ref" \
-    --env "DOTFILES_SCRIPT=$dotfiles_script" \
-    -- bash -lc '
-      set -euo pipefail
-      config_path="$1"
-      mkdir -p "$(dirname "$config_path")"
-      umask 077
-      printf "repo_url=%s\nref=%s\nscript=%s\n" "$DOTFILES_REPO_URL" "$DOTFILES_REF" "$DOTFILES_SCRIPT" > "$config_path"
-    ' _ "$dotfiles_config_path"
+  run_remote_exec -- bash -lc '
+    set -euo pipefail
+    config_path="$1"
+    repo_url="$2"
+    ref="$3"
+    script="$4"
+    mkdir -p "$(dirname "$config_path")"
+    umask 077
+    printf "repo_url=%s\nref=%s\nscript=%s\n" "$repo_url" "$ref" "$script" > "$config_path"
+  ' _ "$dotfiles_config_path" "$dotfiles_repo_url" "$dotfiles_ref" "$dotfiles_script"
 }
 
 parse_dotfiles_options() {
@@ -253,20 +252,19 @@ parse_dotfiles_options() {
 
 sync_dotfiles_repo() {
   log "syncing dotfiles repo $dotfiles_repo_url at $dotfiles_ref"
-  run_remote_exec \
-    --env "DOTFILES_REPO_URL=$dotfiles_repo_url" \
-    --env "DOTFILES_REF=$dotfiles_ref" \
-    -- bash -lc '
-      set -euo pipefail
-      repo_dir="$1"
-      parent_dir=$(dirname "$repo_dir")
-      temp_dir=$(mktemp -d)
-      trap "rm -rf \"$temp_dir\"" EXIT
-      mkdir -p "$parent_dir"
-      git clone --depth 1 --branch "$DOTFILES_REF" "$DOTFILES_REPO_URL" "$temp_dir/repo"
-      rm -rf "$repo_dir"
-      mv "$temp_dir/repo" "$repo_dir"
-    ' _ "$dotfiles_repo_dir"
+  run_remote_exec -- bash -lc '
+    set -euo pipefail
+    repo_dir="$1"
+    repo_url="$2"
+    ref="$3"
+    parent_dir=$(dirname "$repo_dir")
+    temp_dir=$(mktemp -d)
+    trap "rm -rf \"$temp_dir\"" EXIT
+    mkdir -p "$parent_dir"
+    git clone --depth 1 --branch "$ref" "$repo_url" "$temp_dir/repo"
+    rm -rf "$repo_dir"
+    mv "$temp_dir/repo" "$repo_dir"
+  ' _ "$dotfiles_repo_dir" "$dotfiles_repo_url" "$dotfiles_ref"
 }
 
 apply_dotfiles() {
