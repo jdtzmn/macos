@@ -174,6 +174,7 @@ in
       "datadog-labs/pack"
       "entireio/tap"
       "oven-sh/bun"
+      "smarzban/tap"
     ];
   };
 
@@ -190,6 +191,7 @@ in
       "datadog-labs/pack"
       "entireio/tap"
       "oven-sh/bun"
+      "smarzban/tap"
     ];
     brews = [
       # Prefer Homebrew for faster-moving CLI releases that lag in nixpkgs.
@@ -204,6 +206,7 @@ in
       "wasm-pack"
       "beads"
       "datadog-labs/pack/pup"
+      "smarzban/tap/tsk"
  
       # CLI File Explorer
       "yazi"
