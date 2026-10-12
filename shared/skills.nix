@@ -1,11 +1,9 @@
 { config, lib, repoDir, ... }:
 {
   # ~/.agents/skills is the shared, Agent-Skills-standard-compliant location
-  # that any compliant coding agent (Pi, OpenCode, etc.) discovers skills
-  # from. It happens to also resolve to the same physical directory as
-  # ~/.config/opencode/skills, but this wiring is intentionally
-  # agent-agnostic and does not belong to any single agent's module.
-  home.file.".agents/skills".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/opencode/skills";
+  # discovered by compliant coding agents (Pi, OpenCode, etc.). Agent-specific
+  # skills live under each agent's config directory.
+  home.file.".agents/skills".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/skills";
 
   # Installs pup's Datadog CLI skills into the shared ~/.agents/skills dir
   # so they're discoverable by any Agent-Skills-standard-compliant coding

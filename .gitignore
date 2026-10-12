@@ -112,15 +112,15 @@ shared/config/pi/extensions/pi-permission-system/logs/
 
 # pup-generated Datadog skills (reproducible via `pup skills install`,
 # installed into the shared ~/.agents/skills dir by shared/skills.nix)
-shared/config/opencode/skills/dd-pup/
-shared/config/opencode/skills/dd-monitors/
-shared/config/opencode/skills/dd-logs/
-shared/config/opencode/skills/dd-apm/
-shared/config/opencode/skills/dd-debugger/
-shared/config/opencode/skills/dd-docs/
-shared/config/opencode/skills/dd-code-generation/
-shared/config/opencode/skills/dd-file-issue/
-shared/config/opencode/skills/dd-symdb/
+shared/config/skills/dd-pup/
+shared/config/skills/dd-monitors/
+shared/config/skills/dd-logs/
+shared/config/skills/dd-apm/
+shared/config/skills/dd-debugger/
+shared/config/skills/dd-docs/
+shared/config/skills/dd-code-generation/
+shared/config/skills/dd-file-issue/
+shared/config/skills/dd-symdb/
 
 # Node
 package-lock.json
