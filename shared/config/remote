@@ -167,6 +167,7 @@ validate_dotfiles_configuration() {
   case "$dotfiles_repo_url" in
     *$'\n'*|*$'\r'*) die "dotfiles repo URL cannot contain newlines" ;;
   esac
+  dotfiles_repo_url=$(canonical_git_url "$dotfiles_repo_url")
   git check-ref-format --branch "$dotfiles_ref" >/dev/null 2>&1 || die "invalid dotfiles ref: $dotfiles_ref"
   case "/$dotfiles_script/" in
     /*/../*|*/./*|*//*) die "dotfiles script must be a relative path inside the dotfiles repo" ;;
