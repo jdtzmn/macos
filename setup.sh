@@ -32,6 +32,9 @@ if ! command -v nix >/dev/null 2>&1; then
 	rm -f "$tmp_installer"
 fi
 
+# The installer updates shell startup files but does not update this process.
+export PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+
 # Layout-agnostic: the classic nixos.org single-user installer (used above
 # when Nix isn't already present) ships nix.sh under ~/.nix-profile, but
 # some workspaces already have Nix installed via the Determinate installer
