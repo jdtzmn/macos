@@ -16,6 +16,16 @@ description = "open Herdr Navigator"
 [terminal]
 kitty_graphics = true
 
+[ui.toast]
+delivery = "herdr"
+delay_seconds = 0
+
+[ui.sound]
+enabled = true
+
+[ui.sound.agents]
+pi = "on"
+
 [ui.sidebar.agents]
 rows = [
   ["state_icon", "machine", "workspace", "tab"],
