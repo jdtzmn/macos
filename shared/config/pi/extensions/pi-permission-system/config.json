@@ -2,6 +2,7 @@
   "debugLog": false,
   "permissionReviewLog": true,
   "yoloMode": false,
+  "promptNotifications": ["bell"],
   "permission": {
     "*": "allow",
     "path": {
