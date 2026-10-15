@@ -2,7 +2,6 @@
   "debugLog": false,
   "permissionReviewLog": true,
   "yoloMode": false,
-  "promptNotifications": ["bell", "osc9"],
   "permission": {
     "*": "allow",
     "path": {
