@@ -1,3 +1,6 @@
 # pi-reflect runtime state
 reflect-history.json
 reflect-backups/
+
+## Native MCP OAuth credentials
+mcp-auth.json
