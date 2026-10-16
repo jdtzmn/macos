@@ -1,13 +1,10 @@
 {
   "mcpServers": {
     "linear": {
-      "url": "https://mcp.linear.app/mcp",
-      "auth": "oauth"
+      "url": "https://mcp.linear.app/mcp"
     },
     "datadog": {
-      "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp",
-      "auth": "oauth",
-      "lifecycle": "lazy"
+      "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp"
     }
   }
 }
