@@ -101,8 +101,8 @@ on a low-probability match.
 
 ## File layout
 
-- `shared/config/opencode/skills/aoe-linear/SKILL.md` — the skill. Picked up
-  via the existing `~/.agents/skills` symlink in `shared/opencode.nix`.
+- `shared/config/skills/aoe-linear/SKILL.md` — the shared skill, discovered via
+  the `~/.agents/skills` symlink in `shared/skills.nix`.
 
 ## Out of scope (YAGNI)
 
