@@ -197,7 +197,8 @@
     {
       "name": "intercom",
       "source": "npm:pi-intercom",
-      "lazy": true,
+      "lazy": "after-start",
+      "priority": 30,
       "tools": [
         "intercom"
       ],
