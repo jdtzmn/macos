@@ -119,30 +119,6 @@
       "description": "Web search, page fetches, and video analysis"
     },
     {
-      "name": "mcp",
-      "source": "npm:pi-mcp-adapter",
-      "lazy": true,
-      "cmd": [
-        "mcp"
-      ],
-      "keywords": [
-        "mcp",
-        "playwright",
-        "clickup",
-        "linear",
-        "datadog",
-        "dd",
-        "issue",
-        "ticket",
-        "bug",
-        "incident",
-        "monitoring",
-        "logs",
-        "metrics"
-      ],
-      "description": "MCP server bridge"
-    },
-    {
       "name": "context-mode",
       "source": "npm:context-mode",
       "lazy": true,
