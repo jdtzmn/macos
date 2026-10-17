@@ -28,6 +28,7 @@
       "extensions": []
     },
     "npm:@firstpick/pi-themes-bundle@0.1.7",
+    "npm:billion-context@0.1.197",
     {
       "source": "npm:context-mode@1.0.169",
       "extensions": []
