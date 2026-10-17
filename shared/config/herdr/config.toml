@@ -40,3 +40,7 @@ rows = [
   ],
   ["$agent_progress_activity"],
 ]
+
+[theme]
+name = "tokyo-night"
+auto_switch = false
