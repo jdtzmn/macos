@@ -47,7 +47,7 @@
       "source": "npm:@ff-labs/pi-fff@0.10.5",
       "extensions": []
     },
-    "npm:pi-hashline-edit-pro@2.7.2",
+    "npm:pi-hashline-edit-pro@6.4.7",
     {
       "source": "npm:pi-btw@0.4.1",
       "extensions": []
