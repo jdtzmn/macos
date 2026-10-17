@@ -27,7 +27,7 @@
       "source": "npm:pi-lens@4.1.2",
       "extensions": []
     },
-    "npm:@firstpick/pi-themes-bundle@0.1.6",
+    "npm:@firstpick/pi-themes-bundle@0.1.7",
     {
       "source": "npm:context-mode@1.0.169",
       "extensions": []
