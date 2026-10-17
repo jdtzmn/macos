@@ -11,6 +11,12 @@ via per-tool overlays.
 - After each completed phase, run the smallest relevant validation you can, then create a commit before starting the next phase.
 - Skip phase-by-phase commits only for trivial single-change tasks, read-only work, or when the user explicitly asks for one final commit.
 
+## Proactive Delegation
+
+- For non-trivial work, assess whether independent investigation, review, or isolated implementation streams can reduce wall-clock time or protect the primary context.
+- Delegate disjoint streams with explicit scope and expected results; keep the primary agent responsible for synthesis and shared-file changes unless worktree isolation is used.
+- Use direct tools for targeted lookups and tightly coupled edits; use subagents when their independent result materially advances the task.
+
 ## Worktrees and Branch Safety
 
 - Before starting a change that would normally be made on an independent branch
