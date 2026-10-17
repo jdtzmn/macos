@@ -1,12 +1,12 @@
 { config, lib, pkgs, ... }:
 let
   globalNpmPackages = [
-    "@earendil-works/pi-coding-agent"
-    "opencode-ai"
-    "@jdtzmn/port"
+    "@earendil-works/pi-coding-agent@latest"
+    "opencode-ai@latest"
+    "@jdtzmn/port@0.6.4"
   ];
   globalNpmPackageArgs =
-    lib.concatMapStringsSep " " (package: lib.escapeShellArg "${package}@latest") globalNpmPackages;
+    lib.concatMapStringsSep " " lib.escapeShellArg globalNpmPackages;
   # Use Bun's default locations so `bun pm ls -g` and PATH resolve the same CLIs.
   bunGlobalDir = "${config.home.homeDirectory}/.bun/install/global";
   bunGlobalBinDir = "${config.home.homeDirectory}/.bun/bin";
@@ -16,7 +16,7 @@ in
   home.packages = [ pkgs.nodejs ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.bun ];
 
   # Bun's Nix package runs the activation command; installed CLIs live outside
-  # the Nix store so every activation can resolve their current npm releases.
+  # the Nix store so every activation can resolve their configured npm releases.
   home.sessionPath = [ bunGlobalBinDir ];
   home.activation.installGlobalNpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     export BUN_INSTALL_GLOBAL_DIR=${lib.escapeShellArg bunGlobalDir}
