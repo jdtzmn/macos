@@ -4,3 +4,8 @@ reflect-backups/
 
 ## Native MCP OAuth credentials
 mcp-auth.json
+
+# pi-claude-bridge runtime state
+claude-bridge.json
+claude-bridge.log
+cc-cli-logs/
