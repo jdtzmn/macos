@@ -9,7 +9,7 @@
     "openai-codex/gpt-5.6-terra",
     "anthropic/claude-opus-5-5"
   ],
-  "lastChangelogVersion": "0.87.1",
+  "lastChangelogVersion": "1.3.0",
   "packages": [
     {
       "source": "npm:pi-web-access@0.25.0",
@@ -27,7 +27,8 @@
       "source": "npm:pi-lens@4.1.2",
       "extensions": []
     },
-    "npm:@firstpick/pi-themes-bundle@0.1.6",
+    "npm:@firstpick/pi-themes-bundle@0.1.7",
+    "npm:billion-context@0.1.197",
     {
       "source": "npm:context-mode@1.0.169",
       "extensions": []
@@ -37,7 +38,7 @@
       "extensions": []
     },
     "npm:pi-zentui@0.21.0",
-    "npm:pi-hermes-memory@0.9.9",
+    "npm:pi-hermes-memory@0.9.10",
     {
       "source": "npm:pi-ultra-compact@1.3.0",
       "extensions": []
@@ -47,7 +48,7 @@
       "source": "npm:@ff-labs/pi-fff@0.10.5",
       "extensions": []
     },
-    "npm:pi-hashline-edit-pro@2.7.2",
+    "npm:pi-hashline-edit-pro@6.4.7",
     {
       "source": "npm:pi-btw@0.4.1",
       "extensions": []

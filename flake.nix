@@ -25,7 +25,7 @@
         sprite-cli.inputs.nixpkgs.follows = "nixpkgs";
 
         # Herdr terminal workspace manager
-        herdr.url = "github:herdrdev/herdr/v0.9.1";
+        herdr.url = "github:herdrdev/herdr/v0.9.5";
     };
 
 
