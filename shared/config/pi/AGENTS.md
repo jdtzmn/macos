@@ -13,6 +13,17 @@ via per-tool overlays.
 - After each completed phase, run the smallest relevant validation you can, then create a commit before starting the next phase.
 - Skip phase-by-phase commits only for trivial single-change tasks, read-only work, or when the user explicitly asks for one final commit.
 
+## Skill Storage
+
+- Create and update globally shared skills through `~/.agents/skills/<name>/SKILL.md`.
+  This path is symlinked to the managed skill directory; write through the symlink
+  rather than choosing an underlying repository path yourself.
+- Do not use Hermes `skill_manage(scope="global")` for shared skills: it writes to
+  `~/.pi/agent/pi-hermes-memory/skills/` instead. Use it only when a
+  Hermes-managed procedural skill is specifically wanted.
+- Keep project-specific or agent-specific skills in their appropriate local
+  directories when the request calls for that scope.
+
 ## Worktrees and Branch Safety
 
 - Before starting a change that would normally be made on an independent branch
