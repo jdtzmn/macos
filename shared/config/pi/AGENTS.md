@@ -74,6 +74,7 @@ via per-tool overlays.
 
 ## GitHub Communication
 
+- In user-facing Markdown (chat or GitHub), link PR numbers to their verified URLs (for example, `[#123](https://github.com/owner/repo/pull/123)`). If the URL is unknown, use the plain number rather than guessing.
 - When posting any text to GitHub on my behalf, append the following footer on its own line at the end of the message body:
 
       _(Drafted by Jacob's coding agent on his behalf)_
