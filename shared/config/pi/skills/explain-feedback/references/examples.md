@@ -55,6 +55,32 @@ Better:
 
 The short version is sufficient because the failure follows directly from the stated inputs. It does not need a manufactured benefit of the broken bound, a balanced debate, or an essay about iteration. In a real review, verify the requirement and loop behavior before making the claim.
 
+## An architecture recommendation after an investigation
+
+### Scenario
+
+Assume a fictional shop stores prices as integer cents but promises decimal currency amounts in its public catalog API. Two catalog endpoints currently divide by 100 themselves. An investigation confirms that a third endpoint returns stored cents unchanged, and that every catalog response already passes through a shared response serializer. Internal batch exports deliberately use cents and do not use that serializer. No customer impact has been measured.
+
+### Weak feedback
+
+> We already have a boundary. Normalize the representation there rather than adding more opt-in conversion sites. This shouldn't wait for the money-model redesign.
+
+The recommendation may be sound, but it assumes the reader knows the representation, the boundary, and what goes wrong. Naming an architectural pattern does not explain the problem.
+
+### Stronger feedback
+
+> Today each catalog endpoint has to remember to convert stored cents into the currency amount promised by the API. Keeping that decision local lets each endpoint choose its own output units, but these endpoints all promise the same ones, and the third misses the conversion: a stored price of 1,299 cents is returned as 1,299 rather than 12.99. A client following the documented contract would interpret that as a price one hundred times too high. We haven't established whether any customer has encountered this.
+>
+> Every catalog response already passes through the shared response serializer—the function that turns an internal record into the public API shape. Putting the conversion there would make it part of producing a catalog response, rather than something each endpoint must remember to do. That couples the serializer to the catalog's price contract, so internal exports that intentionally use cents must stay on their separate path. I think that is the right boundary here: these endpoints all promise the same units, and the export path already has a different contract.
+>
+> I'd move the conversion into that existing serializer and remove the endpoint-specific copies now, rather than waiting for a larger money-model redesign. Can we make that change and check that all three endpoints return the documented units? If another public endpoint intentionally needs cents, it should have an explicit separate contract rather than inherit this conversion accidentally.
+
+### A shorter version that keeps the explanation
+
+> Each catalog endpoint currently has to remember to convert cents into the API's currency amount. The third misses that step, so 1,299 cents becomes 1,299 instead of 12.99. Can we convert in the response serializer that every catalog response already uses, and remove the per-endpoint copies? This makes that serializer enforce one price representation rather than leaving the choice to each endpoint; that is appropriate because they all promise the same units. Keep internal exports separate because they intentionally use cents. We can enforce the existing contract without waiting for the larger redesign.
+
+Both versions pass the comprehension gate: current behavior, concrete failure, mechanism, and tradeoff are present. The shorter version removes detail, not the reason for the request. In real feedback, establish the shared path's coverage before recommending it; a plausible central-sounding function name is not evidence.
+
 ## Routing examples
 
 Load `explain-feedback` for:
@@ -65,6 +91,10 @@ Load `explain-feedback` for:
 - “Why is this a problem, and what would you recommend instead?”
 - “Turn these review findings into feedback I can send.”
 - “Rewrite this comment; it asks for a change but doesn't explain the tradeoff.”
+- “Given what you found, should we wait for the redesign or change this now?”
+- “That makes sense. Turn your recommendation into a comment the author can understand without this conversation.”
+- “Shorten that to one comment, but keep why the change matters.”
+- “This is still telling them what to do. Explain why the current approach is a problem.”
 - A general review task when delivering human-facing findings, without replacing the review's evidence-gathering workflow.
 
 Do not load solely for:
