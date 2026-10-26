@@ -3,6 +3,7 @@ let
   globalNpmPackages = [
     "@earendil-works/pi-coding-agent@latest"
     "@opencode/cli@latest"
+    "@anthropic-ai/claude-code@latest"
     "@jdtzmn/port@0.6.4"
   ];
   globalNpmPackageArgs =
