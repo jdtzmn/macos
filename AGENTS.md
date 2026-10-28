@@ -79,9 +79,18 @@ REPO_DIR=$(pwd) nix run home-manager -- switch --flake .#linux --impure
 
 ## Validation, Lint, and Test Commands
 
-This repo does not have a conventional unit test suite. Use flake and target evaluation checks.
+Use flake and target evaluation checks for configuration changes. The global npm
+activation regression tests require Python 3 and Nix (with flake inputs available);
+they evaluate the shared module with mock executables, without package installs
+or system activation.
 
 ```bash
+# Global npm activation regression tests
+python3 tests/test_npm_cli_packages.py -v
+
+# One regression test
+python3 tests/test_npm_cli_packages.py GlobalNpmPackagesTest.test_fresh_install_and_reapply_always_run_postinstall_then_verify -v
+
 # Repo-level flake validation
 nix flake check --impure
 
