@@ -41,6 +41,7 @@
     "npm:pi-zentui@0.21.0",
     "npm:pi-hermes-memory@0.9.10",
     "npm:pi-claude-bridge@0.9.3",
+    "npm:@llblab/pi-telegram@0.58.3",
     {
       "source": "npm:pi-ultra-compact@1.3.0",
       "extensions": []

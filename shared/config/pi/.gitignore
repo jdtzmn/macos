@@ -9,3 +9,8 @@ mcp-auth.json
 claude-bridge.json
 claude-bridge.log
 cc-cli-logs/
+
+# pi-telegram bot token and runtime state
+telegram.json
+telegram.json.transaction
+tmp/
