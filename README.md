@@ -31,32 +31,3 @@ sudo make macbook-admin
 ```
 
 Some packages can't be installed with homebrew this way, so you may need to install them manually or use a different method.
-
-## Claude Code installation
-
-Claude Code is installed through Bun by `shared/npm-cli-packages.nix` on both
-macOS and Linux. Bun can block dependency postinstall scripts, leaving Claude's
-launcher installed without its native binary. Every Home Manager activation
-explicitly runs Claude's supported `install.cjs` with Nix-managed Node after the
-Bun install, then verifies the exact `~/.bun/bin/claude` launcher with `--version`.
-This covers fresh installs, upgrades, and same-version reapplies without enabling
-scripts for unrelated packages or switching to a different installer.
-
-Apply the fix with the normal target for your host: `make macbook`,
-`make macbook-admin`, or `make linux`. No separate manual postinstall is required.
-If the platform-native optional dependency is missing, activation fails rather
-than accepting a broken launcher; restore optional-dependency downloads and
-reapply the target. The postinstall alone can report success in that situation,
-so the launcher verification is required.
-
-If your shell still reports the old error after applying, check which install
-it resolves before changing anything:
-
-```bash
-command -v claude
-~/.bun/bin/claude --version
-```
-
-The shared configuration adds `~/.bun/bin` to the session PATH. A different
-`claude` earlier in PATH is a separate install, not the launcher verified during
-activation.
