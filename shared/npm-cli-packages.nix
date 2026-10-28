@@ -23,5 +23,11 @@ in
     export BUN_INSTALL_GLOBAL_DIR=${lib.escapeShellArg bunGlobalDir}
     export BUN_INSTALL_BIN=${lib.escapeShellArg bunGlobalBinDir}
     run ${lib.getExe pkgs.bun} add --global --force ${globalNpmPackageArgs}
+
+    # Bun blocks untrusted dependency scripts; run only Claude's supported hook.
+    run ${lib.getExe pkgs.nodejs} "$BUN_INSTALL_GLOBAL_DIR/node_modules/@anthropic-ai/claude-code/install.cjs"
+    # The hook can succeed without a native optional dependency. Fail activation
+    # rather than leave a broken launcher (or accidentally check another CLI).
+    run "$BUN_INSTALL_BIN/claude" --version
   '';
 }
