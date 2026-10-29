@@ -19,6 +19,7 @@
     ./remote.nix
     ./skills.nix
     ./tmux.nix
+    ./terminfo.nix
     ./wezterm.nix
     ./zed.nix
     ./zoxide.nix
