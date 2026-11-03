@@ -6,8 +6,12 @@ usage() {
 Usage: remote [--org ORG] [--sprite NAME] <command> [args]
 
 Commands:
-  create           Create the Sprite and configure it from the macos repo
-  rebuild          Update the macos bootstrap repo and re-apply the config
+  create [--repo URL] [--ref REF] [--script PATH]
+                   Create a Sprite and apply configured dotfiles
+  rebuild [--repo URL] [--ref REF] [--script PATH]
+                   Re-sync the dotfiles repo and re-run its setup script
+  dotfiles [--repo URL] [--ref REF] [--script PATH]
+                   Show or update the Sprite dotfiles source and apply it
   exec -- CMD...   Run a command in the Sprite home directory
   console          Open an interactive shell in the Sprite home directory
   ssh              Open an SSH session through sprite proxy with agent forwarding
@@ -63,12 +67,12 @@ while [ -L "$script_path" ]; do
 done
 
 script_dir=$(cd -P "$(dirname "$script_path")" && pwd)
-bootstrap_local_repo_root=$(cd "$script_dir/../.." && pwd)
-bootstrap_repo_url=$(git -C "$bootstrap_local_repo_root" remote get-url origin 2>/dev/null) || die "bootstrap macos repo must have an origin remote"
-bootstrap_repo_url=$(canonical_git_url "$bootstrap_repo_url")
-bootstrap_repo_dir="/home/sprite/.local/share/remote/macos"
+default_dotfiles_repo_root=$(cd "$script_dir/../.." && pwd)
+default_dotfiles_repo_url=$(git -C "$default_dotfiles_repo_root" remote get-url origin 2>/dev/null) || die "default dotfiles repo must have an origin remote"
+default_dotfiles_repo_url=$(canonical_git_url "$default_dotfiles_repo_url")
+dotfiles_repo_dir="/home/sprite/.local/share/remote/dotfiles"
+dotfiles_config_path="/home/sprite/.config/remote/dotfiles.conf"
 remote_home_dir="/home/sprite"
-
 workload_repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || die "must be run from a git repository"
 workload_repo_name=$(basename "$workload_repo_root")
 workload_repo_slug=$(sanitize_name "$workload_repo_name")
@@ -77,6 +81,11 @@ workload_hash=$(printf '%s' "$workload_identity" | git hash-object --stdin | cut
 
 sprite_name="${REMOTE_SPRITE_NAME:-}"
 org_name="${REMOTE_SPRITE_ORG:-}"
+dotfiles_repo_url="$default_dotfiles_repo_url"
+dotfiles_ref="main"
+dotfiles_script="setup.sh"
+dotfiles_config_loaded=0
+
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -147,66 +156,158 @@ run_remote_exec() {
   sprite exec "${sprite_scope_args[@]}" "$@"
 }
 
-sync_bootstrap_repo() {
-  log "syncing bootstrap repo from origin/main"
-  run_remote_exec --env "BOOTSTRAP_REPO_URL=$bootstrap_repo_url" -- bash -lc '
+validate_dotfiles_configuration() {
+  [ -n "$dotfiles_repo_url" ] || die "dotfiles repo URL cannot be empty"
+  [ -n "$dotfiles_ref" ] || die "dotfiles ref cannot be empty"
+  [ -n "$dotfiles_script" ] || die "dotfiles script cannot be empty"
+  case "$dotfiles_script" in
+    *$'\n'*|*$'\r'*) die "dotfiles script cannot contain newlines" ;;
+  esac
+
+  case "$dotfiles_repo_url" in
+    *$'\n'*|*$'\r'*) die "dotfiles repo URL cannot contain newlines" ;;
+  esac
+  dotfiles_repo_url=$(canonical_git_url "$dotfiles_repo_url")
+  git check-ref-format --branch "$dotfiles_ref" >/dev/null 2>&1 || die "invalid dotfiles ref: $dotfiles_ref"
+  case "/$dotfiles_script/" in
+    /*/../*|*/./*|*//*) die "dotfiles script must be a relative path inside the dotfiles repo" ;;
+  esac
+}
+
+load_dotfiles_configuration() {
+  local config
+  local key
+  local value
+  local loaded_repo_url=""
+  local loaded_ref=""
+  local loaded_script=""
+
+  config=$(run_remote_exec -- bash -lc 'config_path="$1"; if [ -f "$config_path" ]; then cat "$config_path"; fi' _ "$dotfiles_config_path") || die "could not read Sprite dotfiles configuration"
+  if [ -z "$config" ]; then
+    dotfiles_config_loaded=1
+    return
+  fi
+
+  while IFS='=' read -r key value; do
+    case "$key" in
+      repo_url) loaded_repo_url="$value" ;;
+      ref) loaded_ref="$value" ;;
+      script) loaded_script="$value" ;;
+      *) die "invalid Sprite dotfiles configuration" ;;
+    esac
+  done <<<"$config"
+
+  dotfiles_repo_url="$loaded_repo_url"
+  dotfiles_ref="$loaded_ref"
+  dotfiles_script="$loaded_script"
+  validate_dotfiles_configuration
+  dotfiles_config_loaded=1
+}
+
+write_dotfiles_configuration() {
+  run_remote_exec -- bash -lc '
+    set -euo pipefail
+    config_path="$1"
+    repo_url="$2"
+    ref="$3"
+    script="$4"
+    mkdir -p "$(dirname "$config_path")"
+    umask 077
+    printf "repo_url=%s\nref=%s\nscript=%s\n" "$repo_url" "$ref" "$script" > "$config_path"
+  ' _ "$dotfiles_config_path" "$dotfiles_repo_url" "$dotfiles_ref" "$dotfiles_script"
+}
+
+parse_dotfiles_options() {
+  local found_option=0
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --repo)
+        [ "$#" -ge 2 ] || die "missing value for --repo"
+        dotfiles_repo_url="$2"
+        found_option=1
+        shift 2
+        ;;
+      --ref)
+        [ "$#" -ge 2 ] || die "missing value for --ref"
+        dotfiles_ref="$2"
+        found_option=1
+        shift 2
+        ;;
+      --script)
+        [ "$#" -ge 2 ] || die "missing value for --script"
+        dotfiles_script="$2"
+        found_option=1
+        shift 2
+        ;;
+      *)
+        die "unknown dotfiles option: $1"
+        ;;
+    esac
+  done
+
+  if [ "$found_option" -eq 1 ]; then
+    dotfiles_config_loaded=1
+  fi
+}
+
+sync_dotfiles_repo() {
+  log "syncing dotfiles repo $dotfiles_repo_url at $dotfiles_ref"
+  run_remote_exec -- bash -lc '
     set -euo pipefail
     repo_dir="$1"
+    repo_url="$2"
+    ref="$3"
     parent_dir=$(dirname "$repo_dir")
     temp_dir=$(mktemp -d)
     trap "rm -rf \"$temp_dir\"" EXIT
     mkdir -p "$parent_dir"
-    git clone --depth 1 --branch main "$BOOTSTRAP_REPO_URL" "$temp_dir/repo"
+    git clone --depth 1 --branch "$ref" "$repo_url" "$temp_dir/repo"
     rm -rf "$repo_dir"
     mv "$temp_dir/repo" "$repo_dir"
-  ' _ "$bootstrap_repo_dir"
+  ' _ "$dotfiles_repo_dir" "$dotfiles_repo_url" "$dotfiles_ref"
 }
 
-apply_home() {
-  log "applying sprite home-manager config"
+apply_dotfiles() {
+  log "running dotfiles script $dotfiles_script"
+  run_remote_exec --env "DOTFILES_HOME_CONFIGURATION=sprite" -- bash -lc '
+    set -euo pipefail
+    repo_dir="$1"
+    script="$2"
+    script_path="$repo_dir/$script"
+    test -f "$script_path"
+    cd "$repo_dir"
+    bash "$script_path"
+  ' _ "$dotfiles_repo_dir" "$dotfiles_script"
+}
+
+verify_dotfiles() {
+  log "verifying dotfiles setup"
   run_remote_exec -- bash -lc '
     set -euo pipefail
     repo_dir="$1"
-    export PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
-    export NIX_CONFIG="experimental-features = nix-command flakes"
-    export USER="${USER:-sprite}"
-    export LOGNAME="${LOGNAME:-$USER}"
-    export SHELL="${SHELL:-/usr/bin/bash}"
-
-    if ! command -v nix >/dev/null 2>&1; then
-      curl -fsSL https://nixos.org/nix/install -o /tmp/nix-install.sh
-      sh /tmp/nix-install.sh --no-daemon
-      rm -f /tmp/nix-install.sh
-      export PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
-    fi
-
-    if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
-      . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-    fi
-
-    REPO_DIR="$repo_dir" nix run home-manager -- switch -b backup --flake "$repo_dir#sprite" --impure
-  ' _ "$bootstrap_repo_dir"
-}
-
-verify_remote() {
-  log "verifying remote bootstrap state"
-  run_remote_exec -- bash -lc '
-    set -euo pipefail
-    repo_dir="$1"
-    test -f "$repo_dir/flake.nix"
-    test -x "$HOME/.local/bin/remote"
-    test -e "$HOME/.config/opencode"
-  ' _ "$bootstrap_repo_dir"
+    script="$2"
+    config_path="$3"
+    test -d "$repo_dir/.git"
+    test -f "$repo_dir/$script"
+    test -f "$config_path"
+  ' _ "$dotfiles_repo_dir" "$dotfiles_script" "$dotfiles_config_path"
 }
 
 run_rebuild() {
-  sync_bootstrap_repo
-  apply_home
-  verify_remote
+  if [ "$dotfiles_config_loaded" -eq 0 ]; then
+    load_dotfiles_configuration
+  fi
+  validate_dotfiles_configuration
+  write_dotfiles_configuration
+  sync_dotfiles_repo
+  apply_dotfiles
+  verify_dotfiles
 }
 
 run_create() {
-  sprite_exists && die "remote environment already exists; use 'remote rebuild' instead"
+  validate_dotfiles_configuration
+  sprite_exists && die "remote environment already exists; use 'remote rebuild' or 'remote dotfiles' instead"
   log "creating sprite $sprite_name"
   sprite create "${sprite_org_args[@]}" --skip-console "$sprite_name"
   run_rebuild
@@ -330,46 +431,68 @@ run_ssh() {
   ssh -A -o StrictHostKeyChecking=accept-new -p "$local_port" sprite@localhost
 }
 
+show_dotfiles_configuration() {
+  printf 'dotfiles_repo: %s\n' "$dotfiles_repo_url"
+  printf 'dotfiles_ref: %s\n' "$dotfiles_ref"
+  printf 'dotfiles_script: %s\n' "$dotfiles_script"
+}
+
 show_doctor() {
   printf 'workload_repo: %s\n' "$workload_repo_root"
   printf 'workload_identity: %s\n' "$workload_identity"
-  printf 'bootstrap_repo: %s\n' "$bootstrap_local_repo_root"
-  printf 'bootstrap_url: %s\n' "$bootstrap_repo_url"
-  printf 'bootstrap_remote: %s\n' "$bootstrap_repo_dir"
+  printf 'default_dotfiles_repo: %s\n' "$default_dotfiles_repo_root"
+  printf 'default_dotfiles_url: %s\n' "$default_dotfiles_repo_url"
   printf 'sprite: %s\n' "$sprite_name"
   if [ -n "$org_name" ]; then
     printf 'org: %s\n' "$org_name"
   fi
 
   if ! sprite_exists; then
+    show_dotfiles_configuration
     printf 'status: missing\n'
-    exit 0
+    return
   fi
 
+  load_dotfiles_configuration
+  show_dotfiles_configuration
   printf 'status: created\n'
   printf 'home: %s\n' "$remote_home_dir"
 
-  if sha=$(run_remote_exec -- bash -lc 'set -euo pipefail; repo_dir="$1"; if [ -d "$repo_dir/.git" ]; then git -C "$repo_dir" rev-parse HEAD; fi' _ "$bootstrap_repo_dir" 2>/dev/null); then
+  if sha=$(run_remote_exec -- bash -lc 'set -euo pipefail; repo_dir="$1"; if [ -d "$repo_dir/.git" ]; then git -C "$repo_dir" rev-parse HEAD; fi' _ "$dotfiles_repo_dir" 2>/dev/null); then
     if [ -n "$sha" ]; then
-      printf 'bootstrap_sha: %s\n' "$sha"
+      printf 'dotfiles_sha: %s\n' "$sha"
     fi
   fi
 
-  if run_remote_exec -- bash -lc 'test -x "$HOME/.local/bin/remote" && test -e "$HOME/.config/opencode"' >/dev/null 2>&1; then
-    printf 'config: applied\n'
+  if run_remote_exec -- bash -lc 'test -d "$1/.git" && test -f "$2"' _ "$dotfiles_repo_dir" "$dotfiles_config_path" >/dev/null 2>&1; then
+    printf 'dotfiles: configured\n'
   else
-    printf 'config: unknown\n'
+    printf 'dotfiles: unknown\n'
   fi
 }
 
 case "$subcommand" in
   create)
+    parse_dotfiles_options "$@"
     run_create
     ;;
   rebuild)
     require_sprite
+    load_dotfiles_configuration
+    parse_dotfiles_options "$@"
     run_rebuild
-    printf 'remote: rebuilt %s from macos origin/main\n' "$sprite_name"
+    printf 'remote: rebuilt %s from %s at %s\n' "$sprite_name" "$dotfiles_repo_url" "$dotfiles_ref"
+    ;;
+  dotfiles)
+    require_sprite
+    load_dotfiles_configuration
+    if [ "$#" -eq 0 ]; then
+      show_dotfiles_configuration
+    else
+      parse_dotfiles_options "$@"
+      run_rebuild
+      printf 'remote: updated dotfiles for %s\n' "$sprite_name"
+    fi
     ;;
   exec)
     require_sprite
