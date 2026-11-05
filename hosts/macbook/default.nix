@@ -252,6 +252,7 @@ in
       "tower"
       "orbstack"
       "cmux"
+      "herdr-app"
       "ghostty"
       "conductor"
       "bruno"
