@@ -103,6 +103,8 @@ shared/config/pi/.pi-hermes-locks.sqlite
 shared/config/pi/.pi-hermes-locks.sqlite-shm
 shared/config/pi/.pi-hermes-locks.sqlite-wal
 shared/config/pi/intercom/broker.pid
+# claude-bridge diagnostics log
+shared/config/pi/claude-bridge-diag.log
 
 # projects-memory directory (internal state)
 projects-memory/
