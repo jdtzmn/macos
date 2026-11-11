@@ -10,7 +10,7 @@
     "claude-bridge/claude-opus-5-5",
     "claude-bridge/claude-sonnet-5-5"
   ],
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.0",
   "packages": [
     {
       "source": "npm:pi-web-access@0.25.0",
@@ -97,5 +97,10 @@
     "search": {
       "enable": false
     }
+  },
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:@llblab/pi-telegram@0.58.3\",\"scope\":\"user\"}": "0.58.3",
+    "{\"source\":\"npm:@gotgenes/pi-permission-system@36.2.1\",\"scope\":\"user\"}": "36.2.1",
+    "{\"source\":\"npm:@rahularya01/pi-lazy\",\"scope\":\"user\"}": "0.3.1"
   }
 }
