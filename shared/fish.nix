@@ -67,6 +67,7 @@
       "gc" = "git commit -m";
       "gca" = "git commit -amend";
       "gp" = "git push";
+      "p" = "git pull origin main";
       "gl" = "git log";
       "gcob" = "git checkout -b";
 
