@@ -16,6 +16,7 @@
       delta
       lazygit
       eza
+      ranger
       opentofu
       awscli2
       kubectl
