@@ -171,6 +171,7 @@ in
     autoMigrate = true;
     # Trust third-party taps required by the declarative Homebrew packages.
     trust.taps = [
+      "anomalyco/tap"
       "datadog-labs/pack"
       "entireio/tap"
       "oven-sh/bun"
@@ -188,6 +189,7 @@ in
     caskArgs.appdir =
       if separateAdminAccount then "/Users/jacob/Applications" else "/Applications";
     taps = [
+      "anomalyco/tap"
       "datadog-labs/pack"
       "entireio/tap"
       "oven-sh/bun"
@@ -257,6 +259,7 @@ in
       "conductor"
       "bruno"
       "dbeaver-community"
+      "anomalyco/tap/hex"
 
       # Work
       "slack"
