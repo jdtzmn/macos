@@ -2,7 +2,7 @@
   "debugLog": false,
   "permissionReviewLog": true,
   "yoloMode": false,
-  "promptTimeoutMs": 15000,
+  "promptTimeoutMs": 5000,
   "permission": {
     "*": "allow",
     "path": {
