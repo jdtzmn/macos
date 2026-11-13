@@ -7,7 +7,7 @@
   "autoLoadLimit": 1,
   "afterStartBatchSize": 1,
   "afterStartDelayMs": 0,
-  "afterStartInitialDelayMs": 750,
+  "afterStartInitialDelayMs": 100,
   "afterStartPauseDuringTurn": true,
   "afterStartAdaptiveYield": true,
   "afterStartPrefetch": true,
@@ -15,7 +15,8 @@
     {
       "name": "hermes-memory",
       "source": "npm:pi-hermes-memory",
-      "lazy": false,
+      "lazy": "after-start",
+      "priority": 1,
       "tools": [
         "memory_search",
         "memory_add",
@@ -29,6 +30,13 @@
         "previous session"
       ],
       "description": "Persistent memory and session indexing"
+    },
+    {
+      "name": "hashline-edit",
+      "source": "npm:pi-hashline-edit-pro",
+      "lazy": "after-start",
+      "priority": 2,
+      "description": "Hashline-anchored read/edit tools"
     },
     {
       "name": "subagents",
