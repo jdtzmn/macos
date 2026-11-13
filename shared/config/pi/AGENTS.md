@@ -70,6 +70,15 @@ via per-tool overlays.
 - The primary agent may run normal git operations directly, including branch switch/create/delete, merge, rebase, cherry-pick, fetch, pull, and push (when requested).
 - Do not run destructive git commands (`reset --hard`, checkout rollback) unless requested.
 - Do not amend commits unless explicitly requested.
+- Git is configured to sign commits by default (SSH). Always try a signed commit first.
+  If signing fails (for example `ssh-keygen`/agent errors, a locked or unreachable
+  signing agent, or a sandbox that blocks the key), do not stop, wait for approval,
+  or ask the user: retry once with `git -c commit.gpgsign=false commit ...` and
+  continue. Unsigned commits are explicitly allowed as a fallback; mention which
+  commits were unsigned in your final report so they can be re-signed later.
+- Never change git config permanently (`git config`, editing `.gitconfig`) or
+  tamper with signing keys/agents to work around a signing failure; use the
+  per-command `-c` override only.
 - Commit message style is imperative and concise (no Conventional Commit prefixes required).
 
 ## GitHub Communication
