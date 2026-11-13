@@ -212,11 +212,24 @@
       "description": "Read-only planning workflow"
     },
     {
+      "name": "telegram",
+      "source": "npm:@llblab/pi-telegram",
+      "lazy": true,
+      "cmd": [
+        "telegram-setup",
+        "telegram-status",
+        "telegram-disconnect"
+      ],
+      "keywords": [
+        "telegram"
+      ],
+      "description": "Telegram bot bridge (connects on first use)"
+    },
+    {
       "name": "sessions",
       "source": "npm:pi-sessions",
       "lazy": "after-start",
       "tools": [
-        "session_search",
         "session_reachable",
         "session_send_message",
         "session_cancel",
