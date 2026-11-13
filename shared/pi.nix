@@ -3,6 +3,9 @@
   home.file.".pi/agent".source = config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/pi";
   xdg.configFile."billion-context/billion-context.json".source =
     config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/billion-context/billion-context.json";
+  # Silences ponytail's "Ponytail loaded" startup toast in pi.
+  xdg.configFile."ponytail/config.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${repoDir}/shared/config/ponytail/config.json";
 
   # pi runs `npm install -g pi-web-access` on startup/first-use. nixpkgs'
   # `nodejs` (added in npm-cli-packages.nix) has no writable global-install
