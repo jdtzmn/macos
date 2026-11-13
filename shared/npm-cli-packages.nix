@@ -5,6 +5,10 @@ let
     "@opencode/cli@latest"
     "@anthropic-ai/claude-code@latest"
     "@jdtzmn/port@0.6.4"
+    # Pinned: `browse install` is not run (it edits shell rc/agent configs and
+    # self-updates). The MCP entry lives in shared/config/pi/mcp.json and the
+    # skill in shared/config/skills/browse; bump all three together.
+    "@opencode/browse@0.0.16"
   ];
   globalNpmPackageArgs =
     lib.concatMapStringsSep " " lib.escapeShellArg globalNpmPackages;
