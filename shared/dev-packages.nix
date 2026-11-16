@@ -9,6 +9,7 @@
       gh
       gh-dash
       gnumake
+      go
       fzf
       bat
       ripgrep
