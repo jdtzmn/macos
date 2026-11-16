@@ -179,6 +179,19 @@
       "description": "Parallel side conversation"
     },
     {
+      "name": "hop",
+      "source": "npm:pi-hop",
+      "lazy": true,
+      "cmd": [
+        "hop"
+      ],
+      "keywords": [
+        "hop session",
+        "send session to another machine"
+      ],
+      "description": "Send the current session to another machine over SSH"
+    },
+    {
       "name": "intercom",
       "source": "npm:pi-intercom",
       "lazy": "after-start",

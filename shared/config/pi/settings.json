@@ -98,7 +98,10 @@
       "extensions": []
     },
     "npm:pi-suggest",
-    "npm:pi-hop@0.1.0",
+    {
+      "source": "npm:pi-hop@0.1.0",
+      "extensions": []
+    },
     "npm:@petechu/pi-rewrite",
     "git:github.com/jo-inc/pi-reflect@33a72886c8d5882b8b89a4a0ace1bb8d35403ef2",
     "git:github.com/DietrichGebert/ponytail@96608e078b2d5ea607c5c3b8b5a54d1c1fba6846"
