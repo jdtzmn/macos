@@ -22,6 +22,8 @@
       kubectl
       croc
       mosh
+      uv
+      prek
       # Nix language servers
       nil
       nixd
