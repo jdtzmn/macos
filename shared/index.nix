@@ -17,6 +17,7 @@
     ./opencode.nix
     ./pi.nix
     ./remote.nix
+    ./rex.nix
     ./skills.nix
     ./tmux.nix
     ./terminfo.nix
