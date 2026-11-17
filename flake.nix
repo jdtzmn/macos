@@ -34,6 +34,7 @@
     let
         repoDir = builtins.getEnv "REPO_DIR";
         unstablePkgsDarwin = import nixpkgs-unstable { system = "aarch64-darwin"; };
+        unstablePkgsLinux = import nixpkgs-unstable { system = "x86_64-linux"; };
         mkDarwinSystem = { separateAdminAccount ? false }: darwin.lib.darwinSystem {
             system = "aarch64-darwin";
             modules = [
@@ -44,6 +45,8 @@
                         sprite-cli.overlays.default
                         # nix-homebrew 2026-05+ requires ruby_4_0, not in nixpkgs 25.11
                         (final: prev: { ruby_4_0 = unstablePkgsDarwin.ruby_4_0; })
+                        # gh releases faster than nixpkgs 25.11 ships it
+                        (final: prev: { gh = unstablePkgsDarwin.gh; })
                     ];
                 }
                 ./hosts/macbook/default.nix
@@ -56,6 +59,7 @@
             system = "x86_64-linux";
             overlays = [
                 sprite-cli.overlays.default
+                (final: prev: { gh = unstablePkgsLinux.gh; })
             ];
         };
         mkLinuxHome = { username, homeDirectory, enableSprite ? false }: home-manager.lib.homeManagerConfiguration {
