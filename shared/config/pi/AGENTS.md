@@ -87,6 +87,22 @@ via per-tool overlays.
   missing tool, a stack that will not start, a check that needs a human sign-off.
   Offering to do the next required step is not a blocker; do the step.
 
+## After a Pull Request Merges
+
+- When a pull request you opened merges, clean up what you started for it. First
+  confirm the merge with `gh pr view --json state` rather than assuming it.
+- Stop the resources you launched for the task: dev servers, Compose stacks,
+  preview environments, and background processes. Check that you started a
+  process before stopping it, and never touch anything you did not start.
+- Remove the Port worktree and the local branch you created, following the
+  `port-cli` workflow, but only after confirming the PR is merged, the worktree is
+  clean, and no commits are unpushed. Leave remote branches to GitHub's
+  auto-delete unless asked.
+- Update the main checkout if you work there (`git pull --ff-only`) and delete
+  scratch files you wrote outside the repository.
+- Report in one line what you cleaned up and what you left running or in place,
+  with the reason.
+
 ## GitHub Communication
 
 - In user-facing Markdown (chat or GitHub), link PR numbers to their verified URLs (for example, `[#123](https://github.com/owner/repo/pull/123)`). If the URL is unknown, use the plain number rather than guessing.
