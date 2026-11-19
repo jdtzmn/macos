@@ -54,10 +54,6 @@
     },
     "npm:@gotgenes/pi-permission-system@42.0.0",
     {
-      "source": "npm:@ff-labs/pi-fff@0.10.5",
-      "extensions": []
-    },
-    {
       "source": "npm:pi-hashline-edit-pro@6.4.7",
       "extensions": []
     },

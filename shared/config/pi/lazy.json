@@ -90,13 +90,6 @@
       "description": "Enhanced context compaction"
     },
     {
-      "name": "fff",
-      "source": "npm:@ff-labs/pi-fff",
-      "lazy": "after-start",
-      "priority": 10,
-      "description": "Fuzzy file and content search"
-    },
-    {
       "name": "image-view",
       "source": "npm:pi-image-view",
       "lazy": "after-start",
