@@ -78,6 +78,12 @@ via per-tool overlays.
   tamper with signing keys/agents to work around a signing failure; use the
   per-command `-c` override only.
 - Commit message style is imperative and concise (no Conventional Commit prefixes required).
+- When you open a pull request, carry it to ready without asking: do whatever the
+  repository requires before ready (for example, recording and publishing test
+  evidence), mark it ready, wait for the full checks, then request review the way
+  the repository says. Stop only for a genuine blocker, and name it concretely: a
+  missing tool, a stack that will not start, a check that needs a human sign-off.
+  Offering to do the next required step is not a blocker; do the step.
 
 ## GitHub Communication
 
