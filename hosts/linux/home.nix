@@ -44,6 +44,10 @@
               fi
             fi
         '';
+        # ssh and Rex start login shells, which read ~/.profile but not ~/.bashrc.
+        profileExtra = ''
+            [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
+        '';
     };
     programs.zsh.enable = false;
 
