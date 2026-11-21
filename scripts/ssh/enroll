@@ -42,6 +42,27 @@ ask() {
   [ -n "${!var}" ] || die "$prompt is required"
 }
 
+# Offer online Linux tailnet peers; sets host and peer_name, or leaves them empty.
+pick_peer() {
+  local cli peers choice line
+  cli="$(command -v tailscale || true)"
+  [ -n "$cli" ] || cli=/Applications/Tailscale.app/Contents/MacOS/Tailscale
+  [ "$tty" -eq 1 ] && [ -x "$cli" ] || return 0
+  peers="$("$cli" status 2>/dev/null | awk '$4 == "linux" && $5 !~ /^offline/ { print $2, $1 }')"
+  [ -n "$peers" ] || return 0
+  printf 'Online Linux machines on your tailnet:\n'
+  printf '%s\n' "$peers" | nl -w2 -s') '
+  read -r -p "Pick a number, or type a name/IP: " choice
+  if [[ "$choice" =~ ^[0-9]+$ ]]; then
+    line="$(printf '%s\n' "$peers" | sed -n "${choice}p")"
+    [ -n "$line" ] || die "no machine number $choice"
+    peer_name="${line% *}"
+    host="${line#* }"
+  else
+    host="$choice"
+  fi
+}
+
 user=""
 key_match=""
 args=()
@@ -57,8 +78,13 @@ done
 [ "${#args[@]}" -le 2 ] || { usage >&2; exit 2; }
 name="${args[0]:-}"
 host="${args[1]:-}"
+peer_name=""
+if [ -z "$host" ]; then
+  pick_peer
+  [ -n "$host" ] || ask host "Tailscale name or IP (e.g. 100.64.0.10)"
+fi
+[ -n "$name" ] || name="$peer_name"
 [ -n "$name" ] || ask name "Host alias (e.g. build-box)"
-[ -n "$host" ] || ask host "Tailscale name or IP (e.g. 100.64.0.10)"
 [ -n "$user" ] || { [ "$tty" -eq 1 ] && ask user "Remote username" "$USER" || user="$USER"; }
 [ -n "$key_match" ] || key_match="$(printf '%s' "$name" | tr '_-' '  ')"
 
