@@ -27,7 +27,7 @@ Both are idempotent, so re-running them is safe.
    ```bash
    scripts/ssh/enroll build-box 100.64.0.10 --user alice
    ```
-   Run it bare and it offers the online Linux machines on your tailnet as a numbered list (the pick supplies both the host and the alias), then asks for the username and, if no title matches, a key from a numbered list. `name` is the alias for `ssh build-box`. The key is matched by title: the default is the name with `-`/`_` as spaces (`build box` for `build-box`). Use `--key "<text>"` when the title differs. You are asked for the remote password once.
+   Run it bare and it offers the other online Linux and macOS machines on your tailnet as a numbered list (the pick supplies both the host and the alias), then asks for the username and, if no title matches, a key from a numbered list. `name` is the alias for `ssh build-box`. The key is matched by title: the default is the name with `-`/`_` as spaces (`build box` for `build-box`). Use `--key "<text>"` when the title differs. You are asked for the remote password once.
 4. **Check** `ssh build-box` works and prompts for Touch ID.
 5. **Harden**, with the existing session still open:
    ```bash
@@ -43,5 +43,5 @@ Both are idempotent, so re-running them is safe.
 
 ## Limits
 
-- `setup` supports apt and systemd only.
+- `setup` supports apt and systemd only. A macOS remote needs Remote Login enabled by hand (System Settings → General → Sharing); `enroll` works against it, but `setup --harden` does not apply.
 - `enroll` leaves an existing `Host <name>` block untouched; edit it by hand if it is stale.
