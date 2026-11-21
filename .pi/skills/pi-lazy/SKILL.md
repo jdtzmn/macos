@@ -20,7 +20,7 @@ Deferred extension factories are intentionally absent at Pi startup. Their skill
 
 Configured package names:
 
-- `fff`, `image-view` — loaded after startup
+- `fff` — loaded after startup
 - `context-mode` — context-preserving data processing
 - `lens` — code intelligence and diagnostics
 - `web` — web search, fetching, and video analysis
@@ -43,5 +43,5 @@ Configured package names:
 - `shared/config/pi/lazy.json` controls load modes and triggers.
 - `shared/config/pi/settings.json` contains package entries. An entry with `"extensions": []` prevents Pi from running that package's extension factory at startup; pi-lazy loads it later.
 - Keep boot-critical packages eager. Preserve custom package filters, especially the `pi-background-tasks` Anthropic-attribution exclusion.
-- `premind` is git-sourced and should remain eager unless pi-lazy is given a local package path.
+- `premind` and `pi-image-view` (pinned to the `jdtzmn` fork) are git-sourced and should remain eager unless pi-lazy is given a local package path.
 - After configuration changes, restart Pi. Validate JSON and compare a clean-launch startup-header measurement before and after changes.
