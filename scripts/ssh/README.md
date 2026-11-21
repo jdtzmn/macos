@@ -6,8 +6,8 @@ remote only gets the public half.
 
 | Script | Runs on | Does |
 | --- | --- | --- |
-| `setup` | the Linux machine | installs and enables `openssh-server`, prepares `~/.ssh`; `--harden` disables password and root login |
-| `enroll` | your Mac | lists the 1Password agent's keys for you to pick from, installs its public key on the remote, adds a `Host` block to `~/.ssh/config`, verifies key login |
+| `setup` | the Linux machine | installs and enables `openssh-server`, prepares `~/.ssh`; `--harden` disables password login, root login and X11 forwarding; `--tailscale-only` firewalls SSH to Tailscale |
+| `enroll` | your Mac | lists the 1Password agent's keys for you to pick from, installs its public key on the remote, adds a `Host` block to `~/.ssh/config`, verifies key login, then offers to harden the remote by running `setup --harden` over ssh |
 
 Both are idempotent, so re-running them is safe.
 
@@ -28,12 +28,10 @@ Both are idempotent, so re-running them is safe.
    scripts/ssh/enroll build-box 100.64.0.10 --user alice
    ```
    Run it bare and it offers the other online Linux and macOS machines on your tailnet as a numbered list (the pick supplies both the host and the alias), then asks for the username and which key to use from a numbered list (never guessed). `name` is the alias for `ssh build-box`. Use `--key "<text>"` to name the key by title and skip the picker. You are asked for the remote password once.
-4. **Check** `ssh build-box` works and prompts for Touch ID.
-5. **Harden**, with the existing session still open:
-   ```bash
-   scripts/ssh/setup --harden
-   ```
-   Then confirm a fresh `ssh build-box` from a second terminal.
+4. **Harden.** Once key login is verified, `enroll` asks `Disable password login on <host>? [Y/n]` and, on yes, runs `setup --harden` on the remote (you type the remote `sudo` password), then confirms key login still works and password login is rejected. `--harden` skips the question, `--no-harden` skips the offer. Add `--tailscale-only` to also firewall the remote so SSH is reachable only over Tailscale; do not use it if you reach that machine any other way.
+5. **Check** `ssh build-box` works and prompts for Touch ID.
+
+To harden a machine you enrolled earlier, run `enroll` again: it skips the key install and goes straight to the hardening offer. You can also run `scripts/ssh/setup --harden` on the machine directly.
 
 ## Troubleshooting
 
@@ -43,5 +41,5 @@ Both are idempotent, so re-running them is safe.
 
 ## Limits
 
-- `setup` supports apt and systemd only. A macOS remote needs Remote Login enabled by hand (System Settings → General → Sharing); `enroll` works against it, but `setup --harden` does not apply.
+- `setup` supports apt and systemd only. A macOS remote needs Remote Login enabled by hand (System Settings → General → Sharing); `enroll` works against it, but hardening is skipped for it.
 - `enroll` leaves an existing `Host <name>` block untouched; edit it by hand if it is stale.

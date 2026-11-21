@@ -6,7 +6,7 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: enroll [--user USER] [--key PATTERN] [name] [host]
+Usage: enroll [--user USER] [--key PATTERN] [--harden|--no-harden] [--tailscale-only] [name] [host]
 
   name   Host alias to write to ~/.ssh/config (also the .pub filename)
   host   Tailscale name or IP of the remote
@@ -16,6 +16,13 @@ Anything left out is asked for interactively.
   --user USER    Remote username (default: current local user)
   --key PATTERN  Case-insensitive text matching one 1Password key title
                  (skips the key picker)
+  --harden       Harden the remote without asking (disable password login)
+  --no-harden    Do not offer to harden the remote
+  --tailscale-only
+                 Also firewall the remote so SSH is Tailscale-only (implies --harden)
+
+After key login is verified, a Linux remote can be hardened by running `setup`
+on it over ssh (asks for the remote sudo password).
 
 The private key never leaves 1Password; only its public half is written.
 USAGE
@@ -66,11 +73,16 @@ pick_peer() {
 
 user=""
 key_match=""
+harden=ask
+tailscale_only=0
 args=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --user) [ $# -ge 2 ] || die "--user needs a value"; user="$2"; shift 2 ;;
     --key) [ $# -ge 2 ] || die "--key needs a value"; key_match="$2"; shift 2 ;;
+    --harden) harden=yes; shift ;;
+    --no-harden) harden=no; shift ;;
+    --tailscale-only) harden=yes; tailscale_only=1; shift ;;
     -h | --help) usage; exit 0 ;;
     -*) usage >&2; exit 2 ;;
     *) args+=("$1"); shift ;;
@@ -144,4 +156,37 @@ fi
 
 key_login || die "key login failed; check the key was installed and 1Password is unlocked"
 log "ok: ssh $name"
-log "next, on the remote: scripts/ssh/setup --harden"
+
+remote_os="$(ssh "${ssh_opts[@]}" -o BatchMode=yes "$user@$host" uname -s 2>/dev/null || true)"
+if [ "$remote_os" != "Linux" ]; then
+  log "remote is not Linux (${remote_os:-unknown}); skipping hardening"
+  exit 0
+fi
+if [ "$harden" = ask ]; then
+  harden=no
+  if [ "$tty" -eq 1 ]; then
+    read -r -p "Disable password login on $host? [Y/n]: " reply
+    case "${reply:-y}" in [Yy]*) harden=yes ;; esac
+  else
+    log "no terminal to ask on; not hardening (pass --harden to do it)"
+  fi
+fi
+[ "$harden" = yes ] || { log "not hardened; later run: scripts/ssh/setup --harden on the remote"; exit 0; }
+
+setup_script="$(dirname "$0")/setup"
+remote_setup="/tmp/enroll-setup.$$"
+setup_args="--harden"
+[ "$tailscale_only" -eq 1 ] && setup_args="--harden --tailscale-only"
+log "running setup $setup_args on $host (you will be asked for the remote sudo password)"
+scp -q "${ssh_opts[@]}" "$setup_script" "$user@$host:$remote_setup"
+ssh -t "${ssh_opts[@]}" "$user@$host" "bash $remote_setup $setup_args; rc=\$?; rm -f $remote_setup; exit \$rc" \
+  || die "remote hardening failed; your key login still works"
+
+key_login || die "key login failed after hardening; use any session still open to fix sshd_config.d/10-hardening.conf"
+probe="$(ssh -o BatchMode=yes -o PubkeyAuthentication=no -o IdentityAgent=none -o PreferredAuthentications=password,keyboard-interactive \
+  -o ConnectTimeout=10 "$user@$host" true 2>&1 || true)"
+case "$probe" in
+  *password*) log "warning: remote still offers password login" ;;
+  *"Permission denied"*) log "ok: password login is off and key login still works" ;;
+  *) log "could not confirm password login is off: $probe" ;;
+esac
