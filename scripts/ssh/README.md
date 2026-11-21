@@ -7,7 +7,7 @@ remote only gets the public half.
 | Script | Runs on | Does |
 | --- | --- | --- |
 | `setup` | the Linux machine | installs and enables `openssh-server`, prepares `~/.ssh`; `--harden` disables password and root login |
-| `enroll` | your Mac | finds the key in the 1Password agent, installs its public key on the remote, adds a `Host` block to `~/.ssh/config`, verifies key login |
+| `enroll` | your Mac | lists the 1Password agent's keys for you to pick from, installs its public key on the remote, adds a `Host` block to `~/.ssh/config`, verifies key login |
 
 Both are idempotent, so re-running them is safe.
 
@@ -27,7 +27,7 @@ Both are idempotent, so re-running them is safe.
    ```bash
    scripts/ssh/enroll build-box 100.64.0.10 --user alice
    ```
-   Run it bare and it offers the other online Linux and macOS machines on your tailnet as a numbered list (the pick supplies both the host and the alias), then asks for the username and, if no title matches, a key from a numbered list. `name` is the alias for `ssh build-box`. The key is matched by title: the default is the name with `-`/`_` as spaces (`build box` for `build-box`). Use `--key "<text>"` when the title differs. You are asked for the remote password once.
+   Run it bare and it offers the other online Linux and macOS machines on your tailnet as a numbered list (the pick supplies both the host and the alias), then asks for the username and which key to use from a numbered list (never guessed). `name` is the alias for `ssh build-box`. Use `--key "<text>"` to name the key by title and skip the picker. You are asked for the remote password once.
 4. **Check** `ssh build-box` works and prompts for Touch ID.
 5. **Harden**, with the existing session still open:
    ```bash
@@ -37,7 +37,7 @@ Both are idempotent, so re-running them is safe.
 
 ## Troubleshooting
 
-- **`no key matching ...`**: the key is not in the agent. Check the vault and `agent.toml`, then `SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock ssh-add -l`.
+- **Your key is not in the picker**: it is not in the agent. Check the vault and `agent.toml`, then `SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock ssh-add -l`.
 - **`Too many authentication failures`**: the host entry needs `IdentitiesOnly yes` and an `IdentityFile` pointing at the `.pub`; `enroll` writes both.
 - **Key login fails after install**: unlock 1Password, and check the remote has `~/.ssh` at `700` and `authorized_keys` at `600`.
 

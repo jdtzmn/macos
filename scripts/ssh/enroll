@@ -14,8 +14,8 @@ Usage: enroll [--user USER] [--key PATTERN] [name] [host]
 Anything left out is asked for interactively.
 
   --user USER    Remote username (default: current local user)
-  --key PATTERN  Case-insensitive text to match the 1Password key title
-                 (default: <name> with - and _ turned into spaces)
+  --key PATTERN  Case-insensitive text matching one 1Password key title
+                 (skips the key picker)
 
 The private key never leaves 1Password; only its public half is written.
 USAGE
@@ -87,17 +87,18 @@ fi
 [ -n "$name" ] || name="$peer_name"
 [ -n "$name" ] || ask name "Host alias (e.g. build-box)"
 [ -n "$user" ] || { [ "$tty" -eq 1 ] && ask user "Remote username" "$USER" || user="$USER"; }
-[ -n "$key_match" ] || key_match="$(printf '%s' "$name" | tr '_-' '  ')"
 
 sock="${OP_SSH_AUTH_SOCK:-$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock}"
 [ -S "$sock" ] || die "1Password SSH agent socket not found: $sock (enable it in 1Password → Settings → Developer)"
 export SSH_AUTH_SOCK="$sock"
 
-matches="$(ssh-add -L | grep -iF -- "$key_match" || true)"
-if [ -z "$matches" ]; then
-  printf 'enroll: no key matching "%s" in the 1Password agent. Available:\n' "$key_match" >&2
-  ssh-add -L | cut -d' ' -f3- | nl -w2 -s') ' >&2
-  [ "$tty" -eq 1 ] || die "create the key in the Personal vault (or enable its vault in ~/.config/1Password/ssh/agent.toml), or pass --key"
+if [ -n "$key_match" ]; then
+  matches="$(ssh-add -L | grep -iF -- "$key_match" || true)"
+  [ -n "$matches" ] || die "no key matching \"$key_match\" in the 1Password agent"
+else
+  printf 'Keys in the 1Password agent:\n'
+  ssh-add -L | cut -d' ' -f3- | nl -w2 -s') '
+  [ "$tty" -eq 1 ] || die "no terminal to pick a key on; pass --key"
   choice=""
   ask choice "Pick a key number"
   matches="$(ssh-add -L | sed -n "${choice}p")"
