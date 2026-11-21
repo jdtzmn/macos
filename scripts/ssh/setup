@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Linux side: install and enable OpenSSH, prepare ~/.ssh, optionally disable password login.
+# Run as your normal user (not root); sudo is used where needed.
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: setup [--harden]
+
+  (no flags)  Install openssh-server, enable it, and prepare ~/.ssh.
+  --harden    Also disable password and root login. Run `enroll` from the Mac
+              first and confirm key login works; this refuses to run if
+              ~/.ssh/authorized_keys has no keys.
+USAGE
+}
+
+die() {
+  printf 'setup: %s\n' "$*" >&2
+  exit 1
+}
+
+log() {
+  printf 'setup: %s\n' "$*"
+}
+
+harden=0
+case "${1:-}" in
+  "") ;;
+  --harden) harden=1 ;;
+  -h | --help) usage; exit 0 ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+[ "$(id -u)" -ne 0 ] || die "run as your normal user, not root (~/.ssh would be root's)"
+# shortcut: apt/systemd only (Debian/Ubuntu), add other package managers when a non-apt machine shows up
+command -v apt-get >/dev/null 2>&1 || die "apt-get not found; this script supports Debian/Ubuntu only"
+
+log "installing openssh-server"
+sudo apt-get install -y openssh-server
+sudo systemctl enable --now ssh
+
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+touch ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+if [ "$harden" -eq 0 ]; then
+  log "done. From the Mac run: scripts/ssh/enroll <name> <tailscale-name-or-ip> --user $(id -un)"
+  exit 0
+fi
+
+grep -qE '^(ssh-|ecdsa-|sk-)' ~/.ssh/authorized_keys \
+  || die "authorized_keys has no keys; run enroll first or you will lock yourself out"
+grep -qE '^\s*Include\s+/etc/ssh/sshd_config\.d/' /etc/ssh/sshd_config \
+  || die "/etc/ssh/sshd_config does not include sshd_config.d; edit it by hand"
+
+# 10- sorts before cloud-init's 50-cloud-init.conf; sshd keeps the first value it sees.
+sudo tee /etc/ssh/sshd_config.d/10-hardening.conf >/dev/null <<'CONF'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+CONF
+sudo sshd -t
+sudo systemctl reload ssh
+log "password and root login disabled. Test a fresh key login from the Mac before closing this session."

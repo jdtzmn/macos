@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# macOS side: enroll a remote machine using a key held in the 1Password SSH agent.
+# Finds the key by name, installs its public key on the remote, adds a Host block
+# to ~/.ssh/config, and verifies key login.
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: enroll [--user USER] [--key PATTERN] [name] [host]
+
+  name   Host alias to write to ~/.ssh/config (also the .pub filename)
+  host   Tailscale name or IP of the remote
+
+Anything left out is asked for interactively.
+
+  --user USER    Remote username (default: current local user)
+  --key PATTERN  Case-insensitive text to match the 1Password key title
+                 (default: <name> with - and _ turned into spaces)
+
+The private key never leaves 1Password; only its public half is written.
+USAGE
+}
+
+die() {
+  printf 'enroll: %s\n' "$*" >&2
+  exit 1
+}
+
+log() {
+  printf 'enroll: %s\n' "$*"
+}
+
+tty=0
+[ -t 0 ] && tty=1
+
+# ask VAR "Prompt" [default]
+ask() {
+  local var="$1" prompt="$2" default="${3:-}" reply
+  [ "$tty" -eq 1 ] || die "missing $prompt (no terminal to ask on)"
+  read -r -p "$prompt${default:+ [$default]}: " reply
+  printf -v "$var" '%s' "${reply:-$default}"
+  [ -n "${!var}" ] || die "$prompt is required"
+}
+
+user=""
+key_match=""
+args=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --user) [ $# -ge 2 ] || die "--user needs a value"; user="$2"; shift 2 ;;
+    --key) [ $# -ge 2 ] || die "--key needs a value"; key_match="$2"; shift 2 ;;
+    -h | --help) usage; exit 0 ;;
+    -*) usage >&2; exit 2 ;;
+    *) args+=("$1"); shift ;;
+  esac
+done
+[ "${#args[@]}" -le 2 ] || { usage >&2; exit 2; }
+name="${args[0]:-}"
+host="${args[1]:-}"
+[ -n "$name" ] || ask name "Host alias"
+[ -n "$host" ] || ask host "Tailscale name or IP"
+[ -n "$user" ] || { [ "$tty" -eq 1 ] && ask user "Remote username" "$USER" || user="$USER"; }
+[ -n "$key_match" ] || key_match="$(printf '%s' "$name" | tr '_-' '  ')"
+
+sock="${OP_SSH_AUTH_SOCK:-$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock}"
+[ -S "$sock" ] || die "1Password SSH agent socket not found: $sock (enable it in 1Password → Settings → Developer)"
+export SSH_AUTH_SOCK="$sock"
+
+matches="$(ssh-add -L | grep -iF -- "$key_match" || true)"
+if [ -z "$matches" ]; then
+  printf 'enroll: no key matching "%s" in the 1Password agent. Available:\n' "$key_match" >&2
+  ssh-add -L | cut -d' ' -f3- | nl -w2 -s') ' >&2
+  [ "$tty" -eq 1 ] || die "create the key in the Personal vault (or enable its vault in ~/.config/1Password/ssh/agent.toml), or pass --key"
+  choice=""
+  ask choice "Pick a key number"
+  matches="$(ssh-add -L | sed -n "${choice}p")"
+  [ -n "$matches" ] || die "no key number $choice"
+fi
+[ "$(printf '%s\n' "$matches" | wc -l)" -eq 1 ] || die "multiple keys match \"$key_match\"; pass a more specific --key"
+
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+pub="$HOME/.ssh/$name.pub"
+printf '%s\n' "$matches" >"$pub"
+log "saved public key to $pub"
+
+ssh_opts=(-o IdentitiesOnly=yes -o IdentityAgent=SSH_AUTH_SOCK -i "$pub" -o StrictHostKeyChecking=accept-new)
+key_login() {
+  ssh "${ssh_opts[@]}" -o BatchMode=yes -o PasswordAuthentication=no -o ConnectTimeout=10 "$user@$host" true 2>/dev/null
+}
+
+if key_login; then
+  log "key login already works; skipping key install"
+else
+  log "installing key on $user@$host (you will be asked for the remote password)"
+  # IdentityAgent=none keeps the agent's many keys from tripping MaxAuthTries before the password prompt.
+  ssh-copy-id -f -i "$pub" -o IdentityAgent=none -o PubkeyAuthentication=no -o StrictHostKeyChecking=accept-new "$user@$host"
+fi
+
+config="$HOME/.ssh/config"
+touch "$config"
+chmod 600 "$config"
+if grep -qE "^Host[[:space:]]+$name([[:space:]]|\$)" "$config"; then
+  log "Host $name already in $config; leaving it alone"
+else
+  cat >>"$config" <<BLOCK
+
+Host $name
+  HostName $host
+  User $user
+  IdentityFile $pub
+  IdentitiesOnly yes
+BLOCK
+  log "added Host $name to $config"
+fi
+
+key_login || die "key login failed; check the key was installed and 1Password is unlocked"
+log "ok: ssh $name"
+log "next, on the remote: scripts/ssh/setup --harden"
