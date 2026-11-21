@@ -44,11 +44,12 @@ ask() {
 
 # Offer online Linux/macOS tailnet peers (not this machine); sets host and peer_name, or leaves them empty.
 pick_peer() {
-  local cli peers choice line
+  local cli me peers choice line
   cli="$(command -v tailscale || true)"
   [ -n "$cli" ] || cli=/Applications/Tailscale.app/Contents/MacOS/Tailscale
   [ "$tty" -eq 1 ] && [ -x "$cli" ] || return 0
-  peers="$("$cli" status 2>/dev/null | awk '($4 == "linux" || $4 == "macOS") && $5 != "-" && $5 !~ /^offline/ { print $2, $1 }')"
+  me="$("$cli" ip -4 2>/dev/null | head -1)"
+  peers="$("$cli" status 2>/dev/null | awk -v me="$me" '$1 != me && ($4 == "linux" || $4 == "macOS") && $5 !~ /^offline/ { print $2, $1 }')"
   [ -n "$peers" ] || return 0
   printf 'Online Linux and macOS machines on your tailnet:\n'
   printf '%s\n' "$peers" | nl -w2 -s') '
