@@ -41,4 +41,4 @@ macbook-admin: agents
 
 # Linux home-manager standalone configuration
 linux: agents
-	REPO_DIR=$(CURDIR) nix run home-manager -- switch --flake .#linux --impure
+	REPO_DIR=$(CURDIR) nix run home-manager -- switch -b backup --flake .#linux --impure
