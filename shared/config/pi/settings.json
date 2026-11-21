@@ -112,6 +112,7 @@
     "{\"source\":\"npm:@llblab/pi-telegram@0.58.3\",\"scope\":\"user\"}": "0.58.3",
     "{\"source\":\"npm:@gotgenes/pi-permission-system@36.2.1\",\"scope\":\"user\"}": "36.2.1",
     "{\"source\":\"npm:@rahularya01/pi-lazy\",\"scope\":\"user\"}": "0.3.1",
-    "{\"source\":\"npm:@gotgenes/pi-permission-system@42.0.0\",\"scope\":\"user\"}": "42.0.0"
+    "{\"source\":\"npm:@gotgenes/pi-permission-system@42.0.0\",\"scope\":\"user\"}": "42.0.0",
+    "{\"source\":\"git:github.com/jdtzmn/pi-image-view@610b6cb5d88411b029b4688f161aa72a263aef5d\",\"scope\":\"user\"}": "0.4.0"
   }
 }
