@@ -22,23 +22,33 @@ class GlobalNpmPackagesTest(unittest.TestCase):
         self.env = {**os.environ, "CALL_LOG": str(self.log)}
         self.write_executable("bun", 'printf "bun\\n" >> "$CALL_LOG"\nexit "${BUN_EXIT:-0}"\n')
         self.write_executable("node", '''
-[ "$1" = "$BUN_INSTALL_GLOBAL_DIR/node_modules/@anthropic-ai/claude-code/install.cjs" ] || exit 90
+case "$1" in
+  "$BUN_INSTALL_GLOBAL_DIR/node_modules/@anthropic-ai/claude-code/install.cjs") name=claude ;;
+  "$BUN_INSTALL_GLOBAL_DIR/node_modules/@opencode/cli/postinstall.mjs") name=opencode ;;
+  *) exit 90 ;;
+esac
 [ -f "$1" ] || exit 91
-printf "postinstall\\n" >> "$CALL_LOG"
-exit "${POSTINSTALL_EXIT:-0}"
+printf "postinstall %s\\n" "$name" >> "$CALL_LOG"
+[ "$name" = claude ] && exit "${POSTINSTALL_EXIT:-0}"
+exit "${OPENCODE_POSTINSTALL_EXIT:-0}"
 ''')
-        self.claude_dir = self.home / ".bun/install/global/node_modules/@anthropic-ai/claude-code"
+        modules = self.home / ".bun/install/global/node_modules"
+        self.claude_dir = modules / "@anthropic-ai/claude-code"
         self.claude_dir.mkdir(parents=True)
         (self.claude_dir / "install.cjs").touch()
+        self.opencode_dir = modules / "@opencode/cli"
+        self.opencode_dir.mkdir(parents=True)
+        (self.opencode_dir / "postinstall.mjs").touch()
         self.bin = self.home / ".bun/bin"
         self.bin.mkdir(parents=True)
-        claude = self.bin / "claude"
-        claude.write_text('''#!/bin/sh
+        for name, exit_var in [("claude", "CLAUDE_EXIT"), ("opencode", "OPENCODE_EXIT")]:
+            launcher = self.bin / name
+            launcher.write_text(f'''#!/bin/sh
 [ "$1" = "--version" ] || exit 92
-printf "verify\\n" >> "$CALL_LOG"
-exit "${CLAUDE_EXIT:-0}"
+printf "verify {name}\\n" >> "$CALL_LOG"
+exit "${{{exit_var}:-0}}"
 ''')
-        claude.chmod(0o755)
+            launcher.chmod(0o755)
 
     def write_executable(self, name, body):
         path = self.tools / name / "bin" / name
@@ -81,11 +91,13 @@ exit "${CLAUDE_EXIT:-0}"
     def calls(self):
         return self.log.read_text().splitlines() if self.log.exists() else []
 
+    ALL_CALLS = ["bun", "postinstall claude", "verify claude", "postinstall opencode", "verify opencode"]
+
     def test_fresh_install_and_reapply_always_run_postinstall_then_verify(self):
         for _ in range(2):
             result = self.run_activation()
             self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.calls(), ["bun", "postinstall", "verify"] * 2)
+        self.assertEqual(self.calls(), self.ALL_CALLS * 2)
 
     def test_bun_failure_stops_before_postinstall(self):
         self.assertEqual(self.run_activation(BUN_EXIT="23").returncode, 23)
@@ -93,20 +105,35 @@ exit "${CLAUDE_EXIT:-0}"
 
     def test_postinstall_failure_stops_before_verification(self):
         self.assertEqual(self.run_activation(POSTINSTALL_EXIT="24").returncode, 24)
-        self.assertEqual(self.calls(), ["bun", "postinstall"])
+        self.assertEqual(self.calls(), ["bun", "postinstall claude"])
+
+    def test_opencode_postinstall_failure_stops_before_verification(self):
+        self.assertEqual(self.run_activation(OPENCODE_POSTINSTALL_EXIT="25").returncode, 25)
+        self.assertEqual(self.calls(), self.ALL_CALLS[:4])
 
     def test_missing_postinstall_is_an_error(self):
         (self.claude_dir / "install.cjs").unlink()
         self.assertNotEqual(self.run_activation().returncode, 0)
         self.assertEqual(self.calls(), ["bun"])
 
+    def test_missing_opencode_postinstall_is_an_error(self):
+        (self.opencode_dir / "postinstall.mjs").unlink()
+        self.assertNotEqual(self.run_activation().returncode, 0)
+        self.assertEqual(self.calls(), self.ALL_CALLS[:3])
+
     def test_missing_native_binary_fails_even_when_postinstall_succeeds(self):
         self.assertEqual(self.run_activation(CLAUDE_EXIT="1").returncode, 1)
-        self.assertEqual(self.calls(), ["bun", "postinstall", "verify"])
+        self.assertEqual(self.calls(), self.ALL_CALLS[:3])
+
+    def test_broken_opencode_launcher_fails_activation(self):
+        self.assertEqual(self.run_activation(OPENCODE_EXIT="1").returncode, 1)
+        self.assertEqual(self.calls(), self.ALL_CALLS)
 
     def test_dry_run_does_not_execute_or_require_installed_files(self):
         (self.claude_dir / "install.cjs").unlink()
+        (self.opencode_dir / "postinstall.mjs").unlink()
         (self.bin / "claude").unlink()
+        (self.bin / "opencode").unlink()
         self.assertEqual(self.run_activation(dry_run=True).returncode, 0)
         self.assertEqual(self.calls(), [])
 
