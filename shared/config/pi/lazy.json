@@ -90,16 +90,6 @@
       "description": "Enhanced context compaction"
     },
     {
-      "name": "image-view",
-      "source": "npm:pi-image-view",
-      "lazy": "after-start",
-      "priority": 20,
-      "cmd": [
-        "pi-image-view"
-      ],
-      "description": "Clipboard image previews and stable image references"
-    },
-    {
       "name": "web",
       "source": "npm:pi-web-access",
       "lazy": true,
