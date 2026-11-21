@@ -18,22 +18,22 @@ Both are idempotent, so re-running them is safe.
 
 ## Steps
 
-1. **Create the key.** In 1Password, make a new SSH key (ED25519) in the `Personal` vault, named after the machine (`<Machine> SSH Key`). One key per machine keeps a compromise contained. If it is in another vault, enable that vault in `~/.config/1Password/ssh/agent.toml`.
+1. **Create the key.** In 1Password, make a new SSH key (ED25519) in the `Personal` vault, named after the machine (e.g. `Build Box SSH Key`). One key per machine keeps a compromise contained. If it is in another vault, enable that vault in `~/.config/1Password/ssh/agent.toml`.
 2. **On the Linux machine**, get this script there (clone the repo, or `scp` it) and run:
    ```bash
    scripts/ssh/setup
    ```
 3. **On the Mac**:
    ```bash
-   scripts/ssh/enroll <name> <tailscale-name-or-ip> --user <linux-username>
+   scripts/ssh/enroll build-box 100.64.0.10 --user alice
    ```
-   Run it bare to be prompted for the name, host, username and (if no title matches) a key from a numbered list. `name` is the alias for `ssh <name>`. The key is matched by title: the default is the name with `-`/`_` as spaces (`my machine` for `my-machine`). Use `--key "<text>"` when the title differs. You are asked for the remote password once.
-4. **Check** `ssh <name>` works and prompts for Touch ID.
+   Run it bare to be prompted for the name, host, username and (if no title matches) a key from a numbered list. `name` is the alias for `ssh build-box`. The key is matched by title: the default is the name with `-`/`_` as spaces (`build box` for `build-box`). Use `--key "<text>"` when the title differs. You are asked for the remote password once.
+4. **Check** `ssh build-box` works and prompts for Touch ID.
 5. **Harden**, with the existing session still open:
    ```bash
    scripts/ssh/setup --harden
    ```
-   Then confirm a fresh `ssh <name>` from a second terminal.
+   Then confirm a fresh `ssh build-box` from a second terminal.
 
 ## Troubleshooting
 

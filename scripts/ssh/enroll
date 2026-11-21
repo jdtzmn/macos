@@ -57,8 +57,8 @@ done
 [ "${#args[@]}" -le 2 ] || { usage >&2; exit 2; }
 name="${args[0]:-}"
 host="${args[1]:-}"
-[ -n "$name" ] || ask name "Host alias"
-[ -n "$host" ] || ask host "Tailscale name or IP"
+[ -n "$name" ] || ask name "Host alias (e.g. build-box)"
+[ -n "$host" ] || ask host "Tailscale name or IP (e.g. 100.64.0.10)"
 [ -n "$user" ] || { [ "$tty" -eq 1 ] && ask user "Remote username" "$USER" || user="$USER"; }
 [ -n "$key_match" ] || key_match="$(printf '%s' "$name" | tr '_-' '  ')"
 
