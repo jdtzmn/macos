@@ -53,6 +53,23 @@ in
   system.primaryUser = "jacob";
 
   ##############################
+  # Remote Login (SSH)
+  ##############################
+
+  # Key-only SSH; authorized keys live in ~/.ssh/authorized_keys, not the repo.
+  services.openssh = {
+    enable = true;
+    extraConfig = ''
+      AuthenticationMethods publickey
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin no
+      AllowUsers jacob
+      MaxAuthTries 3
+    '';
+  };
+
+  ##############################
   # System Defaults
   ##############################
 
