@@ -1,4 +1,5 @@
 {
   "providers": {},
-  "autoUpdate": false
+  "autoUpdate": false,
+  "pi": { "inline": false }
 }
