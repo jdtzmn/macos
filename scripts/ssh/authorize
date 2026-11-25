@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Local side: allow a key held in the 1Password SSH agent to log in to THIS machine
+# by appending its public half to ~/.ssh/authorized_keys.
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: authorize [--key PATTERN]
+
+  --key PATTERN  Case-insensitive text matching one 1Password key title
+                 (skips the key picker)
+
+Picks a key from the 1Password SSH agent and appends its public key to
+~/.ssh/authorized_keys on this machine. Re-running with the same key is a no-op.
+The private key never leaves 1Password.
+USAGE
+}
+
+die() {
+  printf 'authorize: %s\n' "$*" >&2
+  exit 1
+}
+
+log() {
+  printf 'authorize: %s\n' "$*"
+}
+
+key_match=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --key) [ $# -ge 2 ] || die "--key needs a value"; key_match="$2"; shift 2 ;;
+    -h | --help) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+  esac
+done
+
+sock="${OP_SSH_AUTH_SOCK:-$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock}"
+[ -S "$sock" ] || die "1Password SSH agent socket not found: $sock (enable it in 1Password → Settings → Developer)"
+export SSH_AUTH_SOCK="$sock"
+
+if [ -n "$key_match" ]; then
+  matches="$(ssh-add -L | grep -iF -- "$key_match" || true)"
+  [ -n "$matches" ] || die "no key matching \"$key_match\" in the 1Password agent"
+else
+  [ -t 0 ] || die "no terminal to pick a key on; pass --key"
+  printf 'Keys in the 1Password agent:\n'
+  ssh-add -L | cut -d' ' -f3- | nl -w2 -s') '
+  read -r -p "Pick a key number: " choice
+  [[ "$choice" =~ ^[0-9]+$ ]] || die "not a number: $choice"
+  matches="$(ssh-add -L | sed -n "${choice}p")"
+  [ -n "$matches" ] || die "no key number $choice"
+fi
+[ "$(printf '%s\n' "$matches" | wc -l)" -eq 1 ] || die "multiple keys match \"$key_match\"; pass a more specific --key"
+
+auth="$HOME/.ssh/authorized_keys"
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+touch "$auth"
+chmod 600 "$auth"
+
+# Compare on "type base64" only, so a renamed key in 1Password is not added twice.
+key_body="$(printf '%s\n' "$matches" | cut -d' ' -f1-2)"
+title="$(printf '%s\n' "$matches" | cut -d' ' -f3-)"
+if cut -d' ' -f1-2 "$auth" | grep -qxF -- "$key_body"; then
+  log "already authorized: $title"
+else
+  printf '%s\n' "$matches" >>"$auth"
+  log "authorized: $title"
+fi

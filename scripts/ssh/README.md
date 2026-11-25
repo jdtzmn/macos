@@ -8,8 +8,9 @@ remote only gets the public half.
 | --- | --- | --- |
 | `setup` | the Linux machine | installs and enables `openssh-server`, prepares `~/.ssh`; `--harden` disables password login, root login and X11 forwarding; `--tailscale-only` firewalls SSH to Tailscale |
 | `enroll` | your Mac | lists the 1Password agent's keys for you to pick from, installs its public key on the remote, adds a `Host` block to `~/.ssh/config`, verifies key login, then offers to harden the remote by running `setup --harden` over ssh |
+| `authorize` | the machine to log in to | lists the 1Password agent's keys for you to pick from (or `--key "<text>"`) and appends its public key to this machine's `~/.ssh/authorized_keys`; for machines that refuse password login, where `enroll` cannot install a key |
 
-Both are idempotent, so re-running them is safe.
+All are idempotent, so re-running them is safe.
 
 ## Prerequisites
 
@@ -41,5 +42,5 @@ To harden a machine you enrolled earlier, run `enroll` again: it skips the key i
 
 ## Limits
 
-- `setup` supports apt and systemd only. A macOS remote needs Remote Login enabled by hand (System Settings → General → Sharing); `enroll` works against it, but hardening is skipped for it.
+- `setup` supports apt and systemd only. A macOS remote needs Remote Login enabled by hand (System Settings → General → Sharing); `enroll` works against it, but hardening is skipped for it. The `macbook` nix-darwin host enables key-only Remote Login itself, so add keys to it with `authorize` run on the MacBook.
 - `enroll` leaves an existing `Host <name>` block untouched; edit it by hand if it is stale.
