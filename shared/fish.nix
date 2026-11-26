@@ -41,6 +41,9 @@
         src = pkgs.fishPlugins.pure.src;
       }
     ];
+    shellAliases = {
+      o = "octet";
+    };
     shellAbbrs = {
       # Commands
       "c" = "clear";
