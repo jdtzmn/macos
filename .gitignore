@@ -132,5 +132,9 @@ shared/config/skills/dd-symdb/
 # Ponytail mode state (written next to the OpenCode config)
 shared/config/opencode/.ponytail-active
 
+# billion-context installer backups, if `bili plugin install opencode` is ever run
+shared/config/opencode/*.bili-bak
+shared/config/opencode/*.bili-last
+
 # Node
 package-lock.json

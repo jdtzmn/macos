@@ -10,6 +10,9 @@ let
     # self-updates). The MCP entry lives in shared/config/pi/mcp.json and the
     # skill in shared/config/skills/browse; bump all three together.
     "@opencode/browse@0.0.16"
+    # Loaded by OpenCode via shared/config/opencode/plugins/billion-context.js.
+    # Keep in step with pi's npm:billion-context pin in shared/config/pi/settings.json.
+    "billion-context@0.1.216"
   ];
   globalNpmPackageArgs =
     lib.concatMapStringsSep " " lib.escapeShellArg globalNpmPackages;

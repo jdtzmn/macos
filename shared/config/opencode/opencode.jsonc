@@ -1,5 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  // billion-context (plugins/billion-context.js) owns compression; native
+  // auto-compaction on top of it would double-compress.
+  "compaction": { "auto": false },
   "plugins": [
     "@dietrichgebert/ponytail@5.3.3",
     "opencode-mem@2.44.0"
