@@ -7,9 +7,10 @@
     description = "Launch OpenCode, hiding its session tabs inside Rex";
     body = ''
       if set -q REX_SESSION
-          set -lx OPENCODE_CLI_CONFIG_CONTENT '{"tabs":{"mode":"off"}}'
+          OPENCODE_CLI_CONFIG_CONTENT='{"tabs":{"mode":"off"}}' command opencode $argv
+      else
+          command opencode $argv
       end
-      command opencode $argv
     '';
   };
 }
