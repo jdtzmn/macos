@@ -129,5 +129,8 @@ shared/config/skills/dd-code-generation/
 shared/config/skills/dd-file-issue/
 shared/config/skills/dd-symdb/
 
+# Ponytail mode state (written next to the OpenCode config)
+shared/config/opencode/.ponytail-active
+
 # Node
 package-lock.json

@@ -1,5 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "plugins": [
+    "@dietrichgebert/ponytail@5.3.3"
+  ],
   "instructions": [
     "~/.config/agents/personal-base.md",
     "~/.config/agents/overlays/opencode.md"
