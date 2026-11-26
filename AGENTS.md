@@ -129,6 +129,16 @@ stylua shared/nvim
   - max line width 120
   - Unix line endings
 
+## Dependency Pinning
+
+- Pin agent plugins and extensions to exact versions (npm `name@x.y.z`) or
+  commit SHAs (git sources) in `shared/config/opencode/opencode.jsonc` and
+  `shared/config/pi/settings.json`. They shape agent behavior, so updates
+  should be deliberate, reviewable commits.
+- Exception: self-updating CLIs in `shared/npm-cli-packages.nix` may use `@latest`.
+- To update OpenCode plugins: run `opencode plugin check`, then bump the version
+  in config and commit.
+
 ## Code Style Guidelines
 
 ### General
