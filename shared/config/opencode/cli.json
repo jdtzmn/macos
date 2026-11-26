@@ -3,6 +3,10 @@
   "theme": {
     "name": "tokyonight-transparent"
   },
+  "cursor": {
+    "style": "block",
+    "blinking": false
+  },
   "scroll": {
     "speed": 1
   },
