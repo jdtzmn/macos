@@ -5,7 +5,7 @@
       docker
       docker-compose
       atlas
-      glow
+      (callPackage ./glowm.nix { })
       gh
       gh-dash
       gnumake
