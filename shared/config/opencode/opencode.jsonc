@@ -5,7 +5,8 @@
   "compaction": { "auto": false },
   "plugins": [
     "@dietrichgebert/ponytail@5.3.3",
-    "opencode-mem@2.44.0"
+    "opencode-mem@2.44.0",
+    "@max10240/opencode-plugin-send-message-across-sessions@1.0.39"
   ],
   "instructions": [
     "~/.config/agents/personal-base.md",
