@@ -1,0 +1,4 @@
+theme = "auto"
+model = "codex/gpt-6.2-sol"
+enabled_extensions = []
+disabled_extensions = ["octet-pi-compat"]

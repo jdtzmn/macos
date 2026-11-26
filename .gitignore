@@ -77,6 +77,10 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,linux
 
+# Octet keeps runtime state and credentials next to its config.
+/shared/config/octet/*
+!/shared/config/octet/config.toml
+
 # Secrets
 .env
 shared/config/pi/auth.json

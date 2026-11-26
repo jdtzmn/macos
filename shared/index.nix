@@ -14,6 +14,7 @@
     ./git.nix
     ./lazygit.nix
     ./nvim.nix
+    ./octet.nix
     ./opencode.nix
     ./pi.nix
     ./remote.nix
