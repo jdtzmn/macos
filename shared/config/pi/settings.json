@@ -10,7 +10,7 @@
     "claude-bridge/claude-opus-5-5",
     "claude-bridge/claude-sonnet-5-5"
   ],
-  "lastChangelogVersion": "1.6.0",
+  "lastChangelogVersion": "1.6.1",
   "packages": [
     {
       "source": "npm:pi-web-access@0.25.0",
