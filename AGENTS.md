@@ -129,12 +129,6 @@ stylua shared/nvim
   - max line width 120
   - Unix line endings
 
-### JS (OpenCode plugin under `shared/config/opencode/plugins`)
-
-- No repo-level eslint/vitest config is committed.
-- Follow existing style in `notification.js` (const-first, guard clauses, async/await).
-- If test tooling is added, also add exact single-test commands in this file.
-
 ## Code Style Guidelines
 
 ### General

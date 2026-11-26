@@ -46,15 +46,6 @@ local branch_inactive = blend_toward_bg(dim, bg, 0.35)
 local highlight = scheme.ansi[4]
 local tbg = set_alpha(bg, 0.8)
 local tab_bar_top_padding = '0.7cell'
-local opencode_status_colors = {
-    complete_unseen = scheme.ansi[3],
-    complete_seen = scheme.ansi[3],
-    in_progress = scheme.ansi[4],
-    waiting = scheme.ansi[2],
-}
-
-local opencode_complete_seen_by_tab = {}
-local opencode_last_status_by_tab = {}
 
 -- Customize titlebar
 config.window_frame = {
@@ -274,61 +265,10 @@ local function truncate_text(text, max_len)
     return text:sub(1, max_len - 3) .. '...'
 end
 
-local function tab_opencode_status(tab)
-    local pane = tab.active_pane
-    if not pane or type(pane.user_vars) ~= 'table' then
-        return nil
-    end
-
-    local status = pane.user_vars.opencode_status
-    if status == 'complete' or status == 'in_progress' or status == 'waiting' then
-        return status
-    end
-
-    return nil
-end
-
-local function tab_opencode_display_status(tab)
-    local status = tab_opencode_status(tab)
-    if not status then
-        return nil
-    end
-
-    local tab_id = tab.tab_id
-    if not tab_id then
-        return status
-    end
-
-    local previous_status = opencode_last_status_by_tab[tab_id]
-    if status ~= previous_status then
-        if status == 'complete' then
-            opencode_complete_seen_by_tab[tab_id] = tab.is_active
-        elseif status == 'in_progress' then
-            opencode_complete_seen_by_tab[tab_id] = false
-        end
-
-        opencode_last_status_by_tab[tab_id] = status
-    end
-
-    if status == 'complete' then
-        if tab.is_active then
-            opencode_complete_seen_by_tab[tab_id] = true
-        end
-
-        if opencode_complete_seen_by_tab[tab_id] then
-            return 'complete_seen'
-        end
-
-        return 'complete_unseen'
-    end
-
-    return status
-end
 
 -- Format the tab title
 wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
     local title = tostring(tab.tab_index + 1)
-    local status = tab_opencode_display_status(tab)
     local title_text = title
 
     local cells = {
@@ -348,26 +288,11 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
 
     local branch = tab_git_branch(tab)
 
-    if status or branch then
-      table.insert(cells, { Text = ' ' })
-    end
   
-    if status then
-        local icon = '●'
-        if status == 'waiting' then
-            icon = '🔔'
-        elseif status == 'complete_seen' then
-            icon = '○'
-        end
-
-        table.insert(cells, { Foreground = { Color = opencode_status_colors[status] } })
-        table.insert(cells, { Text = ' ' .. icon })
-    end
-
     if branch then
         branch = truncate_text(branch, 28)
         table.insert(cells, { Foreground = { Color = tab.is_active and dim or branch_inactive } })
-        table.insert(cells, { Text = ' ' .. branch })
+        table.insert(cells, { Text = '  ' .. branch })
     end
 
     return cells
