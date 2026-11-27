@@ -7,8 +7,15 @@
     "@dietrichgebert/ponytail@5.3.3",
     "opencode-mem@2.44.0",
     "@max10240/opencode-plugin-send-message-across-sessions@1.0.39",
-    "opencode-nap@0.1.7"
+    { "package": "opencode-nap@0.1.7", "options": { "napOnBlur": true } }
   ],
+  "mcp": {
+    "servers": {
+      "superlogical": { "type": "remote", "url": "https://www.superlogical.com/rex/community-mcp" },
+      "linear": { "type": "remote", "url": "https://mcp.linear.app/mcp" },
+      "datadog": { "type": "remote", "url": "https://mcp.datadoghq.com/v1/mcp" }
+    }
+  },
   "instructions": [
     "~/.config/agents/personal-base.md",
     "~/.config/agents/overlays/opencode.md"
