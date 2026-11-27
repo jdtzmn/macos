@@ -18,5 +18,9 @@
     "scrollbar": false,
     "thinking": "show"
   },
-  "animations": true
+  "animations": true,
+  "keybinds": {
+    "leader": "ctrl+space",
+    "command.palette.show": "ctrl+k"
+  }
 }
