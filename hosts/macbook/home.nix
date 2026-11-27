@@ -14,6 +14,7 @@
   ##############################
 
   home.packages = with pkgs; [
+    (callPackage ./ocd.nix { })
     terminal-notifier
     vhs # Terminal demo recording; Nix wrapper supplies ttyd and ffmpeg.
   ];
