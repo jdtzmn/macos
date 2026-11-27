@@ -7,7 +7,7 @@
     "@dietrichgebert/ponytail@5.3.3",
     "opencode-mem@2.44.0",
     "@max10240/opencode-plugin-send-message-across-sessions@1.0.39",
-    { "package": "opencode-nap@0.1.7", "options": { "napOnBlur": true } }
+    { "package": "opencode-nap@0.1.7", "options": { "idleMinutes": 5, "blurIdleMinutes": 1 } }
   ],
   "mcp": {
     "servers": {
